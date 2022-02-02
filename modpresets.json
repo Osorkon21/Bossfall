@@ -1,0 +1,23 @@
+[
+    {
+        "Title": "Recommended",
+        "Author": "Osorkon",
+        "Description": "Recommended values for all settings.",
+        "SettingsVersion": "1.4",
+        "Values": {
+            "Difficulty": {
+                "PowerfulEnemiesAre": "1",
+                "EnemyMoveSpeed": "1",
+                "SkillAdvancementDifficulty": "1",
+                "BossProximityWarning": "True",
+                "DisplayEnemyLevel": "True",
+                "AlternateLootPiles": "True"
+            },
+            "Miscellaneous": {
+                "DisplayEnemyLevel": "True",
+                "AlternateLootPiles": "True"
+            }
+        },
+        "$version": "v1"
+    }
+]
