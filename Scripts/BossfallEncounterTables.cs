@@ -1,11 +1,11 @@
 // Project:         Bossfall
 // Copyright:       Copyright (C) 2022 Osorkon, vanilla DFU code Copyright (C) 2009-2022 Daggerfall Workshop
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
-// Source Code:     https://github.com/Osorkon21/BossfallDFMod, vanilla DFU code https://github.com/Interkarma/daggerfall-unity
+// Source Code:     https://github.com/Osorkon21/Bossfall, vanilla DFU code https://github.com/Interkarma/daggerfall-unity
 // Original Author: Osorkon, vanilla DFU code Gavin Clayton (interkarma@dfworkshop.net)
 // Contributors:    
 // 
-// Notes: This script uses code from several vanilla DFU scripts. Comments indicate authorship - please
+// Notes: This script uses code from vanilla's RandomEncounters script. Comments indicate authorship - please
 //        verify original authorship before crediting. When in doubt compare with vanilla DFU's source code.
 //
 
@@ -14,7 +14,7 @@ using DaggerfallConnect.Arena2;
 using DaggerfallWorkshop;
 using DaggerfallWorkshop.Game;
 
-namespace Bossfall.Utility
+namespace BossfallMod.Utility
 {
     public static class BossfallEncounterTables
     {

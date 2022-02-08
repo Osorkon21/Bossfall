@@ -1,7 +1,7 @@
 // Project:         Bossfall
 // Copyright:       Copyright (C) 2022 Osorkon, vanilla DFU code Copyright (C) 2009-2022 Daggerfall Workshop
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
-// Source Code:     https://github.com/Osorkon21/BossfallDFMod, vanilla DFU code https://github.com/Interkarma/daggerfall-unity
+// Source Code:     https://github.com/Osorkon21/Bossfall, vanilla DFU code https://github.com/Interkarma/daggerfall-unity
 // Original Author: Osorkon, vanilla DFU code Gavin Clayton (interkarma@dfworkshop.net)
 // Contributors:    vanilla DFU code Allofich, Hazelnut, ifkopifko, Numidium, TheLacus
 // 
@@ -23,14 +23,14 @@ using DaggerfallWorkshop.Utility;
 using System;
 using UnityEngine;
 
-namespace Bossfall.Formulas
+namespace BossfallMod.Formulas
 {
     public static class BossfallOverrides
     {
         #region Fields
 
-        // These bools are used in the CalculateAttackDamage formula override to prevent weakness/resistance/immunity
-        // HUD messages from appearing more than once per enemy.
+        // These bools are used in the CalculateAttackDamage method to prevent weakness/resistance/immunity HUD
+        // messages from appearing more than once per enemy.
         static bool shownMsg;
         static bool shownMsgTwo;
         static bool shownMsgThree;
