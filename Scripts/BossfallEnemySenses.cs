@@ -36,9 +36,9 @@ namespace BossfallMod.EnemyAI
         DaggerfallEntityBehaviour entityBehaviour;
         QuestResourceBehaviour questBehaviour;
 
-        // [OSORKON] I added the bossfallMotor and bossfallSenses fields.
+        // [OSORKON] I added the bossfallMotor and senses fields.
         BossfallEnemyMotor bossfallMotor;
-        BossfallEnemySenses bossfallSenses;
+        EnemySenses senses;
 
         EnemyMotor motor;
         EnemyEntity enemyEntity;
@@ -54,10 +54,7 @@ namespace BossfallMod.EnemyAI
         DaggerfallEntityBehaviour secondaryTarget;
         bool sawSecondaryTarget;
         Vector3 secondaryTargetPos;
-
-        // [OSORKON] I changed the targetSenses field to senses.
-        EnemySenses senses;
-
+        EnemySenses targetSenses;
         float lastDistanceToTarget;
         float targetRateOfApproach;
         Vector3 lastKnownTargetPos = ResetPlayerPos;
@@ -198,8 +195,7 @@ namespace BossfallMod.EnemyAI
 
         void Start()
         {
-            // [OSORKON] I added the two Bossfall lines and changed "targetSenses" line to "senses".
-            bossfallSenses = GetComponent<BossfallEnemySenses>();
+            // [OSORKON] I added the bossfallMotor and senses lines.
             bossfallMotor = GetComponent<BossfallEnemyMotor>();
             senses = GetComponent<EnemySenses>();
 
@@ -361,9 +357,7 @@ namespace BossfallMod.EnemyAI
                     lastDistanceToTarget = 0;
                     senses.TargetRateOfApproach = 0;
                     distanceToTarget = 0;
-
-                    // [OSORKON] I replaced "targetSenses" with "bossfallSenses".
-                    bossfallSenses = null;
+                    targetSenses = null;
 
                     // If we have a valid secondary target that we acquired when we got the primary, switch to it.
                     // There will only be a secondary target if using enhanced combat AI.
@@ -455,23 +449,18 @@ namespace BossfallMod.EnemyAI
                         // [OSORKON] If the vanilla field or property can be set from outside the script, I call the vanilla
                         // version. Otherwise, I redirect calls to the field or property's Bossfall counterpart.
                         if (senses.Target != null && senses.Target != player)
-
-                            // [OSORKON] I replaced vanilla's "targetSenses" assignment with the Bossfall variant
-                            // in the below lines. I also called EnemySenses' Target property rather than Bossfall's.
-                            bossfallSenses = senses.Target.GetComponent<BossfallEnemySenses>();
+                            targetSenses = senses.Target.GetComponent<EnemySenses>();
                         else
-                            bossfallSenses = null;
+                            targetSenses = null;
                     }
 
                     // Make targeted character also target this character if it doesn't have a target yet.
 
                     // [OSORKON] If the vanilla field or property can be set from outside the script, I call the vanilla
                     // version. Otherwise, I redirect calls to the field or property's Bossfall counterpart.
-                    if (senses.Target != null && bossfallSenses && bossfallSenses.senses.Target == null)
+                    if (senses.Target != null && targetSenses && targetSenses.Target == null)
                     {
-                        // [OSORKON] If the vanilla field or property can be set from outside the script, I call the vanilla
-                        // version. Otherwise, I redirect calls to the field or property's Bossfall counterpart.
-                        bossfallSenses.senses.Target = entityBehaviour;
+                        targetSenses.Target = entityBehaviour;
                     }
                 }
 
@@ -983,18 +972,12 @@ namespace BossfallMod.EnemyAI
                     if (senses.QuestBehaviour && !senses.QuestBehaviour.IsAttackableByAI && targetBehaviour != player)
                         continue;
 
-                    // [OSORKON] I changed EnemySenses to BossfallEnemySenses.
-                    BossfallEnemySenses targetSenses = null;
+                    EnemySenses targetSenses = null;
                     if (targetBehaviour.EntityType == EntityTypes.EnemyMonster || targetBehaviour.EntityType == EntityTypes.EnemyClass)
-
-                        // [OSORKON] I changed EnemySenses to BossfallEnemySenses.
-                        targetSenses = targetBehaviour.GetComponent<BossfallEnemySenses>();
+                        targetSenses = targetBehaviour.GetComponent<EnemySenses>();
 
                     // For now, quest AI can't be targeted
-
-                    // [OSORKON] If the vanilla field or property can be set from outside the script, I call the vanilla
-                    // version. Otherwise, I redirect calls to the field or property's Bossfall counterpart.
-                    if (targetSenses && targetSenses.senses.QuestBehaviour && !targetSenses.senses.QuestBehaviour.IsAttackableByAI)
+                    if (targetSenses && targetSenses.QuestBehaviour && !targetSenses.QuestBehaviour.IsAttackableByAI)
                         continue;
 
                     // [OSORKON] If the vanilla field or property can be set from outside the script, I call the vanilla
@@ -1006,19 +989,13 @@ namespace BossfallMod.EnemyAI
                     bool see = CanSeeTarget(targetBehaviour);
 
                     // Is potential target neither visible nor in area around player? If so, reject as target.
-
-                    // [OSORKON] If the vanilla field or property can be set from outside the script, I call the vanilla
-                    // version. Otherwise, I redirect calls to the field or property's Bossfall counterpart.
-                    if (targetSenses && !targetSenses.senses.WouldBeSpawnedInClassic && !see)
+                    if (targetSenses && !targetSenses.WouldBeSpawnedInClassic && !see)
                         continue;
 
                     float priority = 0;
 
                     // Add 5 priority if this potential target isn't already targeting someone
-
-                    // [OSORKON] If the vanilla field or property can be set from outside the script, I call the vanilla
-                    // version. Otherwise, I redirect calls to the field or property's Bossfall counterpart.
-                    if (targetSenses && targetSenses.senses.Target == null)
+                    if (targetSenses && targetSenses.Target == null)
                         priority += 5;
 
                     if (see)

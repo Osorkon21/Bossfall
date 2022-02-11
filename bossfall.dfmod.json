@@ -13,6 +13,9 @@
         "Assets/Game/Mods/Bossfall/modsettings.json",
         "Assets/Game/Mods/Bossfall/Scripts/Bossfall.cs",
         "Assets/Game/Mods/Bossfall/Scripts/BossfallEncounterTables.cs",
-        "Assets/Game/Mods/Bossfall/Scripts/BossfallOverrides.cs"
+        "Assets/Game/Mods/Bossfall/Scripts/BossfallOverrides.cs",
+        "Assets/Game/Mods/Bossfall/Scripts/BossfallEnemyAttack.cs",
+        "Assets/Game/Mods/Bossfall/Scripts/BossfallEnemyMotor.cs",
+        "Assets/Game/Mods/Bossfall/Scripts/BossfallEnemySenses.cs"
     ]
 }

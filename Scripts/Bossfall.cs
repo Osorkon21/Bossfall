@@ -1,15 +1,20 @@
 // Project:         Bossfall
-// Copyright:       Copyright (C) 2022 Osorkon
+// Copyright:       Copyright (C) 2022 Osorkon, vanilla DFU code Copyright (C) 2009-2022 Daggerfall Workshop
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
-// Source Code:     https://github.com/Osorkon21/Bossfall
-// Original Author: Osorkon
+// Source Code:     https://github.com/Osorkon21/Bossfall, vanilla DFU code https://github.com/Interkarma/daggerfall-unity
+// Original Author: Osorkon, vanilla DFU code Gavin Clayton (interkarma@dfworkshop.net)
 // Contributors:
 // 
-// Notes:
+// Notes: This script uses code from several vanilla scripts. Comments indicate authorship, please verify
+//        authorship before crediting. When in doubt compare to vanilla DFU's source code.
 //
 
+using BossfallMod.EnemyAI;
 using BossfallMod.Formulas;
+using DaggerfallWorkshop;
 using DaggerfallWorkshop.Game;
+using DaggerfallWorkshop.Game.Entity;
+using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
 using DaggerfallWorkshop.Utility;
 using UnityEngine;
@@ -59,7 +64,7 @@ namespace BossfallMod
             // This replaces vanilla FormulaHelper methods with Bossfall methods.
             BossfallOverrides.RegisterOverrides(mod);
 
-            // This disables most of EnemyMotor, EnemySenses, EnemyAttack, and also enables Bossfall AI.
+            // This disables parts of EnemyMotor, EnemySenses, and EnemyAttack. It also enables Bossfall AI.
             GameManager.Instance.DisableAI = true;
         }
 
@@ -86,7 +91,8 @@ namespace BossfallMod
 
         void Start()
         {
-
+            // Bossfall subscribes to many vanilla events.
+            SaveLoadManager.OnLoad += BossfallOnLoad;
         }
 
         void Update()
@@ -97,6 +103,38 @@ namespace BossfallMod
         #endregion
 
         #region Public Methods
+
+
+
+        #endregion
+
+        #region Events
+
+        /// <summary>
+        /// This method runs after every load and sets up enemies.
+        /// </summary>
+        /// <param name="saveData">Save data, unused in current method.</param>
+        void BossfallOnLoad(SaveData_v1 saveData)
+        {
+            // This begins a section of code copied from vanilla's GameManager script, modified for Bossfall.
+            DaggerfallEntityBehaviour[] entityBehaviours = FindObjectsOfType<DaggerfallEntityBehaviour>();
+            for (int i = 0; i < entityBehaviours.Length; i++)
+            {
+                DaggerfallEntityBehaviour entityBehaviour = entityBehaviours[i];
+                if (entityBehaviour.EntityType == EntityTypes.EnemyMonster || entityBehaviour.EntityType == EntityTypes.EnemyClass)
+                {
+                    // Unity scripts that inherit from MonoBehaviour are executed in the order they are attached to a given
+                    // game object. By destroying EnemyAttack and then re-attaching it BossfallEnemyAttack's Update will
+                    // run before EnemyAttack's Update, which is essential to Bossfall functioning correctly.
+                    Destroy(entityBehaviour.gameObject.GetComponent<EnemyAttack>());
+                    entityBehaviour.gameObject.AddComponent<BossfallEnemyAttack>();
+                    entityBehaviour.gameObject.AddComponent<BossfallEnemyMotor>();
+                    entityBehaviour.gameObject.AddComponent<BossfallEnemySenses>();
+                    entityBehaviour.gameObject.AddComponent<EnemyAttack>();
+                }
+            }
+            // This ends the section of code from vanilla's GameManager script.
+        }
 
         #endregion
     }

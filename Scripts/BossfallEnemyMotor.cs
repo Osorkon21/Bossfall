@@ -3,11 +3,10 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/Osorkon21/Bossfall, vanilla DFU code https://github.com/Interkarma/daggerfall-unity
 // Original Author: Osorkon, vanilla DFU code Gavin Clayton (interkarma@dfworkshop.net)
-// Contributors:    vanilla DFU code Allofich
+// Contributors:    vanilla DFU code Allofich, Numidium
 // 
-// Notes: This script uses code from vanilla's EnemyMotor script. // [OSORKON] comments precede changes or
-//        additions I made - please verify original authorship before crediting. When in doubt compare with
-//        vanilla DFU's source code.
+// Notes: This script uses code from several vanilla DFU scripts. // [OSORKON] comments precede changes or additions I
+//        made - please verify original authorship before crediting. When in doubt compare with vanilla DFU's source code.
 //
 
 using DaggerfallWorkshop;
@@ -78,12 +77,13 @@ namespace BossfallMod.EnemyAI
         float lastGroundedY;                        // Used for fall damage
         float originalHeight;
 
-        // [OSORKON] These bools are used for custom enemy AI and boss proximity warning HUD messages.
+        // [OSORKON] These bools are used for Bossfall enemy AI and boss proximity warning HUD messages.
         bool prefersBow;
         bool alwaysCharges;
         bool isBoss;
         bool showBossWarning;
         bool showPowerfulBossWarning;
+        bool runRangedSpellCorrection;
 
         /// <summary>
         /// [OSORKON] This monstrosity represents enemy move speeds by enemy ID and covers IDs from 0-146. This array is used
@@ -113,10 +113,11 @@ namespace BossfallMod.EnemyAI
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4f, 7.5f, 6f, 4f, 4f, 8f, 7f, 8f, 8f, 8.5f, 8f, 10f, 7.5f, 4.5f, 4.5f, 7f, 5.75f, 5f, 8.5f };
 
-        // [OSORKON] I added the two Bossfall fields and the motor field.
+        // [OSORKON] I added the next four lines.
         BossfallEnemySenses bossfallSenses;
         BossfallEnemyAttack bossfallAttack;
         EnemyMotor motor;
+        EntityEffectManager manager;
 
         EnemySenses senses;
         Vector3 destination;
@@ -146,10 +147,17 @@ namespace BossfallMod.EnemyAI
 
         void Start()
         {
-            // [OSORKON] I added the two Bossfall lines and the motor line.
+            // [OSORKON] I added the next three lines.
             bossfallSenses = GetComponent<BossfallEnemySenses>();
             bossfallAttack = GetComponent<BossfallEnemyAttack>();
             motor = GetComponent<EnemyMotor>();
+
+            // [OSORKON] Bossfall AI breaks EnhancedCombatAI aiming. This event fixes spell aiming.
+            if (DaggerfallUnity.Settings.EnhancedCombatAI)
+            {
+                manager = GetComponent<EntityEffectManager>();
+                manager.OnCastReadySpell += BossfallOnCastReadySpell;
+            }
 
             senses = GetComponent<EnemySenses>();
             controller = GetComponent<CharacterController>();
@@ -263,7 +271,11 @@ namespace BossfallMod.EnemyAI
                     }
                 }
             }
+            // [OSORKON] Bossfall AI breaks EnhancedCombat AI aiming. This fixes ranged spell aiming.
+            if (runRangedSpellCorrection)
+                RangedSpellCorrection();
         }
+
         #endregion
 
         #region Public Methods
@@ -487,9 +499,6 @@ namespace BossfallMod.EnemyAI
             if (Bashing)
             {
                 int speed = entity.Stats.LiveSpeed;
-
-                // [OSORKON] If the vanilla field or property can be set from outside the script, I call the vanilla version.
-                // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
                 if (GameManager.ClassicUpdate && DFRandom.rand() % speed >= (speed >> 3) + 6 && attack.MeleeTimer == 0)
                 {
                     mobile.ChangeEnemyState(MobileStates.PrimaryAttack);
@@ -1713,6 +1722,100 @@ namespace BossfallMod.EnemyAI
                 heightChangeTimer -= Time.deltaTime;
             }
         }
+
+        /// <summary>
+        /// [OSORKON] Bossfall AI breaks EnhancedCombatAI aiming. Arrow aiming is easily fixed in BossfallEnemyAttack, but fixing
+        /// spell aiming turned out to be far more complicated. This method searches for spells that have been cast by this enemy,
+        /// destroys them if they are very close to this enemy as their aim direction is always wrong, instantiates an identical
+        /// spell, and fires it in the correct direction. Only active if EnhancedCombatAI is on. This method uses code from
+        /// vanilla's DaggerfallMissile and EntityEffectManager scripts.
+        /// </summary>
+        void RangedSpellCorrection()
+        {
+            DaggerfallMissile[] missiles = FindObjectsOfType<DaggerfallMissile>();
+
+            for (int i = 0; i < missiles.Length; i++)
+            {
+                DaggerfallMissile missile = missiles[i];
+
+                var distance = Vector3.Distance(entityBehaviour.transform.position, missile.transform.position) * MeshReader.GlobalScale;
+                DaggerfallUI.AddHUDText($"Distance is {0}.", distance);
+
+                if ((Vector3.Distance(entityBehaviour.transform.position, missile.transform.position) * MeshReader.GlobalScale) > 0.06f)
+                {
+                    continue;
+                }
+                else if (missile.Payload.CasterEntityBehaviour == entityBehaviour)
+                {
+                    DaggerfallUI.AddHUDText("Test2.");
+                    Destroy(missile.gameObject);
+                    DaggerfallMissile newMissile = manager.InstantiateSpellMissile(missile.Payload.Settings.ElementType);
+                    if (newMissile)
+                    {
+                        newMissile.Payload = missile.Payload;
+                        Vector3 newPredictedPosition = bossfallSenses.PredictNextTargetPos(25.0f);
+                        if (newPredictedPosition == EnemySenses.ResetPlayerPos)
+                            newMissile.CustomAimDirection = entityBehaviour.transform.forward;
+                        else
+                            newMissile.CustomAimDirection = (newPredictedPosition - entityBehaviour.transform.position).normalized;
+
+                        runRangedSpellCorrection = false;
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region Events
+
+        /// <summary>
+        /// [OSORKON] If using EnhancedCombatAI this runs every time this enemy casts a spell. It activates a method that
+        /// fixes vanilla ranged spell aiming and directly fixes vanilla touch spell aiming (Bossfall AI breaks both). This
+        /// method uses code from DaggerfallMissile.
+        /// </summary>
+        /// <param name="spell">The spell to be re-targeted.</param>
+        void BossfallOnCastReadySpell(EntityEffectBundle spell)
+        {
+            if (spell.Settings.TargetType == TargetTypes.SingleTargetAtRange || spell.Settings.TargetType == TargetTypes.AreaAtRange)
+                runRangedSpellCorrection = true;
+            if (spell.Settings.TargetType == TargetTypes.ByTouch)
+            {
+                DaggerfallMissile[] missiles = FindObjectsOfType<DaggerfallMissile>();
+
+                for (int i = 0; i < missiles.Length; i++)
+                {
+                    DaggerfallMissile missile = missiles[i];
+                    if (missile.Payload.CasterEntityBehaviour == entityBehaviour &&
+                        missile.Payload.Settings.TargetType == TargetTypes.ByTouch)
+                    {
+                        Destroy(missile.gameObject);
+                        DaggerfallUI.AddHUDText("Destroyed.");
+                    }
+                }
+                Vector3 aimPosition = entityBehaviour.transform.position;
+                Vector3 aimDirection;
+                Vector3 predictedPosition = bossfallSenses.PredictNextTargetPos(25.0f);
+
+                DaggerfallUI.AddHUDText("Activated.");
+
+                if (predictedPosition == EnemySenses.ResetPlayerPos)
+                    aimDirection = entityBehaviour.transform.forward;
+                else
+                    aimDirection = (predictedPosition - entityBehaviour.transform.position).normalized;
+                
+                DaggerfallEntityBehaviour targetEntity = DaggerfallMissile.GetEntityTargetInTouchRange(aimPosition, aimDirection);
+
+                if (targetEntity && targetEntity != entityBehaviour)
+                {
+                    EntityEffectManager targetManager = targetEntity.GetComponent<EntityEffectManager>();
+                    if (targetManager)
+                        targetManager.AssignBundle(spell, AssignBundleFlags.ShowNonPlayerFailures);
+                    DaggerfallUI.AddHUDText("Assigned.");
+                }
+            }
+        }
+
         #endregion
     }
 }

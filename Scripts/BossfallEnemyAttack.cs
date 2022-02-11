@@ -5,9 +5,9 @@
 // Original Author: Osorkon, vanilla DFU code Gavin Clayton (interkarma@dfworkshop.net)
 // Contributors:    vanilla DFU code Allofich
 // 
-// Notes: This script uses code from vanilla's EnemyAttack script. // [OSORKON] comments precede changes or
-//        additions I made - please verify original authorship before crediting. When in doubt compare with
-//        vanilla DFU's source code.
+// Notes: This script uses code from vanilla's EnemyAttack and DaggerfallMissile scripts. // [OSORKON] comments
+//        precede changes or additions I made - please verify original authorship before crediting. When in doubt
+//        compare with vanilla DFU's source code.
 //
 
 using DaggerfallConnect;
@@ -125,22 +125,16 @@ namespace BossfallMod.EnemyAI
                 MeleeDamage();
                 mobile.DoMeleeDamage = false;
             }
-
-            // [OSORKON] I commented out the lines below. If I didn't, 2 arrows would be generated every time an enemy
-            // shot an arrow, and player would hear two "shoot arrow" sounds. I don't think I can stop the vanilla
-            // version of this method from functioning - there's no "DisableAI" setting in the vanilla method, so I have
-            // to turn things off from my end.
-            //
-            // // If a bow attack has reached the shoot frame we can shoot an arrow
-            // else if (mobile.ShootArrow)
-            // {
-            //    ShootBow();
-            //    mobile.ShootArrow = false;
-            //
-            //    DaggerfallAudioSource dfAudioSource = GetComponent<DaggerfallAudioSource>();
-            //    if (dfAudioSource)
-            //        dfAudioSource.PlayOneShot((int)SoundClips.ArrowShoot, 1, 1.0f);
-            // }
+            // If a bow attack has reached the shoot frame we can shoot an arrow
+            else if (mobile.ShootArrow)
+            {
+                ShootBow();
+                mobile.ShootArrow = false;
+            
+                DaggerfallAudioSource dfAudioSource = GetComponent<DaggerfallAudioSource>();
+                if (dfAudioSource)
+                    dfAudioSource.PlayOneShot((int)SoundClips.ArrowShoot, 1, 1.0f);
+            }
         }
 
         public void ResetMeleeTimer()
@@ -170,7 +164,7 @@ namespace BossfallMod.EnemyAI
             attack.MeleeTimer /= 980; // Approximates classic frame update
         }
 
-        // [OSORKON] I commented out the below method. It's never called from BossfallEnemyAttack.
+        // [OSORKON] I commented out the below method. It's never called.
 
         // public void BowDamage(Vector3 direction)
         // {
@@ -276,46 +270,50 @@ namespace BossfallMod.EnemyAI
                     // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
                     senses.LastKnownDoor.AttemptBash(false);
                 }
-
-                // [OSORKON] I commented out the below lines. If I didn't, 2 miss sounds would be played whenever an enemy
-                // misses an attack and enemy combat voices would be played twice as often. This implementation isn't
-                // perfect - as it is, every time an enemy lands an attack the normal hit sound will be joined with a miss
-                // sound. I can't stop vanilla from running its version of this method - the DisableAI setting doesn't
-                // disable everything - and thus I have to make do with what I have.
-                //
-                // else
-                // {
-                //    sounds.PlayMissSound(weapon);
-                // }
-                //
-                // if (DaggerfallUnity.Settings.CombatVoices && entity.EntityType == EntityTypes.EnemyClass && Dice100.SuccessRoll(20))
-                // {
-                //     Genders gender;
-                //    if (mobile.Enemy.Gender == MobileGender.Male || entity.MobileEnemy.ID == (int)MobileTypes.Knight_CityWatch)
-                //        gender = Genders.Male;
-                //    else
-                //        gender = Genders.Female;
-                //
-                //    sounds.PlayCombatVoice(gender, true);
-                // }
+                else
+                {
+                    sounds.PlayMissSound(weapon);
+                }
+                
+                if (DaggerfallUnity.Settings.CombatVoices && entity.EntityType == EntityTypes.EnemyClass && Dice100.SuccessRoll(20))
+                {
+                    Genders gender;
+                    if (mobile.Enemy.Gender == MobileGender.Male || entity.MobileEnemy.ID == (int)MobileTypes.Knight_CityWatch)
+                        gender = Genders.Male;
+                    else
+                        gender = Genders.Female;
+                
+                    sounds.PlayCombatVoice(gender, true);
+                }
             }
         }
 
-        // [OSORKON] I commented out the below method. It's never called.
-        // private void ShootBow()
-        // {
-        //    if (entityBehaviour)
-        //    {
-        //        DaggerfallMissile missile = Instantiate(ArrowMissilePrefab);
-        //        if (missile)
-        //        {
-        //            missile.Caster = entityBehaviour;
-        //            missile.TargetType = TargetTypes.SingleTargetAtRange;
-        //            missile.ElementType = ElementTypes.None;
-        //            missile.IsArrow = true;
-        //        }
-        //    }
-        // }
+        private void ShootBow()
+        {
+            if (entityBehaviour)
+            {
+                DaggerfallMissile missile = Instantiate(ArrowMissilePrefab);
+                if (missile)
+                {
+                    missile.Caster = entityBehaviour;
+                    missile.TargetType = TargetTypes.SingleTargetAtRange;
+                    missile.ElementType = ElementTypes.None;
+                    missile.IsArrow = true;
+
+                    // [OSORKON] EnhancedCombatAI aiming doesn't work with Bossfall AI. This fixes arrow aiming.
+                    // I copied code from DaggerfallMissile and modified it to work with Bossfall.
+                    if (DaggerfallUnity.Settings.EnhancedCombatAI)
+                    {
+                        Vector3 predictedPosition = bossfallSenses.PredictNextTargetPos(25.0f);
+
+                        if (predictedPosition == EnemySenses.ResetPlayerPos)
+                            missile.CustomAimDirection = entityBehaviour.transform.forward;
+                        else
+                            missile.CustomAimDirection = (predictedPosition - entityBehaviour.transform.position).normalized;
+                    }
+                }
+            }
+        }
 
         // [OSORKON] I removed the "Item" prefix in the line below.
         private int ApplyDamageToPlayer(DaggerfallUnityItem weapon)
