@@ -16,6 +16,7 @@
         "Assets/Game/Mods/Bossfall/Scripts/BossfallOverrides.cs",
         "Assets/Game/Mods/Bossfall/Scripts/BossfallEnemyAttack.cs",
         "Assets/Game/Mods/Bossfall/Scripts/BossfallEnemyMotor.cs",
-        "Assets/Game/Mods/Bossfall/Scripts/BossfallEnemySenses.cs"
+        "Assets/Game/Mods/Bossfall/Scripts/BossfallEnemySenses.cs",
+        "Assets/Game/Mods/Bossfall/Scripts/BossfallPlayerActivate.cs"
     ]
 }

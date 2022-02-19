@@ -19,8 +19,9 @@ using UnityEngine;
 
 namespace BossfallMod.EnemyAI
 {
-    // [OSORKON] Vanilla's EnemyMotor requires EnemySenses and EnemyAttack components so I added their Bossfall counterparts.
-    // Not sure this is necessary.
+    /// <summary>
+    /// Counterpart to vanilla's EnemyMotor. Used for Bossfall enemy AI.
+    /// </summary>
     [RequireComponent(typeof(BossfallEnemySenses))]
     [RequireComponent(typeof(BossfallEnemyAttack))]
     [RequireComponent(typeof(EnemySenses))]

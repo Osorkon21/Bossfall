@@ -25,6 +25,9 @@ using UnityEngine;
 
 namespace BossfallMod.Formulas
 {
+    /// <summary>
+    /// Contains all methods linked to FormulaHelper's RegisterOverride method, along with other override data.
+    /// </summary>
     public static class BossfallOverrides
     {
         #region Fields

@@ -23,7 +23,9 @@ using UnityEngine;
 
 namespace BossfallMod.EnemyAI
 {
-    // [OSORKON] Vanilla's EnemyAttack requires an EnemySenses component so I added something similar. Not sure this is necessary.
+    /// <summary>
+    /// Counterpart to vanilla's EnemyAttack. Used for Bossfall enemy AI.
+    /// </summary>
     [RequireComponent(typeof(BossfallEnemySenses))]
     [RequireComponent(typeof(EnemySenses))]
     public class BossfallEnemyAttack : MonoBehaviour

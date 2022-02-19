@@ -16,6 +16,9 @@ using DaggerfallWorkshop.Game;
 
 namespace BossfallMod.Utility
 {
+    /// <summary>
+    /// Counterpart to vanilla's RandomEncounters. Contains Bossfall encounter tables and enemy generation methods.
+    /// </summary>
     public static class BossfallEncounterTables
     {
         #region Encounter Tables

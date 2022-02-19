@@ -22,6 +22,9 @@ using UnityEngine;
 
 namespace BossfallMod.EnemyAI
 {
+    /// <summary>
+    /// Counterpart to vanilla's EnemySenses. Used for Bossfall enemy AI.
+    /// </summary>
     public class BossfallEnemySenses : MonoBehaviour
     {
         public static readonly Vector3 ResetPlayerPos = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
