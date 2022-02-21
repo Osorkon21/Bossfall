@@ -17,14 +17,14 @@ using DaggerfallWorkshop.Game;
 namespace BossfallMod.Utility
 {
     /// <summary>
-    /// Counterpart to vanilla's RandomEncounters. Contains Bossfall encounter tables and enemy generation methods.
+    /// Counterpart to vanilla's RandomEncounters.
     /// </summary>
     public static class BossfallEncounterTables
     {
         #region Encounter Tables
 
         /// <summary>
-        /// The EncounterTables array's skeleton and a few comments are from vanilla DFU's RandomEncounters script. I rewrote
+        /// The EncounterTables array's skeleton is from vanilla DFU's RandomEncounters script. I rewrote
         /// all the Enemies arrays. I greatly increased the length of every Enemies array so I could make bosses rarer. I
         /// also added a lot more enemy variety. I implemented enemy variation by climate. Enemies I thought would prefer cold
         /// or warm climates are rarer or don't appear in climates not matching their preference. Most dungeons have themes
@@ -32,7 +32,6 @@ namespace BossfallMod.Utility
         /// </summary>
         static RandomEncounterTable[] EncounterTables = new RandomEncounterTable[]
         {
-            // Crypt - Index0
             new RandomEncounterTable()
             {
                 DungeonType = DFRegion.DungeonTypes.Crypt,
@@ -182,7 +181,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Orc Stronghold - Index1
             new RandomEncounterTable()
             {
                 DungeonType = DFRegion.DungeonTypes.OrcStronghold,
@@ -332,7 +330,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Human Stronghold - Index2
             new RandomEncounterTable()
             {
                 DungeonType = DFRegion.DungeonTypes.HumanStronghold,
@@ -482,7 +479,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Prison - Index3
             new RandomEncounterTable()
             {
                 DungeonType = DFRegion.DungeonTypes.Prison,
@@ -632,7 +628,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Desecrated Temple - Index4
             new RandomEncounterTable()
             {
                 DungeonType = DFRegion.DungeonTypes.DesecratedTemple,
@@ -783,7 +778,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Mine - Index5
             new RandomEncounterTable()
             {
                 DungeonType = DFRegion.DungeonTypes.Mine,
@@ -934,7 +928,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Natural Cave - Index6
             new RandomEncounterTable()
             {
                 DungeonType = DFRegion.DungeonTypes.NaturalCave,
@@ -1085,7 +1078,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Coven - Index7
             new RandomEncounterTable()
             {
                 DungeonType = DFRegion.DungeonTypes.Coven,
@@ -1236,7 +1228,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Vampire Haunt - Index8
             new RandomEncounterTable()
             {
                 DungeonType = DFRegion.DungeonTypes.VampireHaunt,
@@ -1387,7 +1378,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Laboratory - Index9
             new RandomEncounterTable()
             {
                 DungeonType = DFRegion.DungeonTypes.Laboratory,
@@ -1537,7 +1527,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Harpy Nest - Index10
             new RandomEncounterTable()
             {
                 DungeonType = DFRegion.DungeonTypes.HarpyNest,
@@ -1687,7 +1676,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Ruined Castle - Index11
             new RandomEncounterTable()
             {
                 DungeonType = DFRegion.DungeonTypes.RuinedCastle,
@@ -1837,7 +1825,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Spider Nest - Index12
             new RandomEncounterTable()
             {
                 DungeonType = DFRegion.DungeonTypes.SpiderNest,
@@ -1987,7 +1974,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Giant Stronghold - Index13
             new RandomEncounterTable()
             {
                 DungeonType = DFRegion.DungeonTypes.GiantStronghold,
@@ -2137,7 +2123,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Dragon's Den - Index14
             new RandomEncounterTable()
             {
                 DungeonType = DFRegion.DungeonTypes.DragonsDen,
@@ -2287,7 +2272,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Barbarian Stronghold - Index15
             new RandomEncounterTable()
             {
                 DungeonType = DFRegion.DungeonTypes.BarbarianStronghold,
@@ -2439,7 +2423,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Volcanic Caves - Index16
             new RandomEncounterTable()
             {
                 DungeonType = DFRegion.DungeonTypes.VolcanicCaves,
@@ -2589,7 +2572,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Scorpion Nest - Index17
             new RandomEncounterTable()
             {
                 DungeonType = DFRegion.DungeonTypes.ScorpionNest,
@@ -2740,7 +2722,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Cemetery - Index18
             new RandomEncounterTable()
             {
                 Enemies = new MobileTypes[]
@@ -2889,28 +2870,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            /*
-            // Cemetery - DF Unity version
-            new RandomEncounterTable()
-            {
-                DungeonType = DFRegion.DungeonTypes.Cemetery,
-                Enemies = new MobileTypes[]
-                {
-                    MobileTypes.Rat,
-                    MobileTypes.SkeletalWarrior,
-                    MobileTypes.GiantBat,
-                    MobileTypes.Mummy,
-                    MobileTypes.Spider,
-                    MobileTypes.Zombie,
-                    MobileTypes.Ghost,
-                    MobileTypes.Wraith,
-                    MobileTypes.Vampire,
-                    MobileTypes.VampireAncient,
-                    MobileTypes.Lich,
-                },
-            },*/
-
-            // Underwater - Index19
             new RandomEncounterTable()
             {
                 Enemies = new MobileTypes[]
@@ -3059,7 +3018,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Desert, in location, night - Index20
             new RandomEncounterTable()
             {
                 Enemies = new MobileTypes[]
@@ -3208,7 +3166,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Desert, not in location, day - Index21
             new RandomEncounterTable()
             {
                 Enemies = new MobileTypes[]
@@ -3359,7 +3316,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Desert, not in location, night - Index22
             new RandomEncounterTable()
             {
                 Enemies = new MobileTypes[]
@@ -3510,7 +3466,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Mountain/Mountain woods, in location, night - Index23
             new RandomEncounterTable()
             {
                 Enemies = new MobileTypes[]
@@ -3659,7 +3614,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Mountain/Mountain woods, not in location, day - Index24
             new RandomEncounterTable()
             {
                 Enemies = new MobileTypes[]
@@ -3808,7 +3762,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Mountain, not in location, night - Index25
             new RandomEncounterTable()
             {
                 Enemies = new MobileTypes[]
@@ -3957,7 +3910,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Rainforest/Swamp, in location, night - Index26
             new RandomEncounterTable()
             {
                 Enemies = new MobileTypes[]
@@ -4106,7 +4058,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Rainforest/Swamp, not in location, day - Index27
             new RandomEncounterTable()
             {
                 Enemies = new MobileTypes[]
@@ -4255,7 +4206,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Rainforest/Swamp, not in location, night - Index28
             new RandomEncounterTable()
             {
                 Enemies = new MobileTypes[]
@@ -4404,7 +4354,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Subtropical, in location, night - Index29
             new RandomEncounterTable()
             {
                 Enemies = new MobileTypes[]
@@ -4553,7 +4502,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Subtropical, not in location, day - Index30
             new RandomEncounterTable()
             {
                 Enemies = new MobileTypes[]
@@ -4702,7 +4650,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Subtropical, not in location, night - Index31
             new RandomEncounterTable()
             {
                 Enemies = new MobileTypes[]
@@ -4852,7 +4799,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Woodlands, in location, night - Index32
             new RandomEncounterTable()
             {
                 Enemies = new MobileTypes[]
@@ -5001,7 +4947,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Woodlands, not in location, day - Index33
             new RandomEncounterTable()
             {
                 Enemies = new MobileTypes[]
@@ -5151,7 +5096,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Woodlands, not in location, night - Index34
             new RandomEncounterTable()
             {
                 Enemies = new MobileTypes[]
@@ -5301,7 +5245,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Haunted woodlands, in location, night - Index35
             new RandomEncounterTable()
             {
                 Enemies = new MobileTypes[]
@@ -5451,7 +5394,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Haunted woodlands, not in location, day - Index36
             new RandomEncounterTable()
             {
                 Enemies = new MobileTypes[]
@@ -5601,7 +5543,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Haunted woodlands, not in location, night - Index37
             new RandomEncounterTable()
             {
                 Enemies = new MobileTypes[]
@@ -5751,7 +5692,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Mountain Woods, not in location, night - Index38
             new RandomEncounterTable()
             {
                 Enemies = new MobileTypes[]
@@ -5902,7 +5842,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Default building - Index39
             new RandomEncounterTable()
             {
                 Enemies = new MobileTypes[]
@@ -6052,7 +5991,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Guildhall - Index40
             new RandomEncounterTable()
             {
                 Enemies = new MobileTypes[]
@@ -6202,7 +6140,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Temple - Index41
             new RandomEncounterTable()
             {
                 Enemies = new MobileTypes[]
@@ -6352,7 +6289,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // Palace, House1 - Index42
             new RandomEncounterTable()
             {
                 Enemies = new MobileTypes[]
@@ -6502,7 +6438,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // House2 - Index43
             new RandomEncounterTable()
             {
                 Enemies = new MobileTypes[]
@@ -6652,7 +6587,6 @@ namespace BossfallMod.Utility
                 },
             },
 
-            // House3 - Index44
             new RandomEncounterTable()
             {
                 Enemies = new MobileTypes[]
@@ -6808,8 +6742,8 @@ namespace BossfallMod.Utility
         #region Enemy Selection
 
         /// <summary>
-        /// Most of this random enemy selection method is from vanilla's RandomEncounters script.
-        /// // [OSORKON] comments precede changes or additions I made.
+        /// Most of this random enemy selection method is from vanilla's RandomEncounters script. Comments precede
+        /// changes or additions I made.
         /// </summary>
         /// <param name="chooseUnderWaterEnemy">True if spawning enemy underwater.</param>
         /// <returns>Random enemy type picked from appropriate encounter table.</returns>
@@ -6854,7 +6788,6 @@ namespace BossfallMod.Utility
                     if (isDay)
                         return MobileTypes.None;
 
-                    // Player in location rectangle, night
                     switch (climate)
                     {
                         case (int)MapsFile.Climates.Desert:
@@ -6863,13 +6796,13 @@ namespace BossfallMod.Utility
                             break;
                         case (int)MapsFile.Climates.Mountain:
 
-                        // [OSORKON] I moved Mountain Woods to use Mountain encounter tables in towns at night.
+                        // I moved Mountain Woods to use Mountain encounter tables in towns at night.
                         case (int)MapsFile.Climates.MountainWoods:
                             encounterTableIndex = 23;
                             break;
                         case (int)MapsFile.Climates.Rainforest:
 
-                        // [OSORKON] I moved Swamps to use Rainforest encounter tables in towns at night.
+                        // I moved Swamps to use Rainforest encounter tables in towns at night.
                         case (int)MapsFile.Climates.Swamp:
                             encounterTableIndex = 26;
                             break;
@@ -6891,7 +6824,6 @@ namespace BossfallMod.Utility
                 {
                     if (isDay)
                     {
-                        // Player not in location rectangle, day
                         switch (climate)
                         {
                             case (int)MapsFile.Climates.Desert:
@@ -6900,13 +6832,13 @@ namespace BossfallMod.Utility
                                 break;
                             case (int)MapsFile.Climates.Mountain:
 
-                            // [OSORKON] I moved Mountain Woods to use Mountain encounter tables in daytime wilderness.
+                            // I moved Mountain Woods to use Mountain encounter tables in daytime wilderness.
                             case (int)MapsFile.Climates.MountainWoods:
                                 encounterTableIndex = 24;
                                 break;
                             case (int)MapsFile.Climates.Rainforest:
 
-                            // [OSORKON] I moved Swamps to use Rainforest encounter tables in daytime wilderness.
+                            // I moved Swamps to use Rainforest encounter tables in daytime wilderness.
                             case (int)MapsFile.Climates.Swamp:
                                 encounterTableIndex = 27;
                                 break;
@@ -6926,7 +6858,6 @@ namespace BossfallMod.Utility
                     }
                     else
                     {
-                        // Player not in location rectangle, night
                         switch (climate)
                         {
                             case (int)MapsFile.Climates.Desert:
@@ -6938,7 +6869,7 @@ namespace BossfallMod.Utility
                                 break;
                             case (int)MapsFile.Climates.Rainforest:
 
-                            // [OSORKON] I moved Swamps to use Rainforest encounter tables in nighttime wilderness.
+                            // I moved Swamps to use Rainforest encounter tables in nighttime wilderness.
                             case (int)MapsFile.Climates.Swamp:
                                 encounterTableIndex = 28;
                                 break;
@@ -6946,7 +6877,7 @@ namespace BossfallMod.Utility
                                 encounterTableIndex = 31;
                                 break;
 
-                            // [OSORKON] I set Mountain Woods to use a new, custom encounter table in nighttime wilderness.
+                            // I set Mountain Woods to use a new, custom encounter table in nighttime wilderness.
                             case (int)MapsFile.Climates.MountainWoods:
                                 encounterTableIndex = 38;
                                 break;
@@ -6964,10 +6895,10 @@ namespace BossfallMod.Utility
                 }
             }
 
-            // [OSORKON] I erased most of what vanilla had here but I kept this necessary variable.
+            // I erased most of what vanilla's method has here but I kept this necessary variable.
             RandomEncounterTable encounterTable = EncounterTables[encounterTableIndex];
 
-            // [OSORKON] If the "Powerful Enemies Are" setting is "More Common" randomly pick an enemy from the first 100
+            // If the "Powerful Enemies Are" setting is "More Common" randomly pick an enemy from the first 100
             // slots of the encounter table. When I made powerful enemies less common for Bossfall v1.3, I added 40 slots
             // at the end of each encounter table and didn't change the first 100. So, by picking only from the first 100,
             // the "More Common" setting uses v1.2.1 enemy rarities. I don't think this setting is balanced so I recommend
@@ -6977,7 +6908,7 @@ namespace BossfallMod.Utility
                 return encounterTable.Enemies[UnityEngine.Random.Range(0, 100)];
             }
 
-            // [OSORKON] In Bossfall there are two types of random spawns. The first is dungeon enemies that spawn at set points
+            // In Bossfall there are two types of random spawns. The first is dungeon enemies that spawn at set points
             // in dungeon blocks, which is not handled here. The second is random spawns when player is resting in a dungeon or
             // outside at certain locations and times, and that is what the line below handles. If the "Powerful Enemies Are"
             // setting is "Less Common" (I recommend using this setting as I think it's the most balanced) a random enemy is
@@ -6987,6 +6918,7 @@ namespace BossfallMod.Utility
             // percent chance of spawning every time this function is called.
             return encounterTable.Enemies[UnityEngine.Random.Range(0, encounterTable.Enemies.Length)];
         }
+
+        #endregion
     }
-    #endregion
 }

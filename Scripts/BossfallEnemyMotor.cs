@@ -5,8 +5,8 @@
 // Original Author: Osorkon, vanilla DFU code Gavin Clayton (interkarma@dfworkshop.net)
 // Contributors:    vanilla DFU code Allofich, Numidium
 // 
-// Notes: This script uses code from several vanilla DFU scripts. // [OSORKON] comments precede changes or additions I
-//        made - please verify original authorship before crediting. When in doubt compare with vanilla DFU's source code.
+// Notes: This script uses code from several vanilla DFU scripts. Comments indicate authorship, please verify authorship
+//        before crediting. When in doubt compare to vanilla DFU's source code.
 //
 
 using DaggerfallWorkshop;
@@ -31,39 +31,37 @@ namespace BossfallMod.EnemyAI
     [RequireComponent(typeof(CharacterController))]
     public class BossfallEnemyMotor : MonoBehaviour
     {
-        // [OSORKON] I changed this region name to Fields. Seemed more appropriate.
+        // I changed this region name to Fields. Seemed more appropriate.
         #region Fields
 
-        public float OpenDoorDistance = 2f;         // Maximum distance to open door
-        const float attackSpeedDivisor = 2f;        // How much to slow down during attack animations
-        float stopDistance = 1.7f;                  // Used to prevent orbiting
-        const float doorCrouchingHeight = 1.65f;    // How low enemies dive to pass thru doors
-        bool flies;                                 // The enemy can fly
-        bool swims;                                 // The enemy can swim
-        bool pausePursuit;                          // pause to wait for the player to come closer to ground
-        float moveInForAttackTimer;                 // Time until next pursue/retreat decision
-        bool moveInForAttack;                       // False = retreat. True = pursue.
-        float retreatDistanceMultiplier;            // How far to back off while retreating
-        float changeStateTimer;                     // Time until next change in behavior. Padding to prevent instant reflexes.
+        public float OpenDoorDistance = 2f;
+        float stopDistance = 1.7f;
+        const float doorCrouchingHeight = 1.65f;
+        bool flies;
+        bool swims;
+        bool pausePursuit;
+        float moveInForAttackTimer;
+        bool moveInForAttack;
+        float retreatDistanceMultiplier;
+        float changeStateTimer;
         bool doStrafe;
         float strafeTimer;
-        bool pursuing;                              // Is pursuing
-        bool retreating;                            // Is retreating
-        bool backingUp;                             // Is backing up
-        bool fallDetected;                          // Detected a fall in front of us, so don't move there
+        bool pursuing;
+        bool retreating;
+        bool backingUp;
+        bool fallDetected;
         bool obstacleDetected;
         bool foundUpwardSlope;
         bool foundDoor;
-        Vector3 lastPosition;                       // Used to track whether we have moved or not
-        Vector3 lastDirection;                      // Used to track whether we have rotated or not
-        bool rotating;                              // Used to track whether we have rotated or not
+        Vector3 lastPosition;
+        Vector3 lastDirection;
+        bool rotating;
         float avoidObstaclesTimer;
         bool checkingClockwise;
         float checkingClockwiseTimer;
         bool didClockwiseCheck;
         float lastTimeWasStuck;
         bool hasBowAttack;
-        float realHeight;
         float centerChange;
         bool resetHeight;
         float heightChangeTimer;
@@ -75,10 +73,10 @@ namespace BossfallMod.EnemyAI
         bool canAct;
         bool falls;
         bool flyerFalls;
-        float lastGroundedY;                        // Used for fall damage
+        float lastGroundedY;
         float originalHeight;
 
-        // [OSORKON] These bools are used for Bossfall enemy AI and boss proximity warning HUD messages.
+        // These bools are used for Bossfall enemy AI and boss proximity warning HUD messages.
         bool prefersBow;
         bool alwaysCharges;
         bool isBoss;
@@ -87,7 +85,7 @@ namespace BossfallMod.EnemyAI
         bool runRangedSpellCorrection;
 
         /// <summary>
-        /// [OSORKON] This monstrosity represents enemy move speeds by enemy ID and covers IDs from 0-146. This array is used
+        /// This monstrosity represents enemy move speeds by enemy ID and covers IDs from 0-146. This array is used
         /// if the "Enemy Move Speed" setting is "Fast", and these speeds are Bossfall v1.3 enemy move speeds. I use this array to
         /// make the enemy movespeed selection process much faster than the giant if/else if tree I had in TakeAction in versions
         /// v1.2.1 and earlier. Most of this array is unused filler as enemies with IDs 43-127 don't exist, but it's more efficient
@@ -101,7 +99,7 @@ namespace BossfallMod.EnemyAI
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4f, 7.5f, 6f, 4f, 4f, 8f, 7f, 8f, 8f, 8.5f, 8f, 10f, 7.5f, 4.5f, 4.5f, 7f, 5.75f, 5f, 8.5f };
 
         /// <summary>
-        /// [OSORKON] This monstrosity represents enemy move speeds by enemy ID and covers IDs from 0-146. This array is used if the
+        /// This monstrosity represents enemy move speeds by enemy ID and covers IDs from 0-146. This array is used if the
         /// "Enemy Move Speed" setting is "Very Fast", and these speeds are Bossfall v1.2.1 enemy move speeds. I use this array to
         /// make the enemy movespeed selection process much faster than the giant if/else if tree I had in TakeAction in versions
         /// v1.2.1 and earlier. Most of this array is unused filler as enemies with IDs 43-127 don't exist, but it's more efficient
@@ -114,9 +112,8 @@ namespace BossfallMod.EnemyAI
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4f, 7.5f, 6f, 4f, 4f, 8f, 7f, 8f, 8f, 8.5f, 8f, 10f, 7.5f, 4.5f, 4.5f, 7f, 5.75f, 5f, 8.5f };
 
-        // [OSORKON] I added the next four lines.
+        // I added the next three lines.
         BossfallEnemySenses bossfallSenses;
-        BossfallEnemyAttack bossfallAttack;
         EnemyMotor motor;
         EntityEffectManager manager;
 
@@ -136,24 +133,19 @@ namespace BossfallMod.EnemyAI
 
         #region Auto Properties
 
-        public bool IsLevitating { get; set; }      // Is this enemy levitating
-        public bool IsHostile { get; set; }         // Is this enemy hostile to the player
-        public float KnockbackSpeed { get; set; }   // While non-zero, this enemy will be knocked back at this speed
-        public Vector3 KnockbackDirection { get; set; } // Direction to travel while being knocked back
-        public bool Bashing { get; private set; }   // Is this enemy bashing a door
-        public int GiveUpTimer { get; set; }        // Timer for enemy giving up pursuit of target
+        public bool Bashing { get; private set; }
+
         #endregion
 
         #region Unity Methods
 
         void Start()
         {
-            // [OSORKON] I added the next three lines.
+            // I added the next two lines.
             bossfallSenses = GetComponent<BossfallEnemySenses>();
-            bossfallAttack = GetComponent<BossfallEnemyAttack>();
             motor = GetComponent<EnemyMotor>();
 
-            // [OSORKON] Bossfall AI breaks EnhancedCombatAI aiming. This event fixes spell aiming.
+            // Bossfall AI breaks EnhancedCombatAI aiming. This event fixes spell aiming.
             if (DaggerfallUnity.Settings.EnhancedCombatAI)
             {
                 manager = GetComponent<EntityEffectManager>();
@@ -165,7 +157,7 @@ namespace BossfallMod.EnemyAI
             mobile = GetComponentInChildren<MobileUnit>();
             myCollider = gameObject.GetComponent<Collider>();
 
-            // [OSORKON] If the vanilla field or property can be set from outside the script, I call the vanilla version.
+            // If the vanilla field or property can be set from outside the script, I call the vanilla version.
             // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
             motor.IsHostile = mobile.Enemy.Reactions == MobileReactions.Hostile;
             flies = CanFly();
@@ -175,28 +167,19 @@ namespace BossfallMod.EnemyAI
             entityEffectManager = GetComponent<EntityEffectManager>();
             entity = entityBehaviour.Entity as EnemyEntity;
             attack = GetComponent<EnemyAttack>();
-
-            // Only need to check for ability to shoot bow once.
             hasBowAttack = mobile.Enemy.HasRangedAttack1 && mobile.Enemy.ID > 129 && mobile.Enemy.ID != 132;
-
-            // Add things AI should ignore when checking for a clear path to shoot.
             ignoreMaskForShooting = ~(1 << LayerMask.NameToLayer("SpellMissiles") | 1 << LayerMask.NameToLayer("Ignore Raycast"));
-
-            // Also ignore arrows and "Ignore Raycast" layer for obstacles
             ignoreMaskForObstacles = ~(1 << LayerMask.NameToLayer("SpellMissiles") | 1 << LayerMask.NameToLayer("Ignore Raycast"));
-
             lastGroundedY = transform.position.y;
-
-            // Get original height, before any height adjustments
             originalHeight = controller.height;
 
-            // [OSORKON] If enemy is an Archer or Ranger prefersBow is true. Only needs to be checked once.
+            // If enemy is an Archer or Ranger prefersBow is true. Only needs to be checked once.
             if (mobile.Enemy.ID == 141 || mobile.Enemy.ID == 142)
             {
                 prefersBow = true;
             }
 
-            // [OSORKON] If enemy is non-sentient or very stupid alwaysCharges is true. Only needs to be checked once.
+            // If enemy is non-sentient or very stupid alwaysCharges is true. Only needs to be checked once.
             if (mobile.Enemy.ID == 32 || mobile.Enemy.ID == 33)
             {
                 alwaysCharges = false;
@@ -210,7 +193,7 @@ namespace BossfallMod.EnemyAI
                 alwaysCharges = true;
             }
 
-            // [OSORKON] If enemy is a boss isBoss is true. If enemy is an OrcWarlord/Vampire/Lich/Dragonling_Alternate
+            // If enemy is a boss isBoss is true. If enemy is an OrcWarlord/Vampire/Lich/Dragonling_Alternate
             // showBossWarning is true. If enemy is a VampireAncient/DaedraLord/AncientLich showPowerfulBossWarning is
             // true. Only needs to be checked once.
             if (mobile.Enemy.ID == 24 || mobile.Enemy.ID == 28 || mobile.Enemy.ID == 32 || mobile.Enemy.ID == 40)
@@ -227,7 +210,7 @@ namespace BossfallMod.EnemyAI
 
         void FixedUpdate()
         {
-            // [OSORKON] I reversed the DisableAI check so player can swap between Bossfall & vanilla AI with the console.
+            // I reversed the DisableAI check so player can swap between Bossfall & vanilla AI with the console.
             if (!GameManager.Instance.DisableAI)
                 return;
 
@@ -249,7 +232,7 @@ namespace BossfallMod.EnemyAI
             OpenDoors();
             HeightAdjust();
 
-            // [OSORKON] If the Boss Proximity Warning setting is ON, this checks for nearby bosses and creates warning
+            // If the Boss Proximity Warning setting is ON, this checks for nearby bosses and creates warning
             // HUD messages. Detection radius is roughly half a dungeon block. Assassins won't trigger warning messages,
             // they're too stealthy to detect. The three toughest bosses (Daedra Lord, Vampire Ancient, Ancient Lich)
             // get a unique HUD message. The HUD message appears once per boss.
@@ -272,7 +255,8 @@ namespace BossfallMod.EnemyAI
                     }
                 }
             }
-            // [OSORKON] Bossfall AI breaks EnhancedCombat AI aiming. This fixes ranged spell aiming.
+
+            // Bossfall AI breaks EnhancedCombat AI aiming. This fixes ranged spell aiming.
             if (runRangedSpellCorrection)
                 RangedSpellCorrection();
         }
@@ -281,47 +265,6 @@ namespace BossfallMod.EnemyAI
 
         #region Public Methods
 
-        // [OSORKON] I commented out the method below. It's never called.
-
-        // /// <summary>
-        // /// Immediately become hostile towards attacker and know attacker's location.
-        // /// </summary>
-        // /// <param name="attacker">Attacker to become hostile towards</param>
-        // public void MakeEnemyHostileToAttacker(DaggerfallEntityBehaviour attacker)
-        // {
-        //      if (!senses)
-        //          senses = GetComponent<EnemySenses>();
-        //      if (!entityBehaviour)
-        //          entityBehaviour = GetComponent<DaggerfallEntityBehaviour>();
-        //
-        //     // Assign target if don't already have target, or original target isn't seen or adjacent
-        //     if (attacker && senses && (senses.Target == null || !senses.TargetInSight || senses.DistanceToTarget > 2f))
-        //     {
-        //         senses.Target = attacker;
-        //         senses.SecondaryTarget = senses.Target;
-        //         senses.OldLastKnownTargetPos = attacker.transform.position;
-        //         senses.LastKnownTargetPos = attacker.transform.position;
-        //         senses.PredictedTargetPos = attacker.transform.position;
-        //         GiveUpTimer = 200;
-        //     }
-        //
-        //     if (attacker == GameManager.Instance.PlayerEntityBehaviour)
-        //     {
-        //         IsHostile = true;
-        //         // Reset former ally's team
-        //         if (entityBehaviour.Entity.Team == MobileTeams.PlayerAlly)
-        //         {
-        //             int id = (entityBehaviour.Entity as EnemyEntity).MobileEnemy.ID;
-        //             entityBehaviour.Entity.Team = EnemyBasics.Enemies.First(x => x.ID == id).Team;
-        //         }
-        //     }
-        // }
-
-        /// <summary>
-        /// Attempts to find the ground position below enemy, even if player is flying/falling
-        /// </summary>
-        /// <param name="distance">Distance to fire ray.</param>
-        /// <returns>Hit point on surface below enemy, or enemy position if hit not found in distance.</returns>
         public Vector3 FindGroundPosition(float distance = 16)
         {
             RaycastHit hit;
@@ -332,31 +275,12 @@ namespace BossfallMod.EnemyAI
             return transform.position;
         }
 
-        // [OSORKON] I commented out the method below. It's never called.
-
-        // /// <summary>
-        // /// Call this when floating origin ticks on Y to ensure enemy doesn't die from large "grounded" difference
-        // /// </summary>
-        // /// <param name="y">Amount to increment to fallstart</param>
-        // public void AdjustLastGrounded(float y)
-        // {
-        //     lastGroundedY += y;
-        // }
-        //
-
         #endregion
 
         #region Private Methods
 
-        /// <summary>
-        /// Handle paralysis halting movement and animation.
-        /// </summary>
         void HandleParalysis()
         {
-            // Cancel movement and animations if paralyzed, but still allow gravity to take effect
-            // This will have the (intentional for now) side-effect of making paralyzed flying enemies fall out of the air
-            // Paralyzed swimming enemies will just freeze in place
-            // Freezing anims also prevents the attack from triggering until paralysis cleared
             if (entityBehaviour.Entity.IsParalyzed)
             {
                 mobile.FreezeAnims = true;
@@ -366,24 +290,15 @@ namespace BossfallMod.EnemyAI
             mobile.FreezeAnims = false;
         }
 
-        /// <summary>
-        /// Handles movement if the enemy has been knocked back.
-        /// </summary>
         void KnockbackMovement()
         {
-            // Prevent stunlocking transforming Seducers
             if (mobile.EnemyState == MobileStates.SeducerTransform1 || mobile.EnemyState == MobileStates.SeducerTransform2)
                 return;
 
-            // If hit, get knocked back
-
-            // [OSORKON] I redirect calls to EnemyMotor's KnockbackSpeed as that is what other (non-Bossfall) scripts are setting.
+            // I redirect calls to EnemyMotor's KnockbackSpeed as that is what other (non-Bossfall) scripts are setting.
             if (motor.KnockbackSpeed > 0)
             {
-                // Limit KnockbackSpeed. This can be higher than what is actually used for the speed of motion,
-                // making it last longer and do more damage if the enemy collides with something (TODO).
-
-                // [OSORKON] I capped KnockbackSpeed at 20 rather than 40. This reduces time spent flying backwards,
+                // I capped KnockbackSpeed at 20 rather than 40. This reduces time spent flying backwards,
                 // so enemy can resume smacking away at the player. I redirect calls to EnemyMotor's KnockbackSpeed as
                 // that is what other (non-Bossfall) scripts are setting.
                 if (motor.KnockbackSpeed > (20 / (PlayerSpeedChanger.classicToUnitySpeedUnitRatio / 10)))
@@ -395,10 +310,9 @@ namespace BossfallMod.EnemyAI
                     mobile.ChangeEnemyState(MobileStates.Hurt);
                 }
 
-                // Actual speed of motion is limited
                 Vector3 motion;
 
-                // [OSORKON] I reduced maximum KnockbackSpeed from 25 to 20 so knockbacks don't last so long. I redirect
+                // I reduced maximum KnockbackSpeed from 25 to 20 so knockbacks don't last so long. I redirect
                 // calls to EnemyMotor's KnockbackSpeed and KnockbackDirection as that is what other (non-Bossfall)
                 // scripts are setting.
                 if (motor.KnockbackSpeed <= (20 / (PlayerSpeedChanger.classicToUnitySpeedUnitRatio / 10)))
@@ -406,21 +320,19 @@ namespace BossfallMod.EnemyAI
                 else
                     motion = motor.KnockbackDirection * (20 / (PlayerSpeedChanger.classicToUnitySpeedUnitRatio / 10));
 
-                // Move in direction of knockback
                 if (swims)
                     WaterMove(motion);
 
-                // [OSORKON] If the vanilla field or property can be set from outside the script, I call the vanilla version.
+                // If the vanilla field or property can be set from outside the script, I call the vanilla version.
                 // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
                 else if (flies || motor.IsLevitating)
                     controller.Move(motion * Time.deltaTime);
                 else
                     controller.SimpleMove(motion);
 
-                // Remove remaining knockback and restore animation
                 if (GameManager.ClassicUpdate)
                 {
-                    // [OSORKON] I set KnockbackSpeed to decrement at 7 rather than 5, and I capped minimum KnockbackSpeed
+                    // I set KnockbackSpeed to decrement at 7 rather than 5, and I capped minimum KnockbackSpeed
                     // at 7 rather than 5. With changes to enemy weight I made in FormulaHelper, this greatly reduces
                     // knockback stunlocks with high damage/SPD attacks. I redirect calls to EnemyMotor's KnockbackSpeed as
                     // that is what other (non-Bossfall) scripts are setting.
@@ -432,9 +344,7 @@ namespace BossfallMod.EnemyAI
                     }
                 }
 
-                // If a decent hit got in, reconsider whether to continue current tactic
-
-                // [OSORKON] I redirect calls to EnemyMotor's KnockbackSpeed as that is what other (non-Bossfall) scripts
+                // I redirect calls to EnemyMotor's KnockbackSpeed as that is what other (non-Bossfall) scripts
                 // are setting.
                 if (motor.KnockbackSpeed > (10 / (PlayerSpeedChanger.classicToUnitySpeedUnitRatio / 10)))
                 {
@@ -446,28 +356,20 @@ namespace BossfallMod.EnemyAI
             }
         }
 
-        /// <summary>
-        /// Apply gravity to ground-based enemies and paralyzed flyers.
-        /// </summary>
         void ApplyGravity()
         {
-            // Apply gravity
-
-            // [OSORKON] If the vanilla field or property can be set from outside the script, I call the vanilla version.
+            // If the vanilla field or property can be set from outside the script, I call the vanilla version.
             // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
             if (!flies && !swims && !motor.IsLevitating && !controller.isGrounded)
             {
                 controller.SimpleMove(Vector3.zero);
                 falls = true;
 
-                // Only cancel movement if actually falling. Sometimes mobiles can get stuck where they are !isGrounded but SimpleMove(Vector3.zero) doesn't help.
-                // Allowing them to continue and attempt a Move() frees them, but we don't want to allow that if we can avoid it so they aren't moving
-                // while falling, which can also accelerate the fall due to anti-bounce downward movement in Move().
                 if (lastPosition != transform.position)
                     canAct = false;
             }
 
-            // [OSORKON] If the vanilla field or property can be set from outside the script, I call the vanilla version.
+            // If the vanilla field or property can be set from outside the script, I call the vanilla version.
             // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
             if (flyerFalls && flies && !motor.IsLevitating)
             {
@@ -476,12 +378,9 @@ namespace BossfallMod.EnemyAI
             }
         }
 
-        /// <summary>
-        /// Do nothing if no target or after giving up finding the target or if target position hasn't been acquired yet.
-        /// </summary>
         void HandleNoAction()
         {
-            // [OSORKON] If the vanilla field or property can be set from outside the script, I call the vanilla version.
+            // If the vanilla field or property can be set from outside the script, I call the vanilla version.
             // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
             if (senses.Target == null || motor.GiveUpTimer <= 0 || senses.PredictedTargetPos == EnemySenses.ResetPlayerPos)
             {
@@ -492,9 +391,6 @@ namespace BossfallMod.EnemyAI
             }
         }
 
-        /// <summary>
-        /// Handle bashing doors.
-        /// </summary>
         void HandleBashing()
         {
             if (Bashing)
@@ -510,9 +406,6 @@ namespace BossfallMod.EnemyAI
             }
         }
 
-        /// <summary>
-        /// Updates timers used in this class.
-        /// </summary>
         void UpdateTimers()
         {
             if (moveInForAttackTimer > 0)
@@ -521,7 +414,6 @@ namespace BossfallMod.EnemyAI
             if (avoidObstaclesTimer > 0)
                 avoidObstaclesTimer -= Time.deltaTime;
 
-            // Set avoidObstaclesTimer to 0 if got close enough to detourDestination. Only bother checking if possible to move.
             if (avoidObstaclesTimer > 0 && canAct)
             {
                 Vector3 detourDestination2D = detourDestination;
@@ -541,34 +433,25 @@ namespace BossfallMod.EnemyAI
             if (strafeTimer > 0)
                 strafeTimer -= Time.deltaTime;
 
-            // As long as the target is detected,
-            // giveUpTimer is reset to full
             if (senses.DetectedTarget)
 
-                // [OSORKON] If the vanilla field or property can be set from outside the script, I call the vanilla version.
+                // [If the vanilla field or property can be set from outside the script, I call the vanilla version.
                 // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
                 motor.GiveUpTimer = 200;
 
-            // GiveUpTimer value is from classic, so decrease at the speed of classic's update loop
-
-            // [OSORKON] If the vanilla field or property can be set from outside the script, I call the vanilla version.
+            // If the vanilla field or property can be set from outside the script, I call the vanilla version.
             // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
             if (GameManager.ClassicUpdate && !senses.DetectedTarget && motor.GiveUpTimer > 0)
                 motor.GiveUpTimer--;
         }
 
-        /// <summary>
-        /// Make decision about what action to take.
-        /// </summary>
         void TakeAction()
         {
-            // Monster speed of movement follows the same formula as for when the player walks
-
-            // [OSORKON] I changed the declaration of this variable to avoid unnecessary moveSpeed calculations.
+            // I changed the declaration of this variable to avoid unnecessary moveSpeed calculations.
             float moveSpeed;
 
-            // [OSORKON] This sets enemy movement speed based on which "Enemy Move Speed" setting is used. The first option
-            // is the recommended "Fast" setting, which is rebalanced speeds for BOSSFALL v1.3. The second option is the
+            // This sets enemy movement speed based on which "Enemy Move Speed" setting is used. The first option
+            // is the recommended "Fast" setting, which is rebalanced speeds for Bossfall v1.3. The second option is the
             // "Very Fast" setting - which is v1.2.1 speeds - and the last option is the "Vanilla" setting, which is vanilla
             // DFU speed set using the vanilla formula. Exact enemy moveSpeed numbers are in the declared arrays up top.
             if (Bossfall.EnemyMoveSpeed == 1)
@@ -584,19 +467,15 @@ namespace BossfallMod.EnemyAI
                 moveSpeed = (entity.Stats.LiveSpeed + PlayerSpeedChanger.dfWalkBase) * MeshReader.GlobalScale;
             }
 
-            // Get isPlayingOneShot for use below
             bool isPlayingOneShot = mobile.IsPlayingOneShot();
 
-            // Reduced speed if playing a one-shot animation with enhanced AI
-
-            // [OSORKON] I commented out the vanilla check below. Now Vampire Ancients can run down the player and
+            // I commented out the vanilla check below. Now Vampire Ancients can run down the player and
             // hit them instead of slowing down when attacking. To balance this out, I added Pacification, Dispel,
             // and Teleport magical items to give player a fighting chance.
 
             // if (isPlayingOneShot && DaggerfallUnity.Settings.EnhancedCombatAI)
             //    moveSpeed /= attackSpeedDivisor;
 
-            // Classic AI moves only as close as melee range. It uses a different range for the player and for other AI.
             if (!DaggerfallUnity.Settings.EnhancedCombatAI)
             {
                 if (senses.Target == GameManager.Instance.PlayerEntityBehaviour)
@@ -605,39 +484,32 @@ namespace BossfallMod.EnemyAI
                     stopDistance = attack.ClassicMeleeDistanceVsAI;
             }
 
-            // Get location to move towards.
             GetDestination();
 
-            // Get direction & distance to destination.
             Vector3 direction = (destination - transform.position).normalized;
 
             float distance;
-            // If enemy sees the target, use the distance value from EnemySenses, as this is also used for the melee attack decision and we need to be consistent with that.
 
-            // [OSORKON] If the vanilla field or property can be set from outside the script, I call the vanilla version.
+            // If the vanilla field or property can be set from outside the script, I call the vanilla version.
             // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
             if (avoidObstaclesTimer <= 0 && bossfallSenses.TargetInSight)
                 distance = bossfallSenses.DistanceToTarget;
             else
                 distance = (destination - transform.position).magnitude;
 
-            // Do not change action if currently playing oneshot wants to stop actions
             if (isPlayingOneShot && mobile.OneShotPauseActionsWhilePlaying())
                 return;
 
-            // Ranged attacks
             if (DoRangedAttack(direction, moveSpeed, distance, isPlayingOneShot))
                 return;
 
-            // Touch spells
             if (DoTouchSpell())
                 return;
 
-            // Update advance/retreat decision
             if (moveInForAttackTimer <= 0 && avoidObstaclesTimer <= 0)
                 EvaluateMoveInForAttack();
 
-            // [OSORKON] If enemy is an Archer or Ranger, I never want them to move in to attack. I put these bool
+            // If enemy is an Archer or Ranger, I never want them to move in to attack. I put these bool
             // settings here, as that influences what decisions are made a few lines down.
             if (prefersBow)
             {
@@ -645,19 +517,14 @@ namespace BossfallMod.EnemyAI
                 pursuing = false;
             }
 
-            // If detouring, always attempt to move
             if (avoidObstaclesTimer > 0)
             {
                 AttemptMove(direction, moveSpeed);
             }
-            // Otherwise, if not still executing a retreat, approach target until close enough to be on-guard.
-            // If decided to move in for attack, continue until within melee range. Classic always moves in for attack.
             else if ((!retreating && distance >= (stopDistance * 2.75)) || (distance > stopDistance && moveInForAttack))
             {
-                // If state change timer is done, or we are continuing an already started pursuit, we can move immediately
                 if (changeStateTimer <= 0 || pursuing)
                     AttemptMove(direction, moveSpeed);
-                // Otherwise, look at target until timer finishes
                 else if (!senses.TargetIsWithinYawAngle(22.5f, destination))
                     TurnToTarget(direction);
             }
@@ -669,27 +536,21 @@ namespace BossfallMod.EnemyAI
             {
                 AttemptMove(direction, moveSpeed / 4, false, true, distance);
             }
-            // Back away from combat target if right next to it, or if decided to retreat and enemy is too close.
-            // Classic AI never backs away.
-
-            // [OSORKON] If the vanilla field or property can be set from outside the script, I call the vanilla version.
+            // If the vanilla field or property can be set from outside the script, I call the vanilla version.
             // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
             else if (DaggerfallUnity.Settings.EnhancedCombatAI && bossfallSenses.TargetInSight && (distance < stopDistance * .8f ||
                 !moveInForAttack && distance < stopDistance * retreatDistanceMultiplier && (changeStateTimer <= 0 || retreating)))
             {
-                // If state change timer is done, or we are already executing a retreat, we can move immediately
-
-                // [OSORKON] Vanilla has moveSpeed / 2 here, I removed the 2. This makes enemies back up at full speed.
+                // Vanilla has moveSpeed / 2 here, I removed the 2. This makes enemies back up at full speed.
                 // The player can run backwards at full speed, I wanted enemies to do so as well. It's only fair.
                 if (changeStateTimer <= 0 || retreating)
                     AttemptMove(direction, moveSpeed, true);
             }
-            // Not moving, just look at target
             else if (!senses.TargetIsWithinYawAngle(22.5f, destination))
             {
                 TurnToTarget(direction);
             }
-            else // Not moving, and no need to turn
+            else
             {
                 SetChangeStateTimer();
                 pursuing = false;
@@ -697,34 +558,28 @@ namespace BossfallMod.EnemyAI
             }
         }
 
-        /// <summary>
-        /// Get the destination to move towards.
-        /// </summary>
         void GetDestination()
         {
             CharacterController targetController = senses.Target.GetComponent<CharacterController>();
-            // If detouring around an obstacle or fall, use the detour position
+
             if (avoidObstaclesTimer > 0)
             {
                 destination = detourDestination;
             }
-            // Otherwise, try to get to the combat target if there is a clear path to it
 
-            // [OSORKON] If the vanilla field or property can be set from outside the script, I call the vanilla version.
+            // If the vanilla field or property can be set from outside the script, I call the vanilla version.
             // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
             else if (ClearPathToPosition(senses.PredictedTargetPos, (destination - transform.position).magnitude) || (bossfallSenses.TargetInSight && (hasBowAttack || entity.CurrentMagicka > 0)))
             {
                 destination = senses.PredictedTargetPos;
-                // Flying enemies and slaughterfish aim for target face
 
-                // [OSORKON] If the vanilla field or property can be set from outside the script, I call the vanilla version.
+                // If the vanilla field or property can be set from outside the script, I call the vanilla version.
                 // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
                 if (flies || motor.IsLevitating || (swims && mobile.Enemy.ID == (int)MonsterCareers.Slaughterfish))
                     destination.y += targetController.height * 0.5f;
 
                 searchMult = 0;
             }
-            // Otherwise, search for target based on its last known position and direction
             else
             {
                 Vector3 searchPosition = senses.LastKnownTargetPos + (senses.LastPositionDiff.normalized * searchMult);
@@ -734,23 +589,18 @@ namespace BossfallMod.EnemyAI
                 destination = searchPosition;
             }
 
-            // [OSORKON] If the vanilla field or property can be set from outside the script, I call the vanilla version.
+            // If the vanilla field or property can be set from outside the script, I call the vanilla version.
             // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
             if (avoidObstaclesTimer <= 0 && !flies && !motor.IsLevitating && !swims && senses.Target)
             {
-                // Ground enemies target at their own height
-                // Otherwise, short enemies' vector can aim up towards the target, which could interfere with distance-to-target calculations.
                 float deltaHeight = (targetController.height - originalHeight) / 2;
                 destination.y -= deltaHeight;
             }
         }
 
-        /// <summary>
-        /// Handles ranged attacks with bows and spells.
-        /// </summary>
         bool DoRangedAttack(Vector3 direction, float moveSpeed, float distance, bool isPlayingOneShot)
         {
-            // [OSORKON] If the vanilla field or property can be set from outside the script, I call the vanilla version.
+            // If the vanilla field or property can be set from outside the script, I call the vanilla version.
             // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
             bool inRange = bossfallSenses.DistanceToTarget > BossfallEnemyAttack.minRangedDistance && bossfallSenses.DistanceToTarget < BossfallEnemyAttack.maxRangedDistance;
             if (inRange && bossfallSenses.TargetInSight && senses.DetectedTarget && (CanShootBow() || CanCastRangedSpell()))
@@ -762,7 +612,7 @@ namespace BossfallMod.EnemyAI
 
                 if (doStrafe && strafeTimer > 0)
                 {
-                    // [OSORKON] Vanilla has moveSpeed / 4 here, I changed that to 2 so enemies at range strafe faster.
+                    // Vanilla has moveSpeed / 4 here, I changed that to 2 so enemies at range strafe faster.
                     // I got annoyed at how easy it was to hit enemies with arrows at long distances.
                     AttemptMove(direction, moveSpeed / 2, false, true, distance);
                 }
@@ -773,9 +623,7 @@ namespace BossfallMod.EnemyAI
                     {
                         if (hasBowAttack)
                         {
-                            // Random chance to shoot bow
-
-                            // [OSORKON] Vanilla has 1/32f here. I thought bow attacks were too infrequent.
+                            // Vanilla has 1/32f here. I thought bow attacks were too infrequent.
                             if (Random.value < 1 / 18f)
                             {
                                 if (mobile.Enemy.HasRangedAttack1 && !mobile.Enemy.HasRangedAttack2)
@@ -784,9 +632,8 @@ namespace BossfallMod.EnemyAI
                                     mobile.ChangeEnemyState(MobileStates.RangedAttack2);
                             }
                         }
-                        // Random chance to shoot spell
 
-                        // [OSORKON] Vanilla has 1/40f here. Bossfall enemies are magical machine guns.
+                        // Vanilla has 1/40f here. Bossfall enemies are magical machine guns.
                         else if (Random.value < 1 / 15f && entityEffectManager.SetReadySpell(selectedSpell))
                         {
                             mobile.ChangeEnemyState(MobileStates.Spell);
@@ -802,12 +649,9 @@ namespace BossfallMod.EnemyAI
             return false;
         }
 
-        /// <summary>
-        /// Handles touch-range spells.
-        /// </summary>
         bool DoTouchSpell()
         {
-            // [OSORKON] If the vanilla field or property can be set from outside the script, I call the vanilla version.
+            // If the vanilla field or property can be set from outside the script, I call the vanilla version.
             // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
             if (bossfallSenses.TargetInSight && senses.DetectedTarget && attack.MeleeTimer == 0
                 && bossfallSenses.DistanceToTarget <= attack.MeleeDistance + senses.TargetRateOfApproach
@@ -823,12 +667,9 @@ namespace BossfallMod.EnemyAI
             return false;
         }
 
-        /// <summary>
-        /// Decide whether to strafe, and get direction to strafe to.
-        /// </summary>
         void StrafeDecision()
         {
-            // [OSORKON] I changed the maximum range from 4 to 5, reducing strafe frequency.
+            // I changed the maximum range from 4 to 5, reducing strafe frequency.
             doStrafe = Random.Range(0, 5) == 0;
             strafeTimer = Random.Range(1f, 2f);
             if (doStrafe)
@@ -839,22 +680,15 @@ namespace BossfallMod.EnemyAI
                     strafeLeft = false;
 
                 Vector3 north = destination;
-                north.z++; // Adding 1 to z so this Vector3 will be north of the destination Vector3.
-
-                // Get angle between vector from destination to the north of it, and vector from destination to this enemy's position
+                north.z++;
                 strafeAngle = Vector3.SignedAngle(destination - north, destination - transform.position, Vector3.up);
                 if (strafeAngle < 0)
                     strafeAngle = 360 + strafeAngle;
 
-                // Convert to radians
                 strafeAngle *= Mathf.PI / 180;
             }
         }
 
-        /// <summary>
-        /// Returns whether there is a clear path to move the given distance from the current location towards the given location. True if clear
-        /// or if combat target is the first obstacle hit.
-        /// </summary>
         bool ClearPathToPosition(Vector3 location, float dist = 30)
         {
             Vector3 sphereCastDir = (location - transform.position).normalized;
@@ -883,25 +717,17 @@ namespace BossfallMod.EnemyAI
             return true;
         }
 
-        /// <summary>
-        /// Returns true if can shoot projectile at target.
-        /// </summary>
         bool HasClearPathToShootProjectile(float speed, float radius)
         {
-            // Check that there is a clear path to shoot projectile
-
-            // [OSORKON] I call the BossfallEnemySenses method instead of vanilla's as Bossfall's will be more accurate.
+            // I call the BossfallEnemySenses method instead of vanilla's as Bossfall's will be more accurate.
             Vector3 sphereCastDir = bossfallSenses.PredictNextTargetPos(speed);
             if (sphereCastDir == EnemySenses.ResetPlayerPos)
                 return false;
-
-            // No point blank shooting special handling here, makes enemies favor other attack types (melee, touch spells,...)
 
             bool myColliderWasEnabled = false;
             if (myCollider)
             {
                 myColliderWasEnabled = myCollider.enabled;
-                // Exclude enemy collider from CheckSphere test
                 myCollider.enabled = false;
             }
             bool isSpaceInsufficient = Physics.CheckSphere(transform.position, radius, ignoreMaskForShooting);
@@ -919,34 +745,23 @@ namespace BossfallMod.EnemyAI
             {
                 DaggerfallEntityBehaviour hitTarget = hit.transform.GetComponent<DaggerfallEntityBehaviour>();
 
-                // Clear path to target
                 if (hitTarget == senses.Target)
                     return true;
 
-                // Something in the way
                 return false;
             }
 
-            // Clear path to predicted target position
             return true;
         }
 
-        /// <summary>
-        /// Returns true if can shoot bow at target.
-        /// </summary>
         bool CanShootBow()
         {
             if (!hasBowAttack)
                 return false;
 
-            // Check that there is a clear path to shoot an arrow
-            // All arrows are currently 35 speed.
             return HasClearPathToShootProjectile(35f, 0.15f);
         }
 
-        /// <summary>
-        /// Selects a ranged spell from this enemy's list and returns true if it can be cast.
-        /// </summary>
         bool CanCastRangedSpell()
         {
             if (entity.CurrentMagicka <= 0)
@@ -957,7 +772,7 @@ namespace BossfallMod.EnemyAI
             int count = 0;
             foreach (EffectBundleSettings spell in spells)
             {
-                // [OSORKON] I added CasterOnly, enemies now cast self-protection/healing spells at range.
+                // I added CasterOnly, enemies now cast self-protection/healing spells at range.
                 // If they didn't, they would never cast Spell Resistance, Shalidor's Mirror, and Heal unless
                 // player is within melee range, and by then it'd likely be too late.
                 if (spell.TargetType == TargetTypes.SingleTargetAtRange
@@ -978,14 +793,9 @@ namespace BossfallMod.EnemyAI
             if (EffectsAlreadyOnTarget(selectedSpell))
                 return false;
 
-            // Check that there is a clear path to shoot a spell
-            // All range spells are currently 25 speed and 0.45f radius
             return HasClearPathToShootProjectile(25f, 0.45f);
         }
 
-        /// <summary>
-        /// Selects a touch spell from this enemy's list and returns true if it can be cast.
-        /// </summary>
         bool CanCastTouchSpell()
         {
             if (entity.CurrentMagicka <= 0)
@@ -997,7 +807,7 @@ namespace BossfallMod.EnemyAI
             foreach (EffectBundleSettings spell in spells)
             {
 
-                // [OSORKON] I condensed this bool as I didn't want to differentiate between classic
+                // I condensed this bool as I didn't want to differentiate between classic
                 // and Enhanced Combat AI. Enemies cast any type of melee spell within melee range.
                 if (spell.TargetType == TargetTypes.ByTouch
                     || spell.TargetType == TargetTypes.CasterOnly
@@ -1021,19 +831,11 @@ namespace BossfallMod.EnemyAI
             return true;
         }
 
-        /// <summary>
-        /// Checks if enemy can fly based on behaviour.
-        /// This can change in the case of a transformed Seducer.
-        /// </summary>
-        /// <returns>True if enemy can fly.</returns>
         bool CanFly()
         {
             return mobile.Enemy.Behaviour == MobileBehaviour.Flying || mobile.Enemy.Behaviour == MobileBehaviour.Spectral;
         }
 
-        /// <summary>
-        /// Checks whether the target already is affected by all of the effects of the given spell.
-        /// </summary>
         bool EffectsAlreadyOnTarget(EntityEffectBundle spell)
         {
             if (senses.Target)
@@ -1044,7 +846,6 @@ namespace BossfallMod.EnemyAI
                 for (int i = 0; i < spell.Settings.Effects.Length; i++)
                 {
                     bool foundEffect = false;
-                    // Get effect template
                     IEntityEffect effectTemplate = GameManager.Instance.EntityEffectBroker.GetEffectTemplate(spell.Settings.Effects[i].Key);
                     for (int j = 0; j < bundles.Length && !foundEffect; j++)
                     {
@@ -1063,12 +864,8 @@ namespace BossfallMod.EnemyAI
             return true;
         }
 
-        /// <summary>
-        /// Try to move in given direction.
-        /// </summary>
         void AttemptMove(Vector3 direction, float moveSpeed, bool backAway = false, bool strafe = false, float strafeDist = 0)
         {
-            // Set whether pursuing or retreating, for bypassing changeStateTimer delay when continuing these actions
             if (!backAway && !strafe)
             {
                 pursuing = true;
@@ -1083,10 +880,8 @@ namespace BossfallMod.EnemyAI
             if (!senses.TargetIsWithinYawAngle(5.625f, destination))
             {
                 TurnToTarget(direction);
-                // Classic always turns in place. Enhanced only does so if enemy is not in sight,
-                // for more natural-looking movement while pursuing.
 
-                // [OSORKON] If the vanilla field or property can be set from outside the script, I call the vanilla version.
+                // If the vanilla field or property can be set from outside the script, I call the vanilla version.
                 // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
                 if (!DaggerfallUnity.Settings.EnhancedCombatAI || !bossfallSenses.TargetInSight)
                     return;
@@ -1109,26 +904,22 @@ namespace BossfallMod.EnemyAI
                 }
             }
 
-            // Move downward some to eliminate bouncing down inclines
-
-            // [OSORKON] If the vanilla field or property can be set from outside the script, I call the vanilla version.
+            // If the vanilla field or property can be set from outside the script, I call the vanilla version.
             // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
             if (!flies && !swims && !motor.IsLevitating && controller.isGrounded)
                 direction.y = -2f;
 
-            // Stop fliers from moving too near the floor during combat
             if (flies && avoidObstaclesTimer <= 0 && direction.y < 0 && FindGroundPosition((originalHeight / 2) + 1f) != transform.position)
                 direction.y = 0.1f;
 
             Vector3 motion = direction * moveSpeed;
 
-            // If using enhanced combat, avoid moving directly below targets
             if (!backAway && DaggerfallUnity.Settings.EnhancedCombatAI && avoidObstaclesTimer <= 0)
             {
                 bool withinPitch = senses.TargetIsWithinPitchAngle(45.0f);
                 if (!pausePursuit && !withinPitch)
                 {
-                    // [OSORKON] If the vanilla field or property can be set from outside the script, I call the vanilla version.
+                    // If the vanilla field or property can be set from outside the script, I call the vanilla version.
                     // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
                     if (flies || motor.IsLevitating || swims)
                     {
@@ -1137,7 +928,6 @@ namespace BossfallMod.EnemyAI
                         else
                             motion = transform.up * moveSpeed;
                     }
-                    // Causes a random delay after being out of pitch range
                     else if (senses.TargetIsAbove() && changeStateTimer <= 0)
                     {
                         SetChangeStateTimer();
@@ -1154,15 +944,12 @@ namespace BossfallMod.EnemyAI
                 {
                     if (senses.TargetIsAbove() && !senses.TargetIsWithinPitchAngle(55.0f) && (changeStateTimer <= 0 || backingUp))
                     {
-                        // Back away from target
-
-                        // [OSORKON] Vanilla has moveSpeed * 0.75 here. I want enemies to back up faster.
+                        // Vanilla has moveSpeed * 0.75 here. I want enemies to back up faster.
                         motion = -transform.forward * moveSpeed;
                         backingUp = true;
                     }
                     else
                     {
-                        // Stop moving
                         backingUp = false;
                         return;
                     }
@@ -1171,10 +958,9 @@ namespace BossfallMod.EnemyAI
 
             SetChangeStateTimer();
 
-            // Check if there is something to collide with directly in movement direction, such as upward sloping ground.
             Vector3 direction2d = direction;
 
-            // [OSORKON] If the vanilla field or property can be set from outside the script, I call the vanilla version.
+            // If the vanilla field or property can be set from outside the script, I call the vanilla version.
             // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
             if (!flies && !swims && !motor.IsLevitating)
                 direction2d.y = 0;
@@ -1187,7 +973,6 @@ namespace BossfallMod.EnemyAI
                     FindDetour(direction2d);
             }
             else
-            // Clear to move
             {
                 if (swims)
                     WaterMove(motion);
@@ -1196,18 +981,13 @@ namespace BossfallMod.EnemyAI
             }
         }
 
-        /// <summary>
-        /// Try to find a way around an obstacle or fall.
-        /// </summary>
         void FindDetour(Vector3 direction2d)
         {
             float angle;
             Vector3 testMove = Vector3.zero;
             bool foundUpDown = false;
 
-            // Try up/down first
-
-            // [OSORKON] If the vanilla field or property can be set from outside the script, I call the vanilla version.
+            // If the vanilla field or property can be set from outside the script, I call the vanilla version.
             // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
             if (flies || swims || motor.IsLevitating)
             {
@@ -1231,7 +1011,6 @@ namespace BossfallMod.EnemyAI
                     foundUpDown = true;
             }
 
-            // Reset clockwise check if we've been clear of obstacles/falls for a while
             if (!foundUpDown && Time.time - lastTimeWasStuck > 2f)
             {
                 checkingClockwiseTimer = 0;
@@ -1242,8 +1021,6 @@ namespace BossfallMod.EnemyAI
             {
                 if (!didClockwiseCheck)
                 {
-                    // Check 45 degrees in both ways first
-                    // Pick first direction to check randomly
                     if (Random.Range(0, 2) == 0)
                         angle = 45;
                     else
@@ -1255,7 +1032,6 @@ namespace BossfallMod.EnemyAI
 
                     if (!obstacleDetected && !fallDetected)
                     {
-                        // First direction was clear, use that way
                         if (angle == 45)
                         {
                             checkingClockwise = true;
@@ -1265,8 +1041,6 @@ namespace BossfallMod.EnemyAI
                     }
                     else
                     {
-                        // Tested 45 degrees in the clockwise/counter-clockwise direction we chose,
-                        // but hit something, so try other one.
                         angle *= -1;
                         testMove = Quaternion.AngleAxis(angle, Vector3.up) * direction2d;
                         ObstacleCheck(testMove);
@@ -1283,7 +1057,6 @@ namespace BossfallMod.EnemyAI
                         }
                         else
                         {
-                            // Both 45 degrees checks failed, pick clockwise/counterclockwise based on angle to target
                             Vector3 toTarget = destination - transform.position;
                             Vector3 directionToTarget = toTarget.normalized;
                             angle = Vector3.SignedAngle(directionToTarget, direction2d, Vector3.up);
@@ -1322,9 +1095,8 @@ namespace BossfallMod.EnemyAI
                     testMove = Quaternion.AngleAxis(angle, Vector3.up) * direction2d;
                     ObstacleCheck(testMove);
                     FallCheck(testMove);
-
-                    // Break out of loop if can't find anywhere to go
                     count++;
+
                     if (count > 7)
                     {
                         break;
@@ -1343,20 +1115,15 @@ namespace BossfallMod.EnemyAI
         void ObstacleCheck(Vector3 direction)
         {
             obstacleDetected = false;
-            // Rationale: follow walls at 45° incidence; is that optimal? At least it seems very good
             float checkDistance = controller.radius / Mathf.Sqrt(2f);
             foundUpwardSlope = false;
             foundDoor = false;
-
             RaycastHit hit;
-            // Climbable/not climbable step for the player seems to be at around a height of 0.65f. The player is 1.8f tall.
-            // Using the same ratio to height as these values, set the capsule for the enemy. 
             Vector3 p1 = transform.position + (Vector3.up * -originalHeight * 0.1388F);
             Vector3 p2 = p1 + (Vector3.up * Mathf.Min(originalHeight, doorCrouchingHeight) / 2);
 
             if (Physics.CapsuleCast(p1, p2, controller.radius / 2, direction, out hit, checkDistance, ignoreMaskForObstacles))
             {
-                // Debug.DrawRay(transform.position, direction, Color.red, 2.0f);
                 obstacleDetected = true;
                 DaggerfallEntityBehaviour entityBehaviour2 = hit.transform.GetComponent<DaggerfallEntityBehaviour>();
                 DaggerfallActionDoor door = hit.transform.GetComponent<DaggerfallActionDoor>();
@@ -1381,14 +1148,13 @@ namespace BossfallMod.EnemyAI
                 {
                     obstacleDetected = false;
                 }
-                // [OSORKON] If the vanilla field or property can be set from outside the script, I call the vanilla version.
+
+                // If the vanilla field or property can be set from outside the script, I call the vanilla version.
                 // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
                 else if (!swims && !flies && !motor.IsLevitating)
                 {
-                    // If an obstacle was hit, check for a climbable upward slope
                     Vector3 checkUp = transform.position + direction;
                     checkUp.y++;
-
                     direction = (checkUp - transform.position).normalized;
                     p1 = transform.position + (Vector3.up * -originalHeight * 0.25f);
                     p2 = p1 + (Vector3.up * originalHeight * 0.75f);
@@ -1400,15 +1166,12 @@ namespace BossfallMod.EnemyAI
                     }
                 }
             }
-            else
-            {
-                // Debug.DrawRay(transform.position, direction, Color.green, 2.0f);
-            }
+            // There was an empty "else" statement here in EnemyMotor's method. I removed it.
         }
 
         void FallCheck(Vector3 direction)
         {
-            // [OSORKON] If the vanilla field or property can be set from outside the script, I call the vanilla version.
+            // If the vanilla field or property can be set from outside the script, I call the vanilla version.
             // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
             if (flies || motor.IsLevitating || swims || obstacleDetected || foundUpwardSlope || foundDoor)
             {
@@ -1426,23 +1189,16 @@ namespace BossfallMod.EnemyAI
             fallDetected = !Physics.Raycast(ray, out hit, (originalHeight * 0.5f) + 1.5f);
         }
 
-        /// <summary>
-        /// Decide whether or not to pursue enemy, based on perceived combat odds.
-        /// </summary>
         void EvaluateMoveInForAttack()
         {
-            // Classic always attacks
-
-            // [OSORKON] If enemy is the type to always charge, they'll always move in to attack.
+            // If enemy is the type to always charge, they'll always move in to attack.
             if (!DaggerfallUnity.Settings.EnhancedCombatAI || alwaysCharges)
             {
                 moveInForAttack = true;
                 return;
             }
 
-            // No retreat from unseen opponent
-
-            // [OSORKON] If the vanilla field or property can be set from outside the script, I call the vanilla version.
+            // If the vanilla field or property can be set from outside the script, I call the vanilla version.
             // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
             if (!bossfallSenses.TargetInSight)
             {
@@ -1450,30 +1206,27 @@ namespace BossfallMod.EnemyAI
                 return;
             }
 
-            // No retreat if enemy is paralyzed
             if (senses.Target != null)
             {
-                // [OSORKON] The new !prefersBow check ensures Archers/Rangers never move in to melee range, even
+                // The new !prefersBow check ensures Archers/Rangers never move in to melee range, even
                 // if player is incapacitated or unaware.
                 if (!prefersBow)
                 {
                     EntityEffectManager targetEffectManager = senses.Target.GetComponent<EntityEffectManager>();
 
-                    // [OSORKON] I removed "MagicAndEffects.MagicEffects" from the line below.
+                    // I removed "MagicAndEffects.MagicEffects" from the line below.
                     if (targetEffectManager.FindIncumbentEffect<Paralyze>() != null)
                     {
                         moveInForAttack = true;
                         return;
                     }
 
-                    // No retreat if enemy's back is turned
                     if (senses.TargetHasBackTurned())
                     {
                         moveInForAttack = true;
                         return;
                     }
 
-                    // No retreat if enemy is player with bow or weapon not out
                     if (senses.Target == GameManager.Instance.PlayerEntityBehaviour
                         && GameManager.Instance.WeaponManager.ScreenWeapon
                         && (GameManager.Instance.WeaponManager.ScreenWeapon.WeaponType == WeaponTypes.Bow
@@ -1490,22 +1243,20 @@ namespace BossfallMod.EnemyAI
             }
 
             const float retreatDistanceBaseMult = 2.25f;
-
-            // Level difference affects likelihood of backing away.
             moveInForAttackTimer = Random.Range(1, 3);
             int levelMod = (entity.Level - senses.Target.Entity.Level) / 2;
+
             if (levelMod > 4)
                 levelMod = 4;
 
-            // [OSORKON] Vanilla has levelMod < -4 here. I find enemies constantly retreating really annoying,
+            // Vanilla has levelMod < -4 here. I find enemies constantly retreating really annoying,
             // so I greatly reduced the likelihood of that occurring.
             if (levelMod < 0)
                 levelMod = 0;
 
             int roll = Random.Range(0 + levelMod, 10 + levelMod);
 
-            // [OSORKON] If enemy is not an Archer or Ranger, proceed as normal. If they are, moveInForAttack will
-            // always be false.
+            // If enemy is not an Archer or Ranger, proceed as normal. If they are, moveInForAttack will always be false.
             if (!prefersBow)
             {
                 moveInForAttack = roll > 4;
@@ -1515,12 +1266,11 @@ namespace BossfallMod.EnemyAI
                 moveInForAttack = false;
             }
 
-            // Chose to retreat
             if (!moveInForAttack)
             {
                 retreatDistanceMultiplier = (float)(retreatDistanceBaseMult + (retreatDistanceBaseMult * (0.25 * (2 - roll))));
 
-                // [OSORKON] This check is necessary for TakeAction to do what I want. Without this custom multiplier, Archers
+                // This check is necessary for TakeAction to do what I want. Without this custom multiplier, Archers
                 // and Rangers usually won't begin retreating until player is right in front of them.
                 if (prefersBow)
                     retreatDistanceMultiplier = 2.75f;
@@ -1534,24 +1284,18 @@ namespace BossfallMod.EnemyAI
                     strafeLeft = false;
 
                 Vector3 north = destination;
-                north.z++; // Adding 1 to z so this Vector3 will be north of the destination Vector3.
-
-                // Get angle between vector from destination to the north of it, and vector from destination to this enemy's position
+                north.z++;
                 strafeAngle = Vector3.SignedAngle(destination - north, destination - transform.position, Vector3.up);
+
                 if (strafeAngle < 0)
                     strafeAngle = 360 + strafeAngle;
 
-                // Convert to radians
                 strafeAngle *= Mathf.PI / 180;
             }
         }
 
-        /// <summary>
-        /// Set timer for padding between state changes, for non-perfect reflexes.
-        /// </summary>
         void SetChangeStateTimer()
         {
-            // No timer without enhanced AI
             if (!DaggerfallUnity.Settings.EnhancedCombatAI)
                 return;
 
@@ -1559,12 +1303,8 @@ namespace BossfallMod.EnemyAI
                 changeStateTimer = Random.Range(0.2f, 0.8f);
         }
 
-        /// <summary>
-        /// Movement for water enemies.
-        /// </summary>
         void WaterMove(Vector3 motion)
         {
-            // Don't allow aquatic enemies to go above the water level of a dungeon block
             if (GameManager.Instance.PlayerEnterExit.blockWaterLevel != 10000
                     && controller.transform.position.y
                     < GameManager.Instance.PlayerEnterExit.blockWaterLevel * -1 * MeshReader.GlobalScale)
@@ -1574,18 +1314,15 @@ namespace BossfallMod.EnemyAI
                 {
                     motion.y = 0;
                 }
+
                 controller.Move(motion * Time.deltaTime);
             }
         }
 
-        /// <summary>
-        /// Rotate toward target.
-        /// </summary>
         void TurnToTarget(Vector3 targetDirection)
         {
-            // [OSORKON] Vanilla has 20f here. I want enemies to turn faster.
+            // Vanilla has 20f here. I want enemies to turn faster.
             const float turnSpeed = 30f;
-            //Classic speed is 11.25f, too slow for Daggerfall Unity's agile player movement
 
             if (GameManager.ClassicUpdate)
             {
@@ -1593,14 +1330,10 @@ namespace BossfallMod.EnemyAI
             }
         }
 
-        /// <summary>
-        /// Set to either idle or move animation depending on whether the enemy has moved or rotated.
-        /// </summary>
         void UpdateToIdleOrMoveAnim()
         {
             if (!mobile.IsPlayingOneShot())
             {
-                // Rotation is done at classic update rate, so check at classic update rate
                 if (GameManager.ClassicUpdate)
                 {
                     Vector3 currentDirection = transform.forward;
@@ -1608,7 +1341,7 @@ namespace BossfallMod.EnemyAI
                     rotating = lastDirection != currentDirection;
                     lastDirection = currentDirection;
                 }
-                // Movement is done at regular update rate, so check position at regular update rate
+
                 if (!rotating && lastPosition == transform.position)
                     mobile.ChangeEnemyState(MobileStates.Idle);
                 else
@@ -1620,18 +1353,14 @@ namespace BossfallMod.EnemyAI
 
         void ApplyFallDamage()
         {
-            // Assuming the same formula is used for the player and enemies
-
-            // [OSORKON] BOSSFALL doubles vanilla falling damage and starts damaging at a lower threshold.
+            // Bossfall doubles vanilla falling damage and starts damaging at a lower threshold.
             // Enemies are also affected by this change.
             const float fallingDamageThreshold = 3.8f;
             const float HPPerMetre = 10f;
 
             if (controller.isGrounded)
             {
-                // did enemy just land?
-
-                // [OSORKON] If player is outside enemies will never suffer fall damage. I do this as BossfallEnemyMotor
+                // If player is outside enemies will never suffer fall damage. I do this as BossfallEnemyMotor
                 // can't access EnemyMotor's lastGroundedY and thus I would re-introduce enemies dying from fall damage when
                 // FloatingOrigin ticks on player (this was fixed in a previous DFU version). I obviously don't want to
                 // re-create already fixed bugs, so Bossfall enemies don't suffer fall damage outside as a crude workaround.
@@ -1647,7 +1376,6 @@ namespace BossfallMod.EnemyAI
 
                         if (entityBlood)
                         {
-                            // Like in classic, falling enemies bleed at the center. It must hurt the center of mass ;)
                             entityBlood.ShowBloodSplash(0, transform.position);
                         }
 
@@ -1659,61 +1387,43 @@ namespace BossfallMod.EnemyAI
             }
         }
 
-        /// <summary>
-        /// Open doors that are in the way.
-        /// </summary>
         void OpenDoors()
         {
-            // Try to open doors blocking way
             if (mobile.Enemy.CanOpenDoors)
             {
-                if (senses.LastKnownDoor != null
-
-                    // [OSORKON] If the vanilla field or property can be set from outside the script, I call the vanilla version.
-                    // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
-                    && senses.DistanceToDoor < motor.OpenDoorDistance && !senses.LastKnownDoor.IsOpen
+                // If the vanilla field or property can be set from outside the script, I call the vanilla version.
+                // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
+                if (senses.LastKnownDoor != null && senses.DistanceToDoor < motor.OpenDoorDistance && !senses.LastKnownDoor.IsOpen
                     && !senses.LastKnownDoor.IsLocked)
                 {
                     senses.LastKnownDoor.ToggleDoor();
                     return;
                 }
 
-                // If door didn't open, and we are trying to get to the target, bash
-
-                // [OSORKON] If the vanilla field or property can be set from outside the script, I call the vanilla version.
+                // If the vanilla field or property can be set from outside the script, I call the vanilla version.
                 // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
                 Bashing = DaggerfallUnity.Settings.EnhancedCombatAI && !bossfallSenses.TargetInSight && moveInForAttack
                     && senses.LastKnownDoor != null && senses.DistanceToDoor <= attack.MeleeDistance && senses.LastKnownDoor.IsLocked;
             }
         }
 
-        /// <summary>
-        /// Limits maximum controller height.
-        /// Tall sprites require this hack to get through doors.
-        /// </summary>
         void HeightAdjust()
         {
-            // If enemy bumps into something, temporarily reduce their height to 1.65, which should be short enough to fit through most if not all doorways.
-            // Unfortunately, while the enemy is shortened, projectiles will not collide with the top of the enemy for the difference in height.
             if (!resetHeight && controller && ((controller.collisionFlags & CollisionFlags.CollidedSides) != 0) && originalHeight > doorCrouchingHeight)
             {
-                // Adjust the center of the controller so that sprite doesn't sink into the ground
                 centerChange = (doorCrouchingHeight - controller.height) / 2;
                 Vector3 newCenter = controller.center;
                 newCenter.y += centerChange;
                 controller.center = newCenter;
-                // Adjust the height
                 controller.height = doorCrouchingHeight;
                 resetHeight = true;
                 heightChangeTimer = 0.5f;
             }
             else if (resetHeight && heightChangeTimer <= 0)
             {
-                // Restore the original center
                 Vector3 newCenter = controller.center;
                 newCenter.y -= centerChange;
                 controller.center = newCenter;
-                // Restore the original height
                 controller.height = originalHeight;
                 resetHeight = false;
             }
@@ -1725,7 +1435,7 @@ namespace BossfallMod.EnemyAI
         }
 
         /// <summary>
-        /// [OSORKON] Bossfall AI breaks EnhancedCombatAI aiming. Arrow aiming is easily fixed in BossfallEnemyAttack, but fixing
+        /// Bossfall AI breaks EnhancedCombatAI aiming. Arrow aiming is easily fixed in BossfallEnemyAttack, but fixing
         /// spell aiming turned out to be far more complicated. This method searches for spells that have been cast by this enemy,
         /// destroys them if they are very close to this enemy as their aim direction is always wrong, instantiates an identical
         /// spell, and fires it in the correct direction. Only active if EnhancedCombatAI is on. This method uses code from
@@ -1771,7 +1481,7 @@ namespace BossfallMod.EnemyAI
         #region Events
 
         /// <summary>
-        /// [OSORKON] If using EnhancedCombatAI this runs every time this enemy casts a spell. It activates a method that
+        /// If using EnhancedCombatAI this runs every time this enemy casts a spell. It activates a method that
         /// fixes vanilla ranged spell aiming and directly fixes vanilla touch spell aiming (Bossfall AI breaks both). This
         /// method uses code from DaggerfallMissile.
         /// </summary>
