@@ -9,6 +9,7 @@
 //        verify original authorship before crediting. When in doubt compare with vanilla DFU's source code.
 //
 
+using BossfallMod.Utility;
 using DaggerfallConnect;
 using DaggerfallWorkshop;
 using DaggerfallWorkshop.Game;
@@ -22,7 +23,6 @@ using DaggerfallWorkshop.Game.Utility.ModSupport;
 using DaggerfallWorkshop.Utility;
 using System;
 using UnityEngine;
-using BossfallMod.Utility;
 
 namespace BossfallMod.Formulas
 {

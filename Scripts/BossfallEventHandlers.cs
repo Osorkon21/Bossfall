@@ -15,11 +15,13 @@ using BossfallMod.Items;
 using BossfallMod.Utility;
 using DaggerfallConnect;
 using DaggerfallConnect.FallExe;
+using DaggerfallConnect.Save;
 using DaggerfallWorkshop;
 using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.Entity;
 using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Game.Items;
+using DaggerfallWorkshop.Game.MagicAndEffects;
 using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Utility;
@@ -36,17 +38,18 @@ namespace BossfallMod.Events
         #region Fields
 
         // Spell lists for BossfallOnEnemyLootSpawned event handler. Based on arrays from vanilla's EnemyEntity script.
-        static readonly byte[] FrostDaedraSpells = { 0x10, 0x14, 0x03 };
-        static readonly byte[] FireDaedraSpells = { 0x0E, 0x19, 0x20 };
-        static readonly byte[] BossfallSpells = { 0x08, 0x0E, 0x1D, 0x1F, 0x32, 0x33, 0x19, 0x1C, 0x43, 0x34, 0x17, 0x10, 0x14,
-            0x09, 0x1B, 0x1E, 0x20, 0x23, 0x24, 0x27, 0x35, 0x36, 0x37, 0x40 };
+        static readonly byte[] BossfallFrostDaedraSpells = { 0x10, 0x14, 0x03 };
+        static readonly byte[] BossfallFireDaedraSpells = { 0x0E, 0x19, 0x20 };
+        static readonly byte[] BossfallGenericSpells = { 0x08, 0x0E, 0x1D, 0x1F, 0x32, 0x33, 0x19, 0x1C, 0x43, 0x34, 0x17, 0x10,
+            0x14, 0x09, 0x1B, 0x1E, 0x20, 0x23, 0x24, 0x27, 0x35, 0x36, 0x37, 0x40 };
 
         #endregion
 
         #region Private Methods
 
         /// <summary>
-        /// This method is entirely vanilla's, pulled from PlayerActivate. It checks if struck object is an enemy.
+        /// This method is vanilla's, pulled from PlayerActivate. I changed the method to be static but changed nothing else.
+        /// It checks if struck object is an enemy.
         /// </summary>
         /// <param name="hitInfo">RaycastHit info.</param>
         /// <param name="mobileEnemy">The object being checked.</param>
@@ -62,9 +65,12 @@ namespace BossfallMod.Events
 
         #region Events
 
-        // DELETE WHEN IMPLEMENTED
-        // For EnemyEntity reset event, there's a method in DaggerfallEntity called SpellbookCount, call that to get spellbook.Count,
-        // then delete entire spellbook using for loop and DeleteSpell method in DaggerfallEntity, do this b4 adding new Bossfall spells
+        // DWI
+        // Clear this script using standard citing methods, everything from start of script to end of
+        // BossfallOnContainerLootSpawned method is cleared
+
+        // DWI
+        // check contributors when done clearing make sure u have listed all, remove all that don't apply
 
         /// <summary>
         /// This method adds necessary components to the PlayerObject. If successful doing so, it never runs again.
@@ -188,10 +194,6 @@ namespace BossfallMod.Events
             }
         }
 
-        // DELETE WHEN IMPLEMENTED
-        // Check BossfallOnEnemyLootSpawned & BossfallOnContainerLootSpawned for vanilla code, make sure u properly cite where
-        // it comes from & any changes u made to it, make sure u do this for every line of vanilla code u use
-
         /// <summary>
         /// This method uses some code from vanilla's EnemyEntity script. Contrary to what the method name says, this changes a
         /// lot more than just enemy loot and is a key part of Bossfall's increased difficulty. The event passes in an instance
@@ -199,24 +201,29 @@ namespace BossfallMod.Events
         /// level 6, give Assassins a guaranteed poisoned weapon if player is above level 1, add drugs as potential weapon
         /// poisons, change enemy starting equipment, give Guards a chance to carry items better than Iron or Steel, slightly
         /// vary monster levels, increase skill caps and skill scaling, change spell kits, change class enemy armor scaling,
-        /// and scale loot with enemy level rather than player level. I also add essential Bossfall components to enemies. If
-        /// enemy has a custom ID, I only add necessary Bossfall components.
+        /// and scale loot with enemy level rather than player level. I also perform necessary Bossfall AI setup on enemies. If
+        /// enemy has a custom ID, I only perform necessary Bossfall AI setup and do nothing else.
         /// </summary>
         /// <param name="sender">An instance of EnemyEntity.</param>
         /// <param name="args">MobileEnemy, DFCareer, and ItemCollection data.</param>
         public static void BossfallOnEnemyLootSpawned(object sender, EnemyLootSpawnedEventArgs args)
         {
-            // Variables from the event args, split into their base components.
+            // Variables I use in this method. Some are from the event args, split into their base components.
             DaggerfallEntityBehaviour entityBehaviour = (sender as EnemyEntity).EntityBehaviour;
             EnemyEntity entity = sender as EnemyEntity;
             MobileEnemy mobileEnemy = args.MobileEnemy;
             DFCareer career = args.EnemyCareer;
             ItemCollection items = args.Items;
+            PlayerEntity player = GameManager.Instance.PlayerEntity;
 
+            // I pulled these next two lines from the SetEnemyCareer method in EnemyEntity and modified them for Bossfall.
             DFCareer customCareer = DaggerfallEntity.GetCustomCareerTemplate(mobileEnemy.ID);
             if (customCareer != null)
             {
-                // If this is a custom enemy I don't change its level or stats - I only add necessary Bossfall components.
+                // If this is a custom enemy I don't change its level or stats - I only add necessary Bossfall components. Unity
+                // executes components in the order they are attached to a given gameObject, so by destroying EnemyAttack and
+                // then re-adding it BossfallEnemyAttack's Update method is executed before EnemyAttack's Update method, which
+                // is necessary for Bossfall to function correctly.
                 Destroy(entityBehaviour.gameObject.GetComponent<EnemyAttack>());
                 entityBehaviour.gameObject.AddComponent<BossfallEnemyAttack>();
                 entityBehaviour.gameObject.AddComponent<BossfallEnemyMotor>();
@@ -225,6 +232,7 @@ namespace BossfallMod.Events
                 return;
             }
 
+            // This if/else if is from the SetEnemyCareer method in EnemyEntity, modified for Bossfall.
             if (entity.EntityType == EntityTypes.EnemyMonster)
             {
                 // Enemy monster levels vary up and down a bit. This affects their accuracy, dodging, and spell power.
@@ -233,20 +241,38 @@ namespace BossfallMod.Events
                 // Non-boss monster levels can't go below 1 and are capped at 20. Only Daedra Seducers are potentially
                 // affected by the level 20 cap.
                 if (entity.Level < 1)
+                {
                     entity.Level = 1;
+                }
 
                 if (entity.Level > 20)
+                {
                     entity.Level = 20;
+                }
 
                 // This manually sets boss levels.
                 if (entity.CareerIndex == (int)MobileTypes.Vampire || entity.CareerIndex == (int)MobileTypes.Lich)
+                {
                     entity.Level = UnityEngine.Random.Range(21, 25 + 1);
+                }
                 else if (entity.CareerIndex == (int)MobileTypes.Dragonling_Alternate
                     || entity.CareerIndex == (int)MobileTypes.OrcWarlord)
+                {
                     entity.Level = UnityEngine.Random.Range(21, 30 + 1);
+                }
                 else if (entity.CareerIndex == (int)MobileTypes.VampireAncient || entity.CareerIndex == (int)MobileTypes.DaedraLord
                     || entity.CareerIndex == (int)MobileTypes.AncientLich)
+                {
                     entity.Level = UnityEngine.Random.Range(26, 30 + 1);
+                }
+
+                // This for loop is from the SetEnemyCareer method in EnemyEntity, modified for Bossfall. I added it here as
+                // theoretically a monster's armor values could be lower than I want if vanilla spawns them with very good
+                // equipment. To avoid that possibility, I reset their armor to my intended values.
+                for (int i = 0; i < entity.ArmorValues.Length; i++)
+                {
+                    entity.ArmorValues[i] = (sbyte)(mobileEnemy.ArmorValue * 5);
+                }
 
                 // DELETE WHEN IMPLEMENTED
                 // Add method of restoring data from instance field, add field of Dictionary<string ID, BossfallSaveData_v1 data>
@@ -260,7 +286,7 @@ namespace BossfallMod.Events
             {
                 // This ugly thing unlevels class enemies. Their levels are weighted to usually be around 10. Level 1 and
                 // 20 enemies are very rare. Class enemies are unleveled once player is at least level 7.
-                if (GameManager.Instance.PlayerEntity.Level > 6)
+                if (player.Level > 6)
                 {
                     int roll = Dice100.Roll();
 
@@ -374,22 +400,26 @@ namespace BossfallMod.Events
                         }
                     }
                 }
-                // If player is level 6 or lower, all class enemies will be within 2 levels of the player.
                 else
                 {
-                    entity.Level = GameManager.Instance.PlayerEntity.Level + UnityEngine.Random.Range(-2, 2 + 1);
+                    // I pulled this from the SetEnemyCareer method in EnemyEntity and modified it for Bossfall.
+                    // If player is level 6 or lower, all class enemies will be within 2 levels of the player.
+                    entity.Level = player.Level + UnityEngine.Random.Range(-2, 2 + 1);
 
                     // The enemy's level can't go below 1.
                     if (entity.Level < 1)
+                    {
                         entity.Level = 1;
+                    }
                 }
 
+                // I pulled this from the SetEnemyCareer method in EnemyEntity and modified it for Bossfall.
                 // Guard levels are buffed compared to vanilla DFU. They can get a 10 level boost. HALT!
                 if (entity.CareerIndex == (int)MobileTypes.Knight_CityWatch - 128)
                     entity.Level += UnityEngine.Random.Range(0, 10 + 1);
 
                 // This manually sets Assassins to boss levels, but only if player is at least level 7.
-                if (GameManager.Instance.PlayerEntity.Level > 6 && entity.CareerIndex == (int)MobileTypes.Assassin - 128)
+                if (player.Level > 6 && entity.CareerIndex == (int)MobileTypes.Assassin - 128)
                     entity.Level = UnityEngine.Random.Range(21, 30 + 1);
 
                 // DELETE WHEN IMPLEMENTED
@@ -400,391 +430,584 @@ namespace BossfallMod.Events
                 //     entity.Level = savedBossfallEnemyLevel;
                 // }
 
-                // Reroll MaxHealth as it likely wasn't correct the first time around.
+                // I copied this line from the SetEnemyCareer method in EnemyEntity and modified it for Bossfall.
+                // I re-roll enemy's MaxHealth as it likely wasn't correct the first time around.
                 entity.MaxHealth = FormulaHelper.RollEnemyClassMaxHealth(entity.Level, entity.Career.HitPointsPerLevel);
 
                 // Once player is at least level 7, Assassin HP is set to their boss range.
-                if (GameManager.Instance.PlayerEntity.Level > 6 && entity.CareerIndex == (int)MobileTypes.Assassin - 128)
+                if (player.Level > 6 && entity.CareerIndex == (int)MobileTypes.Assassin - 128)
                     entity.MaxHealth = UnityEngine.Random.Range(100, 300 + 1);
+
+                // This for loop is based on one from the SetEnemyEquipment method in EnemyEntity. This sets
+                // class enemy armor depending on their level and ignores current equipped armor.
+                for (int i = 0; i < entity.ArmorValues.Length; i++)
+                {
+                    entity.ArmorValues[i] = (sbyte)(60 - (entity.Level * 2));
+
+                    // Once player is at least level 7, Assassins have boss armor.
+                    if (player.Level > 6 && entity.CareerIndex == (int)MobileTypes.Assassin - 128)
+                    {
+                        entity.ArmorValues[i] = 0;
+                    }
+                }
             }
 
-            // Bossfall enemies scale up in skill faster than vanilla's 5/level and have a skill cap of 180 - greatly
-            // increased from vanilla's 100.
+            // I pulled this skillsLevel section from the SetEnemyCareer method in EnemyEntity and modified it for Bossfall.
+            // Enemies scale up faster than vanilla's 5/level and have a skill cap of 180 - greatly increased from vanilla's 100.
             short skillsLevel = (short)((entity.Level * 7) + 30);
+
             if (skillsLevel > 180)
+            {
                 skillsLevel = 180;
+            }
 
-            // This applies new enemy skill values as they weren't correct the first time around.
+            // I pulled this from the SetEnemyCareer method in EnemyEntity and modified it for Bossfall. This re-applies
+            // enemy skill values as they weren't correct the first time around.
             for (int i = 0; i <= DaggerfallSkills.Count; i++)
+            {
                 entity.Skills.SetPermanentSkillValue(i, skillsLevel);
-
-            // I send loot generation to a custom script so I can scale loot generation with enemy level.
-            BossfallItem.GenerateItems(mobileEnemy.LootTableKey, items, entity.Level * 50);
-
-            // This is responsible for high level enemy loot scaling to their level. If I didn't make bosses and high level
-            // monsters use this, all enemy loot would be generated by methods which do not scale with enemy level.
-            if (entityType == EntityTypes.EnemyClass || careerIndex == (int)MonsterCareers.OrcSergeant
-                || careerIndex == (int)MonsterCareers.OrcShaman || careerIndex == (int)MonsterCareers.OrcWarlord
-                || careerIndex == (int)MonsterCareers.FrostDaedra || careerIndex == (int)MonsterCareers.FireDaedra
-                || careerIndex == (int)MonsterCareers.Daedroth || careerIndex == (int)MonsterCareers.Vampire
-                || careerIndex == (int)MonsterCareers.DaedraSeducer || careerIndex == (int)MonsterCareers.VampireAncient
-                || careerIndex == (int)MonsterCareers.DaedraLord || careerIndex == (int)MonsterCareers.Lich
-                || careerIndex == (int)MonsterCareers.AncientLich || careerIndex == (int)MonsterCareers.Dragonling_Alternate)
-            {
-                // I added 1 to the maximum range. There are 3 possible variants and the third is never
-                // used for enemy classes in vanilla. Adds more variety.
-                SetEnemyEquipment(UnityEngine.Random.Range(0, 2 + 1));
             }
 
-            if (entityType == EntityTypes.EnemyMonster)
+            // I send loot generation to a custom method so I can scale loot table items with enemy level.
+            BossfallItemBuilder.GenerateItems(mobileEnemy.LootTableKey, items, entity.Level * 50);
+
+            // I based this section below on a part of the SetEnemyCareer method in EnemyEntity and modified it for Bossfall.
+            // If enemy is in this list, they start with equipment and it scales with their level.
+            if (entity.EntityType == EntityTypes.EnemyClass || entity.CareerIndex == (int)MonsterCareers.OrcSergeant
+                || entity.CareerIndex == (int)MonsterCareers.OrcShaman || entity.CareerIndex == (int)MonsterCareers.OrcWarlord
+                || entity.CareerIndex == (int)MonsterCareers.FrostDaedra || entity.CareerIndex == (int)MonsterCareers.FireDaedra
+                || entity.CareerIndex == (int)MonsterCareers.Daedroth || entity.CareerIndex == (int)MonsterCareers.Vampire
+                || entity.CareerIndex == (int)MonsterCareers.DaedraSeducer || entity.CareerIndex == (int)MonsterCareers.VampireAncient
+                || entity.CareerIndex == (int)MonsterCareers.DaedraLord || entity.CareerIndex == (int)MonsterCareers.Lich
+                || entity.CareerIndex == (int)MonsterCareers.AncientLich || entity.CareerIndex == (int)MonsterCareers.Dragonling_Alternate)
             {
-                // I condensed the vanilla if/else if list, all monsters use the same spells in Bossfall.
-                // The only exceptions are Frost/Fire Daedra, who do use different spell lists.
-                if (careerIndex == (int)MonsterCareers.Imp || careerIndex == (int)MonsterCareers.OrcShaman
-                    || careerIndex == (int)MonsterCareers.Wraith || careerIndex == (int)MonsterCareers.Daedroth
-                    || careerIndex == (int)MonsterCareers.Vampire || careerIndex == (int)MonsterCareers.DaedraSeducer
-                    || careerIndex == (int)MonsterCareers.DaedraLord || careerIndex == (int)MonsterCareers.Lich
-                    || careerIndex == (int)MonsterCareers.AncientLich)
-                    SetEnemySpells(AncientLichSpells);
-                else if (careerIndex == (int)MonsterCareers.FrostDaedra)
-                    SetEnemySpells(FrostDaedraSpells);
-                else if (careerIndex == (int)MonsterCareers.FireDaedra)
-                    SetEnemySpells(FireDaedraSpells);
-            }
-            else if (entityType == EntityTypes.EnemyClass && (mobileEnemy.CastsMagic))
-            {
-                // I set enemy classes to use the same expanded spell list as enemy monsters.
-                SetEnemySpells(AncientLichSpells);
+                // I send the call to a custom item generation method. I use all three possible variants - the third is
+                // never used for enemy classes in vanilla. Adds more variety.
+                BossfallItemBuilder.AssignEnemyStartingEquipment(player, entity, UnityEngine.Random.Range(0, 2 + 1));
             }
 
+            // This if/else if is based on a section of the SetEnemyCareer method in EnemyEntity, modified for Bossfall.
+            // I assign all monsters and human spellcasters the same spell kit, with the exception of Frost/Fire Daedra,
+            // whose spell kits are only slightly modified from vanilla's. I reroute SetEnemySpells method calls to a custom
+            // method elsewhere in this script. I also remove Ghost and VampireAncient spellbooks.
+            if (entity.EntityType == EntityTypes.EnemyMonster)
+            {
+                if (entity.CareerIndex == (int)MonsterCareers.Imp || entity.CareerIndex == (int)MonsterCareers.OrcShaman
+                    || entity.CareerIndex == (int)MonsterCareers.Wraith || entity.CareerIndex == (int)MonsterCareers.Daedroth
+                    || entity.CareerIndex == (int)MonsterCareers.Vampire || entity.CareerIndex == (int)MonsterCareers.DaedraSeducer
+                    || entity.CareerIndex == (int)MonsterCareers.DaedraLord || entity.CareerIndex == (int)MonsterCareers.Lich
+                    || entity.CareerIndex == (int)MonsterCareers.AncientLich)
+                    SetEnemySpells(BossfallGenericSpells, entity);
+                else if (entity.CareerIndex == (int)MonsterCareers.FrostDaedra)
+                    SetEnemySpells(BossfallFrostDaedraSpells, entity);
+                else if (entity.CareerIndex == (int)MonsterCareers.FireDaedra)
+                    SetEnemySpells(BossfallFireDaedraSpells, entity);
+
+                // This deletes the spellbook contents of Ghosts and Vampire Ancients so they no longer cast any spells.
+                else if (entity.CareerIndex == (int)MonsterCareers.Ghost || entity.CareerIndex == (int)MonsterCareers.VampireAncient)
+                {
+                    for (int i = 0; i < entity.SpellbookCount(); i++)
+                    {
+                        entity.DeleteSpell(i);
+                    }
+                }
+            }
+            else if (entity.EntityType == EntityTypes.EnemyClass && (mobileEnemy.CastsMagic))
+            {
+                SetEnemySpells(BossfallGenericSpells, entity);
+            }
+
+            // I pulled this map generation line out of the SetEnemyCareer method in EnemyEntity and made no changes to it.
+            // I include it because I clear and re-generate this enemy's ItemCollection so I have to run this again.
             DaggerfallLoot.RandomlyAddMap(mobileEnemy.MapChance, items);
 
+            // I pulled these potion lines out of the SetEnemyCareer method in EnemyEntity and made no changes to it.
+            // I include it because I clear and re-generate this enemy's ItemCollection so I have to run this again.
             if (!string.IsNullOrEmpty(mobileEnemy.LootTableKey))
             {
                 DaggerfallLoot.RandomlyAddPotion(3, items);
                 DaggerfallLoot.RandomlyAddPotionRecipe(2, items);
             }
 
-            // BEGIN COPYING FROM BOSSFALL'S ENEMYENTITY FROM GITHUB BEGINNING AT THIS POINT
+            // As a final step, I add essential Bossfall AI components to the enemy. Unity executes components in the order
+            // they are attached to a given gameObject, so by destroying EnemyAttack and then re-adding it BossfallEnemyAttack's
+            // Update method is executed before EnemyAttack's Update method, which is necessary for Bossfall to function correctly.
+            Destroy(entityBehaviour.gameObject.GetComponent<EnemyAttack>());
+            entityBehaviour.gameObject.AddComponent<BossfallEnemyAttack>();
+            entityBehaviour.gameObject.AddComponent<BossfallEnemyMotor>();
+            entityBehaviour.gameObject.AddComponent<BossfallEnemySenses>();
+            entityBehaviour.gameObject.AddComponent<EnemyAttack>();
         }
 
-        // DELETE WHEN IMPLEMENTED
-        // Make shop quality affect what high tier materials will spawn, use notes for guidance, make good materials
-        // more likely to spawn as shop quality rises - use notes for guidance
+        /// <summary>
+        /// This method is based on a method of the same name from vanilla's EnemyEntity, modified for Bossfall. I clear
+        /// the enemy's existing spellbook and replace it with my custom list. Bossfall enemy Magicka scales differently
+        /// than vanilla's, and bosses above level 25 have effectively infinite Magicka.
+        /// </summary>
+        /// <param name="spellList">The spell list to assign to the enemy.</param>
+        /// <param name="enemyEntity">The enemy to assign the spell list to.</param>
+        static void SetEnemySpells(byte[] spellList, EnemyEntity enemyEntity)
+        {
+            // This deletes enemy's vanilla spellbook.
+            for (int i = 0; i < enemyEntity.SpellbookCount(); i++)
+            {
+                enemyEntity.DeleteSpell(i);
+            }
+
+            // I set MaxMagicka based on the level of the enemy. Each spell - regardless of type - costs enemy 40 Magicka.
+            if (enemyEntity.Level > 0 && enemyEntity.Level < 8)
+            {
+                // Enough for 2 spells.
+                enemyEntity.MaxMagicka = 79;
+            }
+            else if (enemyEntity.Level >= 8 && enemyEntity.Level < 13)
+            {
+                // Enough for 3 spells.
+                enemyEntity.MaxMagicka = 119;
+            }
+            else if (enemyEntity.Level >= 13 && enemyEntity.Level < 16)
+            {
+                // Enough for 4 spells.
+                enemyEntity.MaxMagicka = 159;
+            }
+            else if (enemyEntity.Level >= 16 && enemyEntity.Level < 18)
+            {
+                // Enough for 5 spells.
+                enemyEntity.MaxMagicka = 199;
+            }
+            else if (enemyEntity.Level >= 18 && enemyEntity.Level < 20)
+            {
+                // Enough for 6 spells.
+                enemyEntity.MaxMagicka = 239;
+            }
+            else if (enemyEntity.Level == 20)
+            {
+                // Enough for 8 spells.
+                enemyEntity.MaxMagicka = 300;
+            }
+            else if (enemyEntity.Level >= 21 && enemyEntity.Level < 26)
+            {
+                // Enough for 30 spells.
+                enemyEntity.MaxMagicka = 1199;
+            }
+            else if (enemyEntity.Level >= 26)
+            {
+                // Infinite spells.
+                enemyEntity.MaxMagicka = 1000000;
+            }
+
+            // This line is from the SetEnemySpells method in EnemyEntity, modified for Bossfall.
+            enemyEntity.CurrentMagicka = enemyEntity.MaxMagicka;
+
+            // This foreach is from the SetEnemySpells method in EnemyEntity, slightly modified for Bossfall.
+            foreach (byte spellID in spellList)
+            {
+                SpellRecord.SpellRecordData spellData;
+                GameManager.Instance.EntityEffectBroker.GetClassicSpellRecord(spellID, out spellData);
+                if (spellData.index == -1)
+                {
+                    Debug.LogError("Failed to locate enemy spell in standard spells list.");
+                    continue;
+                }
+
+                EffectBundleSettings bundle;
+                if (!GameManager.Instance.EntityEffectBroker.ClassicSpellRecordDataToEffectBundleSettings(spellData, BundleTypes.Spell, out bundle))
+                {
+                    Debug.LogError("Failed to create effect bundle for enemy spell: " + spellData.spellName);
+                    continue;
+                }
+
+                // I added "enemyEntity." to the line below.
+                enemyEntity.AddSpell(bundle);
+            }
+        }
 
         /// <summary>
-        /// This is mostly vanilla's StockShopShelves and StockHouseContainer methods from DaggerfallLoot,
-        /// comments indicate changes or additions I made.
+        /// This is mostly vanilla's StockShopShelves and StockHouseContainer methods from DaggerfallLoot, modified for
+        /// Bossfall. Comments indicate changes or additions I made.
         /// </summary>
+        /// <param name="sender">An instance of PlayerActivate.</param>
         /// <param name="args">LootContainerTypes container identifier and ItemCollection items.</param>
         public static void BossfallOnContainerLootSpawned(object sender, ContainerLootSpawnedEventArgs args)
         {
-            items.Clear();
+            // Variables I use in this method. Some are from the event args, split into their base components.
+            PlayerEntity player = GameManager.Instance.PlayerEntity;
+            PlayerActivate playerActivate = sender as PlayerActivate;
+            PlayerEnterExit playerEnterExit = playerActivate.GetComponent<PlayerEnterExit>();
+            PlayerGPS playerGPS = playerActivate.GetComponent<PlayerGPS>();
+            LootContainerTypes containerType = args.ContainerType;
+            ItemCollection items = args.Loot;
+            PlayerGPS.DiscoveredBuilding buildingData = playerEnterExit.BuildingDiscoveryData;
 
-            DFLocation.BuildingTypes buildingType = buildingData.buildingType;
-            int shopQuality = buildingData.quality;
-            Game.Entity.PlayerEntity playerEntity = GameManager.Instance.PlayerEntity;
-            ItemHelper itemHelper = DaggerfallUnity.Instance.ItemHelper;
-            byte[] itemGroups = { 0 };
-
-            switch (buildingType)
+            // This decides how loot should be spawned based on whether it's a shop shelf or house container.
+            if (containerType == LootContainerTypes.ShopShelves)
             {
-                case DFLocation.BuildingTypes.Alchemist:
-                    itemGroups = DaggerfallLootDataTables.itemGroupsAlchemist;
+                items.Clear();
 
-                    // I added "DaggerfallLoot." to the line below to send call to vanilla's DaggerfallLoot method.
-                    DaggerfallLoot.RandomlyAddPotionRecipe(25, items);
-                    break;
-                case DFLocation.BuildingTypes.Armorer:
-                    itemGroups = DaggerfallLootDataTables.itemGroupsArmorer;
-                    break;
-                case DFLocation.BuildingTypes.Bookseller:
-                    itemGroups = DaggerfallLootDataTables.itemGroupsBookseller;
-                    break;
-                case DFLocation.BuildingTypes.ClothingStore:
-                    itemGroups = DaggerfallLootDataTables.itemGroupsClothingStore;
-                    break;
-                case DFLocation.BuildingTypes.GemStore:
-                    itemGroups = DaggerfallLootDataTables.itemGroupsGemStore;
-                    break;
-                case DFLocation.BuildingTypes.GeneralStore:
-                    itemGroups = DaggerfallLootDataTables.itemGroupsGeneralStore;
-                    items.AddItem(ItemBuilder.CreateItem(ItemGroups.Transportation, (int)Transportation.Horse));
-                    items.AddItem(ItemBuilder.CreateItem(ItemGroups.Transportation, (int)Transportation.Small_cart));
-                    break;
-                case DFLocation.BuildingTypes.PawnShop:
-                    itemGroups = DaggerfallLootDataTables.itemGroupsPawnShop;
-                    break;
-                case DFLocation.BuildingTypes.WeaponSmith:
-                    itemGroups = DaggerfallLootDataTables.itemGroupsWeaponSmith;
-                    break;
-            }
+                DFLocation.BuildingTypes buildingType = buildingData.buildingType;
+                int shopQuality = buildingData.quality;
+                ItemHelper itemHelper = DaggerfallUnity.Instance.ItemHelper;
+                byte[] itemGroups = { 0 };
 
-            for (int i = 0; i < itemGroups.Length; i += 2)
-            {
-                ItemGroups itemGroup = (ItemGroups)itemGroups[i];
-                int chanceMod = itemGroups[i + 1];
-                if (itemGroup == ItemGroups.MensClothing && playerEntity.Gender == Game.Entity.Genders.Female)
-                    itemGroup = ItemGroups.WomensClothing;
-                if (itemGroup == ItemGroups.WomensClothing && playerEntity.Gender == Game.Entity.Genders.Male)
-                    itemGroup = ItemGroups.MensClothing;
-
-                if (itemGroup != ItemGroups.Furniture && itemGroup != ItemGroups.UselessItems1)
+                switch (buildingType)
                 {
-                    // I thought General Stores and Pawn Shops stocked too many books. This check greatly
-                    // reduces generated books in those types of stores. The amount of books generated depends on
-                    // shop quality - as quality rises, they may stock more books and have greater chances to do so.
-                    // General Stores and Pawn Shops below average store quality will never stock any books.
-                    if (itemGroup == ItemGroups.Books && buildingType != DFLocation.BuildingTypes.Bookseller
-                        && buildingType != DFLocation.BuildingTypes.Library)
+                    case DFLocation.BuildingTypes.Alchemist:
+                        itemGroups = DaggerfallLootDataTables.itemGroupsAlchemist;
+
+                        // I added "DaggerfallLoot." to the line below to send the call to vanilla's DaggerfallLoot method.
+                        DaggerfallLoot.RandomlyAddPotionRecipe(25, items);
+                        break;
+                    case DFLocation.BuildingTypes.Armorer:
+                        itemGroups = DaggerfallLootDataTables.itemGroupsArmorer;
+                        break;
+                    case DFLocation.BuildingTypes.Bookseller:
+                        itemGroups = DaggerfallLootDataTables.itemGroupsBookseller;
+                        break;
+                    case DFLocation.BuildingTypes.ClothingStore:
+                        itemGroups = DaggerfallLootDataTables.itemGroupsClothingStore;
+                        break;
+                    case DFLocation.BuildingTypes.GemStore:
+                        itemGroups = DaggerfallLootDataTables.itemGroupsGemStore;
+                        break;
+                    case DFLocation.BuildingTypes.GeneralStore:
+                        itemGroups = DaggerfallLootDataTables.itemGroupsGeneralStore;
+                        items.AddItem(ItemBuilder.CreateItem(ItemGroups.Transportation, (int)Transportation.Horse));
+                        items.AddItem(ItemBuilder.CreateItem(ItemGroups.Transportation, (int)Transportation.Small_cart));
+                        break;
+                    case DFLocation.BuildingTypes.PawnShop:
+                        itemGroups = DaggerfallLootDataTables.itemGroupsPawnShop;
+                        break;
+                    case DFLocation.BuildingTypes.WeaponSmith:
+                        itemGroups = DaggerfallLootDataTables.itemGroupsWeaponSmith;
+                        break;
+                }
+
+                for (int i = 0; i < itemGroups.Length; i += 2)
+                {
+                    ItemGroups itemGroup = (ItemGroups)itemGroups[i];
+                    int chanceMod = itemGroups[i + 1];
+
+                    // I changed "playerEntity" to "player" and deleted "Game.Entity." from the line below.
+                    if (itemGroup == ItemGroups.MensClothing && player.Gender == Genders.Female)
+                        itemGroup = ItemGroups.WomensClothing;
+
+                    // I changed "playerEntity" to "player" and deleted "Game.Entity." from the line below.
+                    if (itemGroup == ItemGroups.WomensClothing && player.Gender == Genders.Male)
+                        itemGroup = ItemGroups.MensClothing;
+
+                    if (itemGroup != ItemGroups.Furniture && itemGroup != ItemGroups.UselessItems1)
                     {
-                        if (Dice100.SuccessRoll(5) && shopQuality > 7)
+                        // I thought General Stores and Pawn Shops stocked too many books. This check greatly
+                        // reduces generated books in those types of stores. The amount of books generated depends on
+                        // shop quality - as quality rises, they may stock more books and have greater chances to do so.
+                        // General Stores and Pawn Shops below average store quality will never stock any books.
+                        if (itemGroup == ItemGroups.Books && buildingType != DFLocation.BuildingTypes.Bookseller
+                            && buildingType != DFLocation.BuildingTypes.Library)
                         {
-                            items.AddItem(ItemBuilder.CreateRandomBook());
-                        }
-                        if (Dice100.SuccessRoll(15) && shopQuality > 13)
-                        {
-                            items.AddItem(ItemBuilder.CreateRandomBook());
-                        }
-                        if (Dice100.SuccessRoll(25) && shopQuality > 17)
-                        {
-                            items.AddItem(ItemBuilder.CreateRandomBook());
-                        }
-                    }
-                    // I thought Booksellers didn't stock enough books. This new check greatly increases
-                    // the amount of books on Bookseller shelves.
-                    else if (itemGroup == ItemGroups.Books && buildingType == DFLocation.BuildingTypes.Bookseller)
-                    {
-                        int bookMod = (shopQuality + (UnityEngine.Random.Range(-5, 5 + 1)));
-                        for (int j = 0; j <= bookMod; ++j)
-                        {
-                            items.AddItem(ItemBuilder.CreateRandomBook());
-                        }
-                    }
-                    else if (itemGroup == ItemGroups.Books)
-                    {
-                        int qualityMod = (shopQuality + 3) / 5;
-                        if (qualityMod >= 4)
-                            --qualityMod;
-                        qualityMod++;
-                        for (int j = 0; j <= qualityMod; ++j)
-                        {
-                            items.AddItem(ItemBuilder.CreateRandomBook());
-                        }
-                    }
-                    else
-                    {
-                        System.Array enumArray = itemHelper.GetEnumArray(itemGroup);
-                        for (int j = 0; j < enumArray.Length; ++j)
-                        {
-                            ItemTemplate itemTemplate = itemHelper.GetItemTemplate(itemGroup, j);
-                            if (itemTemplate.rarity <= shopQuality)
+                            if (Dice100.SuccessRoll(5) && shopQuality > 7)
                             {
-                                int stockChance = chanceMod * 5 * (21 - itemTemplate.rarity) / 100;
-                                if (Dice100.SuccessRoll(stockChance))
-                                {
-                                    DaggerfallUnityItem item = null;
-                                    if (itemGroup == ItemGroups.Weapons)
-
-                                        // I replaced "playerEntity.Level" with 0 to unlevel loot. I also call a different item
-                                        // creation method.
-                                        item = BossfallItem.CreateWeapon(j + Weapons.Dagger, FormulaHelper.RandomMaterial(0));
-                                    else if (itemGroup == ItemGroups.Armor)
-
-                                        // I replaced "playerEntity.Level" with 0 to unlevel loot. I also call a different item
-                                        // creation method.
-                                        item = BossfallItem.CreateArmor(playerEntity.Gender, playerEntity.Race, j + Armor.Cuirass, FormulaHelper.RandomArmorMaterial(0));
-                                    else if (itemGroup == ItemGroups.MensClothing)
-                                    {
-                                        item = ItemBuilder.CreateMensClothing(j + MensClothing.Straps, playerEntity.Race);
-                                        item.dyeColor = ItemBuilder.RandomClothingDye();
-                                    }
-                                    else if (itemGroup == ItemGroups.WomensClothing)
-                                    {
-                                        item = ItemBuilder.CreateWomensClothing(j + WomensClothing.Brassier, playerEntity.Race);
-                                        item.dyeColor = ItemBuilder.RandomClothingDye();
-                                    }
-                                    else if (itemGroup == ItemGroups.MagicItems)
-                                    {
-                                        // I replaced "playerEntity.Level" with 0 to unlevel loot. I also call a different item
-                                        // creation method.
-                                        item = BossfallItem.CreateRandomMagicItem(0, playerEntity.Gender, playerEntity.Race);
-                                    }
-                                    else
-                                    {
-                                        item = new DaggerfallUnityItem(itemGroup, j);
-                                        if (DaggerfallUnity.Settings.PlayerTorchFromItems && item.IsOfTemplate(ItemGroups.UselessItems2, (int)UselessItems2.Oil))
-
-                                            // I added "UnityEngine." before "Random.Range".
-                                            item.stackCount = UnityEngine.Random.Range(5, 20 + 1);
-
-                                        // These checks create Holy items with custom enchantments. Only Pawn
-                                        // Shops will ever stock them. If the Pawn Shop message is "better appointed than most"
-                                        // Holy Water may be on the shelf. If the Pawn Shop message is "incense and soft music"
-                                        // Holy Water, Holy Daggers, and Holy Tomes may be on the shelf.
-                                        if (item.IsOfTemplate(ItemGroups.ReligiousItems, (int)ReligiousItems.Holy_water))
-                                        {
-                                            item = BossfallItem.CreateHolyWater();
-                                        }
-                                        else if (item.IsOfTemplate(ItemGroups.ReligiousItems, (int)ReligiousItems.Holy_dagger))
-                                        {
-                                            item = BossfallItem.CreateHolyDagger();
-                                        }
-                                        else if (item.IsOfTemplate(ItemGroups.ReligiousItems, (int)ReligiousItems.Holy_tome))
-                                        {
-                                            item = BossfallItem.CreateHolyTome();
-                                        }
-                                    }
-                                    items.AddItem(item);
-                                }
+                                items.AddItem(ItemBuilder.CreateRandomBook());
+                            }
+                            if (Dice100.SuccessRoll(15) && shopQuality > 13)
+                            {
+                                items.AddItem(ItemBuilder.CreateRandomBook());
+                            }
+                            if (Dice100.SuccessRoll(25) && shopQuality > 17)
+                            {
+                                items.AddItem(ItemBuilder.CreateRandomBook());
                             }
                         }
-                        int[] customItemTemplates = itemHelper.GetCustomItemsForGroup(itemGroup);
-                        for (int j = 0; j < customItemTemplates.Length; j++)
+                        // I thought Booksellers didn't stock enough books. This new check greatly increases
+                        // the amount of books on Bookseller shelves.
+                        else if (itemGroup == ItemGroups.Books && buildingType == DFLocation.BuildingTypes.Bookseller)
                         {
-                            ItemTemplate itemTemplate = itemHelper.GetItemTemplate(itemGroup, customItemTemplates[j]);
-                            if (itemTemplate.rarity <= shopQuality)
+                            int bookMod = (shopQuality + (UnityEngine.Random.Range(-5, 5 + 1)));
+                            for (int j = 0; j <= bookMod; ++j)
                             {
-                                int stockChance = chanceMod * 5 * (21 - itemTemplate.rarity) / 100;
-                                if (Dice100.SuccessRoll(stockChance))
+                                items.AddItem(ItemBuilder.CreateRandomBook());
+                            }
+                        }
+                        else if (itemGroup == ItemGroups.Books)
+                        {
+                            int qualityMod = (shopQuality + 3) / 5;
+                            if (qualityMod >= 4)
+                                --qualityMod;
+                            qualityMod++;
+                            for (int j = 0; j <= qualityMod; ++j)
+                            {
+                                items.AddItem(ItemBuilder.CreateRandomBook());
+                            }
+                        }
+                        else
+                        {
+                            System.Array enumArray = itemHelper.GetEnumArray(itemGroup);
+                            for (int j = 0; j < enumArray.Length; ++j)
+                            {
+                                ItemTemplate itemTemplate = itemHelper.GetItemTemplate(itemGroup, j);
+                                if (itemTemplate.rarity <= shopQuality)
                                 {
-                                    DaggerfallUnityItem item = ItemBuilder.CreateItem(itemGroup, customItemTemplates[j]);
-
-                                    if (itemGroup == ItemGroups.Weapons)
+                                    int stockChance = chanceMod * 5 * (21 - itemTemplate.rarity) / 100;
+                                    if (Dice100.SuccessRoll(stockChance))
                                     {
-                                        // I replaced "playerEntity.Level" with 0 to unlevel loot. I also call a different item
-                                        // creation method.
-                                        WeaponMaterialTypes material = FormulaHelper.RandomMaterial(0);
-                                        BossfallItem.ApplyWeaponMaterial(item, material);
-                                    }
-                                    else if (itemGroup == ItemGroups.Armor)
-                                    {
-                                        // I replaced "playerEntity.Level" with 0 to unlevel loot. I also call a different item
-                                        // creation method.
-                                        ArmorMaterialTypes material = FormulaHelper.RandomArmorMaterial(0);
-                                        BossfallItem.ApplyArmorSettings(item, playerEntity.Gender, playerEntity.Race, material);
-                                    }
+                                        DaggerfallUnityItem item = null;
+                                        if (itemGroup == ItemGroups.Weapons)
 
-                                    items.AddItem(item);
+                                            // I replaced "playerEntity.Level" with 0 to unlevel loot. I also call a different item
+                                            // creation method.
+                                            item = BossfallItemBuilder.CreateWeapon(j + Weapons.Dagger, FormulaHelper.RandomMaterial(0));
+                                        else if (itemGroup == ItemGroups.Armor)
+
+                                            // I replaced "playerEntity.Level" with 0 in the FormulaHelper method call to unlevel
+                                            // loot. I also call a different item creation method and replaced "playerEntity" with
+                                            // "player" in the first and second parameters.
+                                            item = BossfallItemBuilder.CreateArmor(player.Gender, player.Race, j + Armor.Cuirass, FormulaHelper.RandomArmorMaterial(0));
+                                        else if (itemGroup == ItemGroups.MensClothing)
+                                        {
+                                            // I replaced "playerEntity" with "player" in the line below.
+                                            item = ItemBuilder.CreateMensClothing(j + MensClothing.Straps, player.Race);
+                                            item.dyeColor = ItemBuilder.RandomClothingDye();
+                                        }
+                                        else if (itemGroup == ItemGroups.WomensClothing)
+                                        {
+                                            // I replaced "playerEntity" with "player" in the line below.
+                                            item = ItemBuilder.CreateWomensClothing(j + WomensClothing.Brassier, player.Race);
+                                            item.dyeColor = ItemBuilder.RandomClothingDye();
+                                        }
+                                        else if (itemGroup == ItemGroups.MagicItems)
+                                        {
+                                            // I replaced "playerEntity.Level" with 0 in the first parameter to unlevel loot. I
+                                            // also call a different item creation method and replace "playerEntity" with "player"
+                                            // in the second and third parameters.
+                                            item = BossfallItemBuilder.CreateRandomMagicItem(0, player.Gender, player.Race);
+                                        }
+                                        else
+                                        {
+                                            item = new DaggerfallUnityItem(itemGroup, j);
+                                            if (DaggerfallUnity.Settings.PlayerTorchFromItems && item.IsOfTemplate(ItemGroups.UselessItems2, (int)UselessItems2.Oil))
+
+                                                // I added "UnityEngine." before "Random.Range".
+                                                item.stackCount = UnityEngine.Random.Range(5, 20 + 1);
+
+                                            // These checks create Holy items with custom enchantments. Only Pawn
+                                            // Shops will ever stock them. If the Pawn Shop message is "better appointed than most"
+                                            // Holy Water may be on the shelf. If the Pawn Shop message is "incense and soft music"
+                                            // Holy Water, Holy Daggers, and Holy Tomes may be on the shelf.
+                                            if (item.IsOfTemplate(ItemGroups.ReligiousItems, (int)ReligiousItems.Holy_water))
+                                            {
+                                                item = BossfallItemBuilder.CreateHolyWater();
+                                            }
+                                            else if (item.IsOfTemplate(ItemGroups.ReligiousItems, (int)ReligiousItems.Holy_dagger))
+                                            {
+                                                item = BossfallItemBuilder.CreateHolyDagger();
+                                            }
+                                            else if (item.IsOfTemplate(ItemGroups.ReligiousItems, (int)ReligiousItems.Holy_tome))
+                                            {
+                                                item = BossfallItemBuilder.CreateHolyTome();
+                                            }
+                                        }
+                                        items.AddItem(item);
+                                    }
+                                }
+                            }
+                            int[] customItemTemplates = itemHelper.GetCustomItemsForGroup(itemGroup);
+                            for (int j = 0; j < customItemTemplates.Length; j++)
+                            {
+                                ItemTemplate itemTemplate = itemHelper.GetItemTemplate(itemGroup, customItemTemplates[j]);
+                                if (itemTemplate.rarity <= shopQuality)
+                                {
+                                    int stockChance = chanceMod * 5 * (21 - itemTemplate.rarity) / 100;
+                                    if (Dice100.SuccessRoll(stockChance))
+                                    {
+                                        DaggerfallUnityItem item = ItemBuilder.CreateItem(itemGroup, customItemTemplates[j]);
+
+                                        if (itemGroup == ItemGroups.Weapons)
+                                        {
+                                            // I replaced "playerEntity.Level" with 0 to unlevel loot.
+                                            WeaponMaterialTypes material = FormulaHelper.RandomMaterial(0);
+
+                                            // I reroute the method call to a custom method.
+                                            BossfallItemBuilder.ApplyWeaponMaterial(item, material);
+                                        }
+                                        else if (itemGroup == ItemGroups.Armor)
+                                        {
+                                            // I replaced "playerEntity.Level" with 0 to unlevel loot.
+                                            ArmorMaterialTypes material = FormulaHelper.RandomArmorMaterial(0);
+
+                                            // I reroute the method call to a custom method. I also replaced "playerEntity"
+                                            // with "player" in the second and third parameter.
+                                            BossfallItemBuilder.ApplyArmorSettings(item, player.Gender, player.Race, material);
+                                        }
+
+                                        items.AddItem(item);
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-
-            // DELETE WHEN IMPLEMENTED
-            // Split this into "else" or "else if", dependent on whether loot container is a shop shelf or house container
-            // "else" if only other option is house container, "else if" if there are other options than shop shelf or house container
-
-            items.Clear();
-
-            DFLocation.BuildingTypes buildingType = buildingData.buildingType;
-            uint modelIndex = (uint)TextureRecord;
-            byte[] privatePropertyList = null;
-            DaggerfallUnityItem item = null;
-            Game.Entity.PlayerEntity playerEntity = GameManager.Instance.PlayerEntity;
-
-            if (buildingType < DFLocation.BuildingTypes.House5)
+            else
             {
-                if (modelIndex >= 2)
+                // This begins a section of code copied from PlayerActivate, modified for Bossfall. I'm sure I am missing an
+                // obvious solution, but I couldn't figure out how to get the loot container's DaggerfallLoot component and I
+                // need its TextureRecord, so I fire a new ray and check the RaycastHit for DaggerfallLoot.
+                Ray ray = new Ray();
+                Camera mainCamera = GameManager.Instance.MainCamera;
+                int playerLayerMask = ~(1 << LayerMask.NameToLayer("Player"));
+                if (GameManager.Instance.PlayerMouseLook.cursorActive)
                 {
-                    if (modelIndex >= 4)
+                    if (DaggerfallUnity.Settings.RetroRenderingMode > 0)
                     {
-                        if (modelIndex >= 11)
-                        {
-                            if (modelIndex >= 15)
-                            {
-                                privatePropertyList = DaggerfallLootDataTables.privatePropertyItemsModels15AndUp[(int)buildingType];
-                            }
-                            else
-                            {
-                                privatePropertyList = DaggerfallLootDataTables.privatePropertyItemsModels11to14[(int)buildingType];
-                            }
-                        }
-                        else
-                        {
-                            privatePropertyList = DaggerfallLootDataTables.privatePropertyItemsModels4to10[(int)buildingType];
-                        }
+                        float largeHUDHeight = 0;
+                        if (DaggerfallUI.Instance.DaggerfallHUD != null && DaggerfallUI.Instance.DaggerfallHUD.LargeHUD.Enabled && DaggerfallUnity.Settings.LargeHUDDocked)
+                            largeHUDHeight = DaggerfallUI.Instance.DaggerfallHUD.LargeHUD.ScreenHeight;
+                        float xm = Input.mousePosition.x / Screen.width;
+                        float ym = (Input.mousePosition.y - largeHUDHeight) / (Screen.height - largeHUDHeight);
+                        Vector2 retroMousePos = new Vector2(mainCamera.targetTexture.width * xm, mainCamera.targetTexture.height * ym);
+                        ray = mainCamera.ScreenPointToRay(retroMousePos);
                     }
                     else
                     {
-                        privatePropertyList = DaggerfallLootDataTables.privatePropertyItemsModels2to3[(int)buildingType];
+                        ray = mainCamera.ScreenPointToRay(Input.mousePosition);
                     }
                 }
                 else
                 {
-                    privatePropertyList = DaggerfallLootDataTables.privatePropertyItemsModels0to1[(int)buildingType];
+                    ray = new Ray(mainCamera.transform.position, mainCamera.transform.forward);
                 }
-                if (privatePropertyList == null)
-                    return;
 
-                // I added "UnityEngine." before "Random.Range".
-                int randomChoice = UnityEngine.Random.Range(0, privatePropertyList.Length);
-                ItemGroups itemGroup = (ItemGroups)privatePropertyList[randomChoice];
-                int continueChance = 100;
-                bool keepGoing = true;
-                while (keepGoing)
+                // I don't think this Raycast will ever return false, but I include a null check in case it does.
+                if (Physics.Raycast(ray, out RaycastHit hit, PlayerActivate.TreasureActivationDistance, playerLayerMask))
                 {
-                    if (itemGroup != ItemGroups.MensClothing && itemGroup != ItemGroups.WomensClothing)
+                    if (hit.transform.GetComponent<DaggerfallLoot>() == null)
                     {
-                        if (itemGroup == ItemGroups.MagicItems)
+                        return;
+                    }
+                }
+
+                DaggerfallLoot loot = hit.transform.GetComponent<DaggerfallLoot>();
+                // The above line ends the section of code copied from PlayerActivate.
+
+                items.Clear();
+
+                DFLocation.BuildingTypes buildingType = buildingData.buildingType;
+
+                // I added "loot." to the line below.
+                uint modelIndex = (uint)loot.TextureRecord;
+                byte[] privatePropertyList = null;
+                DaggerfallUnityItem item = null;
+
+                if (buildingType < DFLocation.BuildingTypes.House5)
+                {
+                    if (modelIndex >= 2)
+                    {
+                        if (modelIndex >= 4)
                         {
-                            // I replaced "playerEntity.Level" with 0 to unlevel loot. I also call a different item
-                            // creation method.
-                            item = BossfallItem.CreateRandomMagicItem(0, playerEntity.Gender, playerEntity.Race);
-                        }
-                        else if (itemGroup == ItemGroups.Books)
-                        {
-                            item = ItemBuilder.CreateRandomBook();
+                            if (modelIndex >= 11)
+                            {
+                                if (modelIndex >= 15)
+                                {
+                                    privatePropertyList = DaggerfallLootDataTables.privatePropertyItemsModels15AndUp[(int)buildingType];
+                                }
+                                else
+                                {
+                                    privatePropertyList = DaggerfallLootDataTables.privatePropertyItemsModels11to14[(int)buildingType];
+                                }
+                            }
+                            else
+                            {
+                                privatePropertyList = DaggerfallLootDataTables.privatePropertyItemsModels4to10[(int)buildingType];
+                            }
                         }
                         else
                         {
-                            if (itemGroup == ItemGroups.Weapons)
-
-                                // I replaced "playerEntity.Level" with 0 to unlevel loot. I also call a different item
-                                // creation method.
-                                item = BossfallItem.CreateRandomWeapon(0);
-                            else if (itemGroup == ItemGroups.Armor)
-
-                                // I replaced "playerEntity.Level" with 0 to unlevel loot. I also call a different item
-                                // creation method.
-                                item = BossfallItem.CreateRandomArmor(0, playerEntity.Gender, playerEntity.Race);
-                            else
-                            {
-                                System.Array enumArray = DaggerfallUnity.Instance.ItemHelper.GetEnumArray(itemGroup);
-
-                                // I added "UnityEngine." before "Random.Range".
-                                item = new DaggerfallUnityItem(itemGroup, UnityEngine.Random.Range(0, enumArray.Length));
-
-                                // These checks create Holy items with custom enchantments. I don't know which 
-                                // building types can generate religious items, so I can't tell you where to look. I know
-                                // they can generate in some taverns, but I never checked anything beyond that.
-                                if (item.IsOfTemplate(ItemGroups.ReligiousItems, (int)ReligiousItems.Holy_water))
-                                {
-                                    item = BossfallItem.CreateHolyWater();
-                                }
-                                else if (item.IsOfTemplate(ItemGroups.ReligiousItems, (int)ReligiousItems.Holy_dagger))
-                                {
-                                    item = BossfallItem.CreateHolyDagger();
-                                }
-                                else if (item.IsOfTemplate(ItemGroups.ReligiousItems, (int)ReligiousItems.Holy_tome))
-                                {
-                                    item = BossfallItem.CreateHolyTome();
-                                }
-                            }
+                            privatePropertyList = DaggerfallLootDataTables.privatePropertyItemsModels2to3[(int)buildingType];
                         }
                     }
                     else
                     {
-                        item = ItemBuilder.CreateRandomClothing(playerEntity.Gender, playerEntity.Race);
+                        privatePropertyList = DaggerfallLootDataTables.privatePropertyItemsModels0to1[(int)buildingType];
                     }
-                    continueChance >>= 1;
-                    if (DFRandom.rand() % 100 > continueChance)
-                        keepGoing = false;
-                    items.AddItem(item);
+                    if (privatePropertyList == null)
+                        return;
+
+                    // I added "UnityEngine." before "Random.Range" to the line below.
+                    int randomChoice = UnityEngine.Random.Range(0, privatePropertyList.Length);
+                    ItemGroups itemGroup = (ItemGroups)privatePropertyList[randomChoice];
+                    int continueChance = 100;
+                    bool keepGoing = true;
+                    while (keepGoing)
+                    {
+                        if (itemGroup != ItemGroups.MensClothing && itemGroup != ItemGroups.WomensClothing)
+                        {
+                            if (itemGroup == ItemGroups.MagicItems)
+                            {
+                                // I replaced "playerEntity.Level" with 0 in the first parameter to unlevel loot. I
+                                // also call a different item creation method and replace "playerEntity" with "player"
+                                // in the second and third parameters.
+                                item = BossfallItemBuilder.CreateRandomMagicItem(0, player.Gender, player.Race);
+                            }
+                            else if (itemGroup == ItemGroups.Books)
+                            {
+                                item = ItemBuilder.CreateRandomBook();
+                            }
+                            else
+                            {
+                                if (itemGroup == ItemGroups.Weapons)
+
+                                    // I replaced "playerEntity.Level" with 0 to unlevel loot. I also call a different item
+                                    // creation method.
+                                    item = BossfallItemBuilder.CreateRandomWeapon(0);
+                                else if (itemGroup == ItemGroups.Armor)
+
+                                    // I replaced "playerEntity.Level" with 0 in the first parameter to unlevel loot. I
+                                    // also call a different item creation method and replace "playerEntity" with "player"
+                                    // in the second and third parameters.
+                                    item = BossfallItemBuilder.CreateRandomArmor(0, player.Gender, player.Race);
+                                else
+                                {
+                                    System.Array enumArray = DaggerfallUnity.Instance.ItemHelper.GetEnumArray(itemGroup);
+
+                                    // I added "UnityEngine." before "Random.Range".
+                                    item = new DaggerfallUnityItem(itemGroup, UnityEngine.Random.Range(0, enumArray.Length));
+
+                                    // These checks create Holy items with custom enchantments. I don't know which 
+                                    // building types can generate religious items, so I can't tell you where to look. I know
+                                    // they can generate in some taverns, but I never checked anything beyond that.
+                                    if (item.IsOfTemplate(ItemGroups.ReligiousItems, (int)ReligiousItems.Holy_water))
+                                    {
+                                        item = BossfallItemBuilder.CreateHolyWater();
+                                    }
+                                    else if (item.IsOfTemplate(ItemGroups.ReligiousItems, (int)ReligiousItems.Holy_dagger))
+                                    {
+                                        item = BossfallItemBuilder.CreateHolyDagger();
+                                    }
+                                    else if (item.IsOfTemplate(ItemGroups.ReligiousItems, (int)ReligiousItems.Holy_tome))
+                                    {
+                                        item = BossfallItemBuilder.CreateHolyTome();
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // I replaced "playerEntity" with "player" in the first and second parameters.
+                            item = ItemBuilder.CreateRandomClothing(player.Gender, player.Race);
+                        }
+                        continueChance >>= 1;
+                        if (DFRandom.rand() % 100 > continueChance)
+                            keepGoing = false;
+                        items.AddItem(item);
+                    }
                 }
             }
+        }
+
+        public static void BossfallOnTabledLootSpawned(object sender, TabledLootSpawnedEventArgs args)
+        {
+            // DELETE WHEN IMPLEMENTED
+            // This event handler will alter all loot piles in dungeons, houses, etc. This event will fire only when loot
+            // piles are spawned, all enemy loot spawning is handled in BossfallOnEnemyLootSpawned
         }
 
         public static void BossfallOnStartLoad(SaveData_v1 saveData)
@@ -799,13 +1022,6 @@ namespace BossfallMod.Events
         {
             // DELETE WHEN IMPLEMENTED
             // Use this event to write CanDetectInvisible value to restored enemies
-        }
-
-        public static void BossfallOnTabledLootSpawned(object sender, TabledLootSpawnedEventArgs args)
-        {
-            // DELETE WHEN IMPLEMENTED
-            // This event handler will alter all loot piles in dungeons, houses, etc. This event will fire only when loot
-            // piles are spawned, all enemy loot spawning is handled in BossfallOnEnemyLootSpawned
         }
 
         #endregion

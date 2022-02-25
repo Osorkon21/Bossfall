@@ -10,15 +10,15 @@
 
 using BossfallMod.Events;
 using BossfallMod.Formulas;
+using BossfallMod.Items;
 using DaggerfallWorkshop;
 using DaggerfallWorkshop.Game;
-using DaggerfallWorkshop.Game.Items;
 using DaggerfallWorkshop.Game.Entity;
+using DaggerfallWorkshop.Game.Items;
 using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
 using DaggerfallWorkshop.Utility;
 using UnityEngine;
-
 
 namespace BossfallMod
 {
@@ -112,9 +112,9 @@ namespace BossfallMod
             PlayerEnterExit.OnTransitionDungeonInterior += BossfallEventHandlers.BossfallOnTransitionDungeonInterior;
             EnemyEntity.OnLootSpawned += BossfallEventHandlers.BossfallOnEnemyLootSpawned;
             PlayerActivate.OnLootSpawned += BossfallEventHandlers.BossfallOnContainerLootSpawned;
+            LootTables.OnLootSpawned += BossfallEventHandlers.BossfallOnTabledLootSpawned;
             SaveLoadManager.OnStartLoad += BossfallEventHandlers.BossfallOnStartLoad;
             SaveLoadManager.OnLoad += BossfallEventHandlers.BossfallOnLoad;
-            LootTables.OnLootSpawned += BossfallEventHandlers.BossfallOnTabledLootSpawned;
         }
 
         #endregion

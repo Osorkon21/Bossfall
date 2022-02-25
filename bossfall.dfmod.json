@@ -8,7 +8,6 @@
     "GUID": "e71234ab-0a5f-4e38-9987-36fba5ce2977",
     "Files": [
         "Assets/Game/Mods/Bossfall/bossfall.dfmod.json",
-        "Assets/Game/Mods/Bossfall/ItemTemplates.json",
         "Assets/Game/Mods/Bossfall/modpresets.json",
         "Assets/Game/Mods/Bossfall/modsettings.json",
         "Assets/Game/Mods/Bossfall/Scripts/Bossfall.cs",
@@ -18,6 +17,10 @@
         "Assets/Game/Mods/Bossfall/Scripts/BossfallEnemyMotor.cs",
         "Assets/Game/Mods/Bossfall/Scripts/BossfallEnemySenses.cs",
         "Assets/Game/Mods/Bossfall/Scripts/BossfallPlayerActivate.cs",
-        "Assets/Game/Mods/Bossfall/Scripts/BossfallItem.cs"
+        "Assets/Game/Mods/Bossfall/Scripts/BossfallEventHandlers.cs",
+        "Assets/Game/Mods/Bossfall/BossfallMagicItemTemplates.json",
+        "Assets/Game/Mods/Bossfall/Scripts/BossfallItemBuilder.cs",
+        "Assets/Game/Mods/Bossfall/Scripts/BossfallItem.cs",
+        "Assets/Game/Mods/Bossfall/ItemTemplates.json"
     ]
 }
