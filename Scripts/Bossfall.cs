@@ -10,7 +10,6 @@
 
 using BossfallMod.Events;
 using BossfallMod.Formulas;
-using BossfallMod.Items;
 using DaggerfallWorkshop;
 using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.Entity;

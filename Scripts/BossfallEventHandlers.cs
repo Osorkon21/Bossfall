@@ -63,7 +63,7 @@ namespace BossfallMod.Events
 
         #endregion
 
-        #region Events
+        #region Event Handlers
 
         // DWI
         // Clear this script using standard citing methods, everything from start of script to end of
@@ -1021,7 +1021,7 @@ namespace BossfallMod.Events
         public static void BossfallOnLoad(SaveData_v1 saveData)
         {
             // DELETE WHEN IMPLEMENTED
-            // Use this event to write CanDetectInvisible value to restored enemies
+            // Use this event to write CanDetectInvisible value to restored enemies and to replace vanilla shields w/custom ones
         }
 
         #endregion

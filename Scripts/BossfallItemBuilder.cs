@@ -543,6 +543,28 @@ namespace BossfallMod.Items
             int groupIndex = DaggerfallUnity.Instance.ItemHelper.GetGroupIndex(ItemGroups.Armor, (int)armor);
             DaggerfallUnityItem newItem = new DaggerfallUnityItem(ItemGroups.Armor, groupIndex);
 
+            // No point running item template checks if item isn't a shield.
+            if (newItem.IsShield)
+            {
+                // Replaces vanilla shields with my custom shield items so I can vary armor values with shield material.
+                if (newItem.IsOfTemplate(ItemGroups.Armor, (int)Armor.Buckler))
+                {
+                    newItem = new Buckler();
+                }
+                else if (newItem.IsOfTemplate(ItemGroups.Armor, (int)Armor.Round_Shield))
+                {
+                    newItem = new RoundShield();
+                }
+                else if (newItem.IsOfTemplate(ItemGroups.Armor, (int)Armor.Kite_Shield))
+                {
+                    newItem = new KiteShield();
+                }
+                else if (newItem.IsOfTemplate(ItemGroups.Armor, (int)Armor.Tower_Shield))
+                {
+                    newItem = new TowerShield();
+                }
+            }
+
             // I reroute the method call to a method contained in this script.
             ApplyArmorSettings(newItem, gender, race, material, variant);
 
@@ -570,15 +592,26 @@ namespace BossfallMod.Items
                 // I added "ItemBuilder." to send it to vanilla's ItemBuilder method.
                 newItem = ItemBuilder.CreateItem(ItemGroups.Armor, customItemTemplates[groupIndex - enumArray.Length]);
 
-            // Replaces vanilla shields with my custom shield items so I can vary armor values with shield material.
-            if (newItem.IsOfTemplate(ItemGroups.Armor, (int)Armor.Buckler))
+            // No point running item template checks if item isn't a shield.
+            if (newItem.IsShield)
             {
-                newItem = new Buckler();
-
-                // DWI
-
-                // Remove the below line before releasing anything
-                DaggerfallUI.AddHUDText("Created?");
+                // Replaces vanilla shields with my custom shield items so I can vary armor values with shield material.
+                if (newItem.IsOfTemplate(ItemGroups.Armor, (int)Armor.Buckler))
+                {
+                    newItem = new Buckler();
+                }
+                else if (newItem.IsOfTemplate(ItemGroups.Armor, (int)Armor.Round_Shield))
+                {
+                    newItem = new RoundShield();
+                }
+                else if (newItem.IsOfTemplate(ItemGroups.Armor, (int)Armor.Kite_Shield))
+                {
+                    newItem = new KiteShield();
+                }
+                else if (newItem.IsOfTemplate(ItemGroups.Armor, (int)Armor.Tower_Shield))
+                {
+                    newItem = new TowerShield();
+                }
             }
 
             // I pass on enemyLevelModifier so loot scales with enemy level rather than player's. I also reroute the method
