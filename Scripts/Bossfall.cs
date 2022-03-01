@@ -47,11 +47,11 @@ namespace BossfallMod
 
         #region Mod Init
 
-        // This is the magic method to invoke to start up a mod. No idea what is going on behind the scenes.
+        // This registers Bossfall to vanilla's ModManager.
         [Invoke(StateManager.StateTypes.Start, 0)]
         public static void Init(InitParams initParams)
         {
-            // This initializes the mod and adds the Bossfall component to the new mod GameObject.
+            // This initializes the mod and adds a Bossfall component to the new mod GameObject.
             mod = initParams.Mod;
             var go = new GameObject(mod.Title);
             go.AddComponent<Bossfall>();
@@ -114,6 +114,7 @@ namespace BossfallMod
             LootTables.OnLootSpawned += BossfallEventHandlers.BossfallOnTabledLootSpawned;
             SaveLoadManager.OnStartLoad += BossfallEventHandlers.BossfallOnStartLoad;
             SaveLoadManager.OnLoad += BossfallEventHandlers.BossfallOnLoad;
+            DaggerfallUI.Instance.UserInterfaceManager.OnWindowChange += BossfallEventHandlers.BossfallOnWindowChange;
         }
 
         #endregion

@@ -26,6 +26,8 @@ using DaggerfallWorkshop.Game.Serialization;
 using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Utility;
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 
 namespace BossfallMod.Events
@@ -35,6 +37,14 @@ namespace BossfallMod.Events
     /// </summary>
     public class BossfallEventHandlers : MonoBehaviour
     {
+        // DWI
+
+        // Clear this script using standard citing methods, recheck entire script as u changed a lot
+
+        // DWI
+
+        // check contributors when done clearing make sure u have listed all, remove all that don't apply
+
         #region Fields
 
         // Spell lists for BossfallOnEnemyLootSpawned event handler. Based on arrays from vanilla's EnemyEntity script.
@@ -42,6 +52,12 @@ namespace BossfallMod.Events
         static readonly byte[] BossfallFireDaedraSpells = { 0x0E, 0x19, 0x20 };
         static readonly byte[] BossfallGenericSpells = { 0x08, 0x0E, 0x1D, 0x1F, 0x32, 0x33, 0x19, 0x1C, 0x43, 0x34, 0x17, 0x10,
             0x14, 0x09, 0x1B, 0x1E, 0x20, 0x23, 0x24, 0x27, 0x35, 0x36, 0x37, 0x40 };
+
+        // Fields used to properly restore my custom shields.
+        static ItemCollection inventoryItems = new ItemCollection();
+        static ItemCollection wagonItems = new ItemCollection();
+        static ItemCollection otherItems = new ItemCollection();
+        static ItemData_v1 itemData;
 
         #endregion
 
@@ -65,24 +81,34 @@ namespace BossfallMod.Events
 
         #region Event Handlers
 
-        // DWI
-        // Clear this script using standard citing methods, everything from start of script to end of
-        // BossfallOnContainerLootSpawned method is cleared
-
-        // DWI
-        // check contributors when done clearing make sure u have listed all, remove all that don't apply
-
         /// <summary>
-        /// This method adds necessary components to the PlayerObject. If successful doing so, it never runs again.
+        /// This method performs setup on the PlayerObject. If successful doing so, it never runs again.
         /// </summary>
         public static void BossfallOnRespawnerComplete()
         {
             if (GameManager.Instance.PlayerObject != null)
             {
+                // Adds necessary Bossfall components.
                 GameManager.Instance.PlayerObject.AddComponent<BossfallPlayerActivate>();
+
+                // Using Reflection, I access all parts of the player's inventory. I don't want to use the already-existing
+                // public Item "set" properties as I don't want to clone every inventory item just so I can replace vanilla
+                // shields with my custom ones - that changes item UIDs, which I want to avoid.
+                PlayerEntity playerEntity = GameManager.Instance.PlayerEntity;
+                Type type = playerEntity.GetType();
+                FieldInfo fieldInfo = type.GetField("items", BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo fieldInfo1 = type.GetField("wagonItems", BindingFlags.NonPublic | BindingFlags.Instance);
+                FieldInfo fieldInfo2 = type.GetField("otherItems", BindingFlags.NonPublic | BindingFlags.Instance);
+                object inventory = fieldInfo.GetValue(playerEntity);
+                object wagon = fieldInfo1.GetValue(playerEntity);
+                object other = fieldInfo2.GetValue(playerEntity);
+                inventoryItems = (ItemCollection)inventory;
+                wagonItems = (ItemCollection)wagon;
+                otherItems = (ItemCollection)other;
+
+                // Once setup is complete, don't run this method again.
                 PlayerEnterExit.OnRespawnerComplete -= BossfallOnRespawnerComplete;
             }
-
         }
 
         /// <summary>
@@ -212,7 +238,6 @@ namespace BossfallMod.Events
             DaggerfallEntityBehaviour entityBehaviour = (sender as EnemyEntity).EntityBehaviour;
             EnemyEntity entity = sender as EnemyEntity;
             MobileEnemy mobileEnemy = args.MobileEnemy;
-            DFCareer career = args.EnemyCareer;
             ItemCollection items = args.Items;
             PlayerEntity player = GameManager.Instance.PlayerEntity;
 
@@ -275,6 +300,7 @@ namespace BossfallMod.Events
                 }
 
                 // DELETE WHEN IMPLEMENTED
+
                 // Add method of restoring data from instance field, add field of Dictionary<string ID, BossfallSaveData_v1 data>
                 // up top, delete entries after u process a given ID so the next enemy has less to iterate thru
                 // if (savedEnemyID == thisEnemyID && savedBossfallEnemyLevel != 0 (or != null))
@@ -423,6 +449,7 @@ namespace BossfallMod.Events
                     entity.Level = UnityEngine.Random.Range(21, 30 + 1);
 
                 // DELETE WHEN IMPLEMENTED
+
                 // Add method of restoring data from instance field, add field of Dictionary<string ID, BossfallSaveData_v1 data>
                 // up top, delete entries after u process a given ID so the next enemy has less to iterate thru
                 // if (savedEnemyID == thisEnemyID && savedBossfallEnemyLevel != 0 (or != null))
@@ -537,6 +564,10 @@ namespace BossfallMod.Events
             entityBehaviour.gameObject.AddComponent<BossfallEnemyMotor>();
             entityBehaviour.gameObject.AddComponent<BossfallEnemySenses>();
             entityBehaviour.gameObject.AddComponent<EnemyAttack>();
+
+            // DWI
+
+            // Restore CanDetectInvisible bool value 2 enemies here, then delete entity enemy from Dictionary as u'll be done w/it
         }
 
         /// <summary>
@@ -602,16 +633,16 @@ namespace BossfallMod.Events
             // This foreach is from the SetEnemySpells method in EnemyEntity, slightly modified for Bossfall.
             foreach (byte spellID in spellList)
             {
-                SpellRecord.SpellRecordData spellData;
-                GameManager.Instance.EntityEffectBroker.GetClassicSpellRecord(spellID, out spellData);
+                // I inlined the "SpellRecord.SpellRecordData" declaration.
+                GameManager.Instance.EntityEffectBroker.GetClassicSpellRecord(spellID, out SpellRecord.SpellRecordData spellData);
                 if (spellData.index == -1)
                 {
                     Debug.LogError("Failed to locate enemy spell in standard spells list.");
                     continue;
                 }
 
-                EffectBundleSettings bundle;
-                if (!GameManager.Instance.EntityEffectBroker.ClassicSpellRecordDataToEffectBundleSettings(spellData, BundleTypes.Spell, out bundle))
+                // I inlined the "EffectBundleSettings" declaration.
+                if (!GameManager.Instance.EntityEffectBroker.ClassicSpellRecordDataToEffectBundleSettings(spellData, BundleTypes.Spell, out EffectBundleSettings bundle))
                 {
                     Debug.LogError("Failed to create effect bundle for enemy spell: " + spellData.spellName);
                     continue;
@@ -634,7 +665,6 @@ namespace BossfallMod.Events
             PlayerEntity player = GameManager.Instance.PlayerEntity;
             PlayerActivate playerActivate = sender as PlayerActivate;
             PlayerEnterExit playerEnterExit = playerActivate.GetComponent<PlayerEnterExit>();
-            PlayerGPS playerGPS = playerActivate.GetComponent<PlayerGPS>();
             LootContainerTypes containerType = args.ContainerType;
             ItemCollection items = args.Loot;
             PlayerGPS.DiscoveredBuilding buildingData = playerEnterExit.BuildingDiscoveryData;
@@ -749,7 +779,8 @@ namespace BossfallMod.Events
                                     int stockChance = chanceMod * 5 * (21 - itemTemplate.rarity) / 100;
                                     if (Dice100.SuccessRoll(stockChance))
                                     {
-                                        DaggerfallUnityItem item = null;
+                                        // I removed "= null" from the following line.
+                                        DaggerfallUnityItem item;
                                         if (itemGroup == ItemGroups.Weapons)
 
                                             // I replaced "playerEntity.Level" with 0 to unlevel loot. I also call a different item
@@ -851,7 +882,9 @@ namespace BossfallMod.Events
                 // This begins a section of code copied from PlayerActivate, modified for Bossfall. I'm sure I am missing an
                 // obvious solution, but I couldn't figure out how to get the loot container's DaggerfallLoot component and I
                 // need its TextureRecord, so I fire a new ray and check the RaycastHit for DaggerfallLoot.
-                Ray ray = new Ray();
+
+                // I removed "= new Ray()" from the line below.
+                Ray ray;
                 Camera mainCamera = GameManager.Instance.MainCamera;
                 int playerLayerMask = ~(1 << LayerMask.NameToLayer("Player"));
                 if (GameManager.Instance.PlayerMouseLook.cursorActive)
@@ -894,8 +927,10 @@ namespace BossfallMod.Events
 
                 // I added "loot." to the line below.
                 uint modelIndex = (uint)loot.TextureRecord;
-                byte[] privatePropertyList = null;
-                DaggerfallUnityItem item = null;
+
+                // I removed "= null" from the following two lines.
+                byte[] privatePropertyList;
+                DaggerfallUnityItem item;
 
                 if (buildingType < DFLocation.BuildingTypes.House5)
                 {
@@ -1006,6 +1041,7 @@ namespace BossfallMod.Events
         public static void BossfallOnTabledLootSpawned(object sender, TabledLootSpawnedEventArgs args)
         {
             // DELETE WHEN IMPLEMENTED
+
             // This event handler will alter all loot piles in dungeons, houses, etc. This event will fire only when loot
             // piles are spawned, all enemy loot spawning is handled in BossfallOnEnemyLootSpawned
         }
@@ -1013,15 +1049,199 @@ namespace BossfallMod.Events
         public static void BossfallOnStartLoad(SaveData_v1 saveData)
         {
             // DELETE WHEN IMPLEMENTED
+
             // U get save data, load mod save into ur cache at this time so u have it for
             // EnemyEntity event level restore. As u go thru IDs & restore levels remove IDs from cache that you've already
             // handled so u progressively have less and less in the cache to iterate thru, should end up w/empty cache @ end
+            // use timing in BossfallOnEnemyLootSpawned event handler for precise time for when 2 delete entry from ur cache
         }
 
+        /// <summary>
+        /// I need to search three ItemCollections for vanilla shields to replace them with my custom ones - the player's
+        /// inventory, their wagon, and their item repair list. A messy solution, but the other way would require me to
+        /// register custom shield items and manually prohibit the game from ever creating them like other modded items -
+        /// also, if the player ever disabled Bossfall, all of their shields would disappear as they would all be Bossfall
+        /// custom shields. As I want shields to act exactly like vanilla's except have different armor values based on
+        /// shield material, I found this alternate solution unacceptable. Thus, I wrote this method.
+        /// </summary>
+        /// <param name="saveData">Unused save data.</param>
         public static void BossfallOnLoad(SaveData_v1 saveData)
         {
-            // DELETE WHEN IMPLEMENTED
-            // Use this event to write CanDetectInvisible value to restored enemies and to replace vanilla shields w/custom ones
+            // Inventory items section.
+            if (inventoryItems != null)
+            {
+                // This search only returns armor.
+                List<DaggerfallUnityItem> inventoryArmor = inventoryItems.SearchItems(ItemGroups.Armor);
+
+                // No point checking for shields if no armor present.
+                if (inventoryArmor != null)
+                {
+                    // I go backwards through the list as I remove objects from the list while iterating.
+                    for (int i = inventoryArmor.Count - 1; i >= 0; i--)
+                    {
+                        DaggerfallUnityItem item = inventoryArmor[i];
+
+                        // Shield check. If not a shield, do nothing.
+                        if (item.IsShield)
+                        {
+                            DaggerfallUnityItem newItem;
+
+                            // I create a custom shield to replace the old one.
+                            if (item.TemplateIndex == (int)Armor.Buckler)
+                                newItem = new Buckler();
+                            else if (item.TemplateIndex == (int)Armor.Round_Shield)
+                                newItem = new RoundShield();
+                            else if (item.TemplateIndex == (int)Armor.Kite_Shield)
+                                newItem = new KiteShield();
+                            else
+                                newItem = new TowerShield();
+
+                            // Variables used to handle equipped shields.
+                            PlayerEntity player = GameManager.Instance.PlayerEntity;
+                            ItemEquipTable playerEquipTable = GameManager.Instance.PlayerEntity.ItemEquipTable;
+                            bool wasEquipped = false;
+                            int condition = item.currentCondition;
+
+                            // Get save data from the item, store in a local field.
+                            itemData = item.GetSaveData();
+
+                            // Equipped shield check.
+                            if (playerEquipTable.IsEquipped(item))
+                            {
+                                // I unequip the old shield before destroying it.
+                                playerEquipTable.UnequipItem(EquipSlots.LeftHand);
+                                player.UpdateEquippedArmorValues(item, false);
+
+                                // Activate special handling for equipped shields.
+                                wasEquipped = true;
+                            }
+
+                            // Remove old shield from inventory.
+                            inventoryItems.RemoveItem(item);
+
+                            // Write saved field data to the custom shield.
+                            newItem.FromItemData(itemData);
+
+                            // Add the custom shield to player's inventory.
+                            inventoryItems.AddItem(newItem, ItemCollection.AddPosition.DontCare);
+
+                            // Special handling for replacing equipped shields.
+                            if (wasEquipped)
+                            {
+                                // Equip the custom shield in the old shield's place.
+                                playerEquipTable.EquipItem(newItem, true, false);
+                                player.UpdateEquippedArmorValues(newItem, true);
+
+                                // If old shield had a Cast When Held enchantment, when I equipped the new custom one it took
+                                // durability damage. I don't want to unnecessarily damage player's shield, so as a final step
+                                // I restore the new shield to the old shield's condition.
+                                newItem.currentCondition = condition;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Wagon items section.
+            if (wagonItems != null)
+            {
+                // This search only returns armor.
+                List<DaggerfallUnityItem> wagonArmor = wagonItems.SearchItems(ItemGroups.Armor);
+
+                // No point checking for shields if no armor present.
+                if (wagonArmor != null)
+                {
+                    // I go backwards through the list as I remove objects from the list while iterating.
+                    for (int i = wagonArmor.Count - 1; i >= 0; i--)
+                    {
+                        DaggerfallUnityItem item = wagonArmor[i];
+
+                        // Shield check. If not a shield, do nothing.
+                        if (item.IsShield)
+                        {
+                            DaggerfallUnityItem newItem;
+
+                            // I create a custom shield to replace the old one.
+                            if (item.TemplateIndex == (int)Armor.Buckler)
+                                newItem = new Buckler();
+                            else if (item.TemplateIndex == (int)Armor.Round_Shield)
+                                newItem = new RoundShield();
+                            else if (item.TemplateIndex == (int)Armor.Kite_Shield)
+                                newItem = new KiteShield();
+                            else
+                                newItem = new TowerShield();
+
+                            // Get save data from the item, store in a local field.
+                            itemData = item.GetSaveData();
+
+                            // Remove item from player's wagon.
+                            wagonItems.RemoveItem(item);
+
+                            // Write saved field data to the custom shield.
+                            newItem.FromItemData(itemData);
+
+                            // Add the custom shield to player's wagon.
+                            wagonItems.AddItem(newItem, ItemCollection.AddPosition.DontCare);
+                        }
+                    }
+                }
+            }
+
+            // Items that are currently being repaired section.
+            if (otherItems != null)
+            {
+                // This search only returns armor.
+                List<DaggerfallUnityItem> otherArmor = otherItems.SearchItems(ItemGroups.Armor);
+
+                // No point checking for shields if no armor present.
+                if (otherArmor != null)
+                {
+                    // I go backwards through the list as I remove objects from the list while iterating.
+                    for (int i = otherArmor.Count - 1; i >= 0; i--)
+                    {
+                        DaggerfallUnityItem item = otherArmor[i];
+
+                        // Shield check. If not a shield, do nothing.
+                        if (item.IsShield)
+                        {
+                            DaggerfallUnityItem newItem;
+
+                            // I create a custom shield to replace the old one.
+                            if (item.TemplateIndex == (int)Armor.Buckler)
+                                newItem = new Buckler();
+                            else if (item.TemplateIndex == (int)Armor.Round_Shield)
+                                newItem = new RoundShield();
+                            else if (item.TemplateIndex == (int)Armor.Kite_Shield)
+                                newItem = new KiteShield();
+                            else
+                                newItem = new TowerShield();
+
+                            // Get save data from the item, store in a local field.
+                            itemData = item.GetSaveData();
+
+                            // Remove old shield from repair list.
+                            otherItems.RemoveItem(item);
+
+                            // Write saved field data to the custom shield, which restores repair data.
+                            newItem.FromItemData(itemData);
+
+                            // Add custom shield to repair list.
+                            otherItems.AddItem(newItem, ItemCollection.AddPosition.DontCare);
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void BossfallOnWindowChange(object sender, EventArgs args)
+        {
+            // DWI
+
+            // run checks 2 determine if the
+            // inventory window is being pushed, if this is true check "lootTarget.items" in DaggerfallInventoryWindow, this is
+            // the ItemCollection (I think, double-check to make sure) of the loot container being accessed, run ur shield
+            // detection/reset methods, this will change all shields to ur custom ones as far as the player is aware
+            // (which is all that matters anyway)
         }
 
         #endregion
