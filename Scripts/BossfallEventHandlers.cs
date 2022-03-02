@@ -23,11 +23,12 @@ using DaggerfallWorkshop.Game.Formulas;
 using DaggerfallWorkshop.Game.Items;
 using DaggerfallWorkshop.Game.MagicAndEffects;
 using DaggerfallWorkshop.Game.Serialization;
+using DaggerfallWorkshop.Game.UserInterface;
+using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Utility;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
 
 namespace BossfallMod.Events
@@ -53,10 +54,7 @@ namespace BossfallMod.Events
         static readonly byte[] BossfallGenericSpells = { 0x08, 0x0E, 0x1D, 0x1F, 0x32, 0x33, 0x19, 0x1C, 0x43, 0x34, 0x17, 0x10,
             0x14, 0x09, 0x1B, 0x1E, 0x20, 0x23, 0x24, 0x27, 0x35, 0x36, 0x37, 0x40 };
 
-        // Fields used to properly restore my custom shields.
-        static ItemCollection inventoryItems = new ItemCollection();
-        static ItemCollection wagonItems = new ItemCollection();
-        static ItemCollection otherItems = new ItemCollection();
+        // Used to restore my custom shields.
         static ItemData_v1 itemData;
 
         #endregion
@@ -90,21 +88,6 @@ namespace BossfallMod.Events
             {
                 // Adds necessary Bossfall components.
                 GameManager.Instance.PlayerObject.AddComponent<BossfallPlayerActivate>();
-
-                // Using Reflection, I access all parts of the player's inventory. I don't want to use the already-existing
-                // public Item "set" properties as I don't want to clone every inventory item just so I can replace vanilla
-                // shields with my custom ones - that changes item UIDs, which I want to avoid.
-                PlayerEntity playerEntity = GameManager.Instance.PlayerEntity;
-                Type type = playerEntity.GetType();
-                FieldInfo fieldInfo = type.GetField("items", BindingFlags.NonPublic | BindingFlags.Instance);
-                FieldInfo fieldInfo1 = type.GetField("wagonItems", BindingFlags.NonPublic | BindingFlags.Instance);
-                FieldInfo fieldInfo2 = type.GetField("otherItems", BindingFlags.NonPublic | BindingFlags.Instance);
-                object inventory = fieldInfo.GetValue(playerEntity);
-                object wagon = fieldInfo1.GetValue(playerEntity);
-                object other = fieldInfo2.GetValue(playerEntity);
-                inventoryItems = (ItemCollection)inventory;
-                wagonItems = (ItemCollection)wagon;
-                otherItems = (ItemCollection)other;
 
                 // Once setup is complete, don't run this method again.
                 PlayerEnterExit.OnRespawnerComplete -= BossfallOnRespawnerComplete;
@@ -1067,13 +1050,16 @@ namespace BossfallMod.Events
         /// <param name="saveData">Unused save data.</param>
         public static void BossfallOnLoad(SaveData_v1 saveData)
         {
-            // Inventory items section.
-            if (inventoryItems != null)
+            // Variable used in this method.
+            PlayerEntity player = GameManager.Instance.PlayerEntity;
+
+            // If player's inventory is empty, do nothing.
+            if (player.Items != null)
             {
                 // This search only returns armor.
-                List<DaggerfallUnityItem> inventoryArmor = inventoryItems.SearchItems(ItemGroups.Armor);
+                List<DaggerfallUnityItem> inventoryArmor = player.Items.SearchItems(ItemGroups.Armor);
 
-                // No point checking for shields if no armor present.
+                // If no armor found, do nothing.
                 if (inventoryArmor != null)
                 {
                     // I go backwards through the list as I remove objects from the list while iterating.
@@ -1081,49 +1067,44 @@ namespace BossfallMod.Events
                     {
                         DaggerfallUnityItem item = inventoryArmor[i];
 
-                        // Shield check. If not a shield, do nothing.
+                        // If not a shield, do nothing.
                         if (item.IsShield)
                         {
+                            // Get save data from shield, store in a local field.
+                            itemData = item.GetSaveData();
+
                             DaggerfallUnityItem newItem;
 
-                            // I create a custom shield to replace the old one.
+                            // Create a custom shield using saved field data.
                             if (item.TemplateIndex == (int)Armor.Buckler)
-                                newItem = new Buckler();
+                                newItem = new Buckler(itemData);
                             else if (item.TemplateIndex == (int)Armor.Round_Shield)
-                                newItem = new RoundShield();
+                                newItem = new RoundShield(itemData);
                             else if (item.TemplateIndex == (int)Armor.Kite_Shield)
-                                newItem = new KiteShield();
+                                newItem = new KiteShield(itemData);
                             else
-                                newItem = new TowerShield();
+                                newItem = new TowerShield(itemData);
 
                             // Variables used to handle equipped shields.
-                            PlayerEntity player = GameManager.Instance.PlayerEntity;
                             ItemEquipTable playerEquipTable = GameManager.Instance.PlayerEntity.ItemEquipTable;
                             bool wasEquipped = false;
                             int condition = item.currentCondition;
-
-                            // Get save data from the item, store in a local field.
-                            itemData = item.GetSaveData();
 
                             // Equipped shield check.
                             if (playerEquipTable.IsEquipped(item))
                             {
                                 // I unequip the old shield before destroying it.
-                                playerEquipTable.UnequipItem(EquipSlots.LeftHand);
-                                player.UpdateEquippedArmorValues(item, false);
+                                player.UpdateEquippedArmorValues(playerEquipTable.UnequipItem(EquipSlots.LeftHand), false);
 
                                 // Activate special handling for equipped shields.
                                 wasEquipped = true;
                             }
 
                             // Remove old shield from inventory.
-                            inventoryItems.RemoveItem(item);
-
-                            // Write saved field data to the custom shield.
-                            newItem.FromItemData(itemData);
+                            player.Items.RemoveItem(item);
 
                             // Add the custom shield to player's inventory.
-                            inventoryItems.AddItem(newItem, ItemCollection.AddPosition.DontCare);
+                            player.Items.AddItem(newItem);
 
                             // Special handling for replacing equipped shields.
                             if (wasEquipped)
@@ -1143,10 +1124,10 @@ namespace BossfallMod.Events
             }
 
             // Wagon items section.
-            if (wagonItems != null)
+            if (player.WagonItems != null)
             {
                 // This search only returns armor.
-                List<DaggerfallUnityItem> wagonArmor = wagonItems.SearchItems(ItemGroups.Armor);
+                List<DaggerfallUnityItem> wagonArmor = player.WagonItems.SearchItems(ItemGroups.Armor);
 
                 // No point checking for shields if no armor present.
                 if (wagonArmor != null)
@@ -1159,39 +1140,36 @@ namespace BossfallMod.Events
                         // Shield check. If not a shield, do nothing.
                         if (item.IsShield)
                         {
-                            DaggerfallUnityItem newItem;
-
-                            // I create a custom shield to replace the old one.
-                            if (item.TemplateIndex == (int)Armor.Buckler)
-                                newItem = new Buckler();
-                            else if (item.TemplateIndex == (int)Armor.Round_Shield)
-                                newItem = new RoundShield();
-                            else if (item.TemplateIndex == (int)Armor.Kite_Shield)
-                                newItem = new KiteShield();
-                            else
-                                newItem = new TowerShield();
-
-                            // Get save data from the item, store in a local field.
+                            // Get save data from shield, store in a local field.
                             itemData = item.GetSaveData();
 
-                            // Remove item from player's wagon.
-                            wagonItems.RemoveItem(item);
+                            DaggerfallUnityItem newItem;
 
-                            // Write saved field data to the custom shield.
-                            newItem.FromItemData(itemData);
+                            // Create a custom shield using saved field data.
+                            if (item.TemplateIndex == (int)Armor.Buckler)
+                                newItem = new Buckler(itemData);
+                            else if (item.TemplateIndex == (int)Armor.Round_Shield)
+                                newItem = new RoundShield(itemData);
+                            else if (item.TemplateIndex == (int)Armor.Kite_Shield)
+                                newItem = new KiteShield(itemData);
+                            else
+                                newItem = new TowerShield(itemData);
+
+                            // Remove item from player's wagon.
+                            player.WagonItems.RemoveItem(item);
 
                             // Add the custom shield to player's wagon.
-                            wagonItems.AddItem(newItem, ItemCollection.AddPosition.DontCare);
+                            player.WagonItems.AddItem(newItem);
                         }
                     }
                 }
             }
 
             // Items that are currently being repaired section.
-            if (otherItems != null)
+            if (player.OtherItems != null)
             {
                 // This search only returns armor.
-                List<DaggerfallUnityItem> otherArmor = otherItems.SearchItems(ItemGroups.Armor);
+                List<DaggerfallUnityItem> otherArmor = player.OtherItems.SearchItems(ItemGroups.Armor);
 
                 // No point checking for shields if no armor present.
                 if (otherArmor != null)
@@ -1204,44 +1182,259 @@ namespace BossfallMod.Events
                         // Shield check. If not a shield, do nothing.
                         if (item.IsShield)
                         {
-                            DaggerfallUnityItem newItem;
-
-                            // I create a custom shield to replace the old one.
-                            if (item.TemplateIndex == (int)Armor.Buckler)
-                                newItem = new Buckler();
-                            else if (item.TemplateIndex == (int)Armor.Round_Shield)
-                                newItem = new RoundShield();
-                            else if (item.TemplateIndex == (int)Armor.Kite_Shield)
-                                newItem = new KiteShield();
-                            else
-                                newItem = new TowerShield();
-
-                            // Get save data from the item, store in a local field.
+                            // Get save data from shield, store in a local field.
                             itemData = item.GetSaveData();
 
-                            // Remove old shield from repair list.
-                            otherItems.RemoveItem(item);
+                            DaggerfallUnityItem newItem;
 
-                            // Write saved field data to the custom shield, which restores repair data.
-                            newItem.FromItemData(itemData);
+                            // Create a custom shield using saved field data, which restores repair data.
+                            if (item.TemplateIndex == (int)Armor.Buckler)
+                                newItem = new Buckler(itemData);
+                            else if (item.TemplateIndex == (int)Armor.Round_Shield)
+                                newItem = new RoundShield(itemData);
+                            else if (item.TemplateIndex == (int)Armor.Kite_Shield)
+                                newItem = new KiteShield(itemData);
+                            else
+                                newItem = new TowerShield(itemData);
+
+                            // Remove old shield from repair list.
+                            player.OtherItems.RemoveItem(item);
 
                             // Add custom shield to repair list.
-                            otherItems.AddItem(newItem, ItemCollection.AddPosition.DontCare);
+                            player.OtherItems.AddItem(newItem);
                         }
                     }
                 }
             }
         }
 
+        /// <summary>
+        /// This method checks if the inventory or trade windows are being opened. If they are, it searches for vanilla shields
+        /// among loot or shop items and replaces them with my custom shields. In combination with BossfallOnLoad, it replaces
+        /// every vanilla shield with custom shields. It also replaces all vanilla magic items and soul gems with Bossfall's
+        /// magic items and soul gems.
+        /// </summary>
+        /// <param name="sender">An instance of UserInterfaceManager.</param>
+        /// <param name="args">Null.</param>
         public static void BossfallOnWindowChange(object sender, EventArgs args)
         {
-            // DWI
+            // Variables used in this method. Some are from the parameters, split into their base components.
+            UserInterfaceManager uiManager = sender as UserInterfaceManager;
+            DaggerfallTradeWindow tradeWindow = uiManager.TopWindow as DaggerfallTradeWindow;
+            DaggerfallInventoryWindow inventoryWindow = DaggerfallUI.Instance.InventoryWindow;
+            PlayerGPS.DiscoveredBuilding buildingDiscoveryData = GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData;
+            PlayerEntity player = GameManager.Instance.PlayerEntity;
 
-            // run checks 2 determine if the
-            // inventory window is being pushed, if this is true check "lootTarget.items" in DaggerfallInventoryWindow, this is
-            // the ItemCollection (I think, double-check to make sure) of the loot container being accessed, run ur shield
-            // detection/reset methods, this will change all shields to ur custom ones as far as the player is aware
-            // (which is all that matters anyway)
+            // Trade window section.
+            if (tradeWindow != null)
+            {
+                // If no Merchant Items are found, do nothing.
+                if (tradeWindow.MerchantItems != null)
+                {
+                    // This searches for armor.
+                    List<DaggerfallUnityItem> merchantArmor = tradeWindow.MerchantItems.SearchItems(ItemGroups.Armor);
+
+                    // Only magic item merchants have spellbooks for sale.
+                    bool sellsMagic = tradeWindow.MerchantItems.Contains(ItemGroups.MiscItems, (int)MiscItems.Spellbook);
+
+                    // Only soul gem merchants sell soul gems.
+                    bool sellsSoulGems = tradeWindow.MerchantItems.Contains(ItemGroups.MiscItems, (int)MiscItems.Soul_trap);
+
+                    // Magic item and soul gem merchant section.
+                    if (sellsMagic && sellsSoulGems)
+                    {
+                        // I replace everything with custom Bossfall items.
+                        tradeWindow.MerchantItems.Clear();
+
+                        // This begins a section of code from vanilla's DaggerfallGuildServicePopupWindow script, modified
+                        // for Bossfall.
+                        int numOfItems = (buildingDiscoveryData.quality / 2) + 1;
+                        int seed = (int)(DaggerfallUnity.Instance.WorldTime.DaggerfallDateTime.ToClassicDaggerfallTime()
+                            / DaggerfallDateTime.MinutesPerDay);
+                        UnityEngine.Random.InitState(seed);
+
+                        for (int i = 0; i <= numOfItems; i++)
+                        {
+                            // Since I pass 0 as the first parameter, these magic items will be unleveled.
+                            DaggerfallUnityItem magicItem = BossfallItemBuilder.CreateRandomMagicItem(0, player.Gender, player.Race);
+                            magicItem.IdentifyItem();
+                            tradeWindow.MerchantItems.AddItem(magicItem);
+                        }
+
+                        tradeWindow.MerchantItems.AddItem(ItemBuilder.CreateItem(ItemGroups.MiscItems, (int)MiscItems.Spellbook));
+
+                        for (int i = 0; i <= numOfItems; i++)
+                        {
+                            DaggerfallUnityItem magicItem;
+                            if (Dice100.FailedRoll(25))
+                            {
+                                magicItem = ItemBuilder.CreateItem(ItemGroups.MiscItems, (int)MiscItems.Soul_trap);
+
+                                // Bossfall Soul Gems are ten times more expensive than vanilla's.
+                                magicItem.value = 50000;
+                                magicItem.TrappedSoulType = MobileTypes.None;
+                            }
+                            else
+                            {
+                                magicItem = BossfallItemBuilder.CreateRandomlyFilledSoulTrap();
+                            }
+
+                            tradeWindow.MerchantItems.AddItem(magicItem);
+                        }
+                        // This ends the section of code from vanilla's DaggerfallGuildServicePopupWindow script.
+                    }
+
+                    // Magic item merchant section.
+                    else if (sellsMagic)
+                    {
+                        // I replace everything with custom Bossfall items.
+                        tradeWindow.MerchantItems.Clear();
+
+                        // This begins a section of code from vanilla's DaggerfallGuildServicePopupWindow script, modified
+                        // for Bossfall.
+                        int numOfItems = (buildingDiscoveryData.quality / 2) + 1;
+                        int seed = (int)(DaggerfallUnity.Instance.WorldTime.DaggerfallDateTime.ToClassicDaggerfallTime()
+                            / DaggerfallDateTime.MinutesPerDay);
+                        UnityEngine.Random.InitState(seed);
+
+                        for (int i = 0; i <= numOfItems; i++)
+                        {
+                            // Since I pass 0 as the first parameter, these magic items will be unleveled.
+                            DaggerfallUnityItem magicItem = BossfallItemBuilder.CreateRandomMagicItem(0, player.Gender, player.Race);
+                            magicItem.IdentifyItem();
+                            tradeWindow.MerchantItems.AddItem(magicItem);
+                        }
+
+                        tradeWindow.MerchantItems.AddItem(ItemBuilder.CreateItem(ItemGroups.MiscItems, (int)MiscItems.Spellbook));
+                        // This ends the section of code from vanilla's DaggerfallGuildServicePopupWindow script.
+                    }
+
+                    // Soul gem merchant section.
+                    else if (sellsSoulGems)
+                    {
+                        // I replace everything with custom Bossfall items.
+                        tradeWindow.MerchantItems.Clear();
+
+                        // This begins a section of code from vanilla's DaggerfallGuildServicePopupWindow script, modified
+                        // for Bossfall.
+                        int numOfItems = (buildingDiscoveryData.quality / 2) + 1;
+                        int seed = (int)(DaggerfallUnity.Instance.WorldTime.DaggerfallDateTime.ToClassicDaggerfallTime()
+                            / DaggerfallDateTime.MinutesPerDay);
+                        UnityEngine.Random.InitState(seed);
+
+                        for (int i = 0; i <= numOfItems; i++)
+                        {
+                            DaggerfallUnityItem magicItem;
+                            if (Dice100.FailedRoll(25))
+                            {
+                                magicItem = ItemBuilder.CreateItem(ItemGroups.MiscItems, (int)MiscItems.Soul_trap);
+
+                                // Bossfall Soul Gems are ten times more expensive than vanilla's.
+                                magicItem.value = 50000;
+                                magicItem.TrappedSoulType = MobileTypes.None;
+                            }
+                            else
+                            {
+                                magicItem = BossfallItemBuilder.CreateRandomlyFilledSoulTrap();
+                            }
+
+                            tradeWindow.MerchantItems.AddItem(magicItem);
+                        }
+                        // This ends the section of code from vanilla's DaggerfallGuildServicePopupWindow script.
+                    }
+
+                    // Conventional merchant section.
+                    else if (merchantArmor != null)
+                    {
+                        // I go backwards through the armor list as I remove elements while iterating.
+                        for (int i = merchantArmor.Count - 1; i >= 0; i--)
+                        {
+                            DaggerfallUnityItem item = merchantArmor[i];
+
+                            // If armor is not a shield, do nothing.
+                            if (item.IsShield)
+                            {
+                                // Get save data from shield, store in a local field.
+                                itemData = item.GetSaveData();
+
+                                DaggerfallUnityItem newItem;
+
+                                // Create a custom shield using saved field data.
+                                if (item.TemplateIndex == (int)Armor.Buckler)
+                                    newItem = new Buckler(itemData);
+                                else if (item.TemplateIndex == (int)Armor.Round_Shield)
+                                    newItem = new RoundShield(itemData);
+                                else if (item.TemplateIndex == (int)Armor.Kite_Shield)
+                                    newItem = new KiteShield(itemData);
+                                else
+                                    newItem = new TowerShield(itemData);
+
+                                // Remove old shield from merchant items.
+                                tradeWindow.MerchantItems.RemoveItem(item);
+
+                                // Add new custom shield to merchant items.
+                                tradeWindow.MerchantItems.AddItem(newItem);
+                            }
+                        }
+                    }
+
+                    // As a final step, refresh the trade window to display new items.
+                    tradeWindow.Refresh();
+                }
+            }
+
+            // Converts shields in loot piles and corpses to my custom shields whenever player is looting anything.
+            else if (inventoryWindow != null)
+            {
+                // If player is not looting anything, do nothing.
+                if (inventoryWindow.LootTarget != null)
+                {
+                    // If there are no items in the target loot container, do nothing.
+                    if (inventoryWindow.LootTarget.Items != null)
+                    {
+                        // Check for armor among the loot.
+                        List<DaggerfallUnityItem> lootArmor = inventoryWindow.LootTarget.Items.SearchItems(ItemGroups.Armor);
+
+                        // If no armor is present, do nothing.
+                        if (lootArmor != null)
+                        {
+                            // I go backwards through armor list as I remove elements while iterating.
+                            for (int i = lootArmor.Count - 1; i >= 0; i--)
+                            {
+                                DaggerfallUnityItem item = lootArmor[i];
+
+                                // If armor is not a shield, do nothing.
+                                if (item.IsShield)
+                                {
+                                    // Get save data from shield, store in a local field.
+                                    itemData = item.GetSaveData();
+
+                                    DaggerfallUnityItem newItem;
+
+                                    // Create a custom shield using saved field data.
+                                    if (item.TemplateIndex == (int)Armor.Buckler)
+                                        newItem = new Buckler(itemData);
+                                    else if (item.TemplateIndex == (int)Armor.Round_Shield)
+                                        newItem = new RoundShield(itemData);
+                                    else if (item.TemplateIndex == (int)Armor.Kite_Shield)
+                                        newItem = new KiteShield(itemData);
+                                    else
+                                        newItem = new TowerShield(itemData);
+
+                                    // Remove old shield from loot.
+                                    inventoryWindow.LootTarget.Items.RemoveItem(item);
+
+                                    // Add new custom shield to loot.
+                                    inventoryWindow.LootTarget.Items.AddItem(newItem);
+                                }
+                            }
+
+                            // Refresh inventory window to display any new custom shields.
+                            inventoryWindow.Refresh();
+                        }
+                    }
+                }
+            }
         }
 
         #endregion

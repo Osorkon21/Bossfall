@@ -424,7 +424,7 @@ namespace BossfallMod.Items
         /// Vanilla's method from ItemBuilder, comments precede changes or additions I made.
         /// </summary>
         /// <returns>A randomly filled soul trap.</returns>
-        static DaggerfallUnityItem CreateRandomlyFilledSoulTrap()
+        public static DaggerfallUnityItem CreateRandomlyFilledSoulTrap()
         {
             MobileTypes soul = MobileTypes.None;
             while (soul == MobileTypes.None)

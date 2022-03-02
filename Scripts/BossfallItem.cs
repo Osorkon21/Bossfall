@@ -10,6 +10,7 @@
 //
 
 using DaggerfallWorkshop.Game.Items;
+using DaggerfallWorkshop.Game.Serialization;
 
 namespace BossfallMod.Items
 {
@@ -30,6 +31,13 @@ namespace BossfallMod.Items
         /// base constructor that resets its item template to that of a vanilla Buckler. I was very surprised when it worked.
         /// </summary>
         public Buckler() : base(ItemGroups.Armor, (int)Armor.Buckler - 102)
+        { }
+
+        /// <summary>
+        /// Alternate constructor, used to restore this shield on game load.
+        /// </summary>
+        /// <param name="itemData">Item save data.</param>
+        public Buckler(ItemData_v1 itemData) : base(itemData)
         { }
 
         /// <summary>
@@ -118,6 +126,13 @@ namespace BossfallMod.Items
         { }
 
         /// <summary>
+        /// Alternate constructor, used to restore this shield on game load.
+        /// </summary>
+        /// <param name="itemData">Item save data.</param>
+        public RoundShield(ItemData_v1 itemData) : base(itemData)
+        { }
+
+        /// <summary>
         /// Reroutes armor calculation to my new method.
         /// </summary>
         /// <returns>Shield armor, adjusted for shield material.</returns>
@@ -147,6 +162,13 @@ namespace BossfallMod.Items
         { }
 
         /// <summary>
+        /// Alternate constructor, used to restore this shield on game load.
+        /// </summary>
+        /// <param name="itemData">Item save data.</param>
+        public KiteShield(ItemData_v1 itemData) : base(itemData)
+        { }
+
+        /// <summary>
         /// Reroutes armor calculation to my new method.
         /// </summary>
         /// <returns>Shield armor, adjusted for shield material.</returns>
@@ -173,6 +195,13 @@ namespace BossfallMod.Items
         /// I run this shield through a base constructor that resets its item template to the vanilla shield value.
         /// </summary>
         public TowerShield() : base(ItemGroups.Armor, (int)Armor.Tower_Shield - 102)
+        { }
+
+        /// <summary>
+        /// Alternate constructor, used to restore this shield on game load.
+        /// </summary>
+        /// <param name="itemData">Item save data.</param>
+        public TowerShield(ItemData_v1 itemData) : base(itemData)
         { }
 
         /// <summary>
