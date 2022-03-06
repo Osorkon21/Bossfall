@@ -268,13 +268,16 @@ namespace BossfallMod.Utility
         }
 
         /// <summary>
-        /// This is vanilla's method, modified for Bossfall. It displays a custom HUD message if the
-        /// Display Enemy Level setting is on.
+        /// This is vanilla's method, modified for Bossfall. It displays a custom HUD message if the Display
+        /// Enemy Level setting is on. I removed vanilla's RaycastHit parameter as I didn't use it.
+        /// Comments indicate changes or additions I made.
         /// </summary>
         /// <param name="mobileEnemyBehaviour">The mobile enemy hit by the ray.</param>
         void ActivateMobileEnemy(DaggerfallEntityBehaviour mobileEnemyBehaviour)
         {
             EnemyEntity enemyEntity = mobileEnemyBehaviour.Entity as EnemyEntity;
+
+            // I changed "currentMode" to "activate.CurrentMode" in the below line.
             switch (activate.CurrentMode)
             {
                 case PlayerActivateModes.Info:
@@ -282,14 +285,20 @@ namespace BossfallMod.Utility
                 case PlayerActivateModes.Talk:
                     if (enemyEntity != null)
                     {
-                        // I added most of this custom message generation section.
                         MobileEnemy mobileEnemy = enemyEntity.MobileEnemy;
                         string enemyName = TextManager.Instance.GetLocalizedEnemyName(mobileEnemy.ID);
                         string message;
+
+                        // I added the following two lines.
                         int enemyLevel = enemyEntity.Level;
                         string enemyLevelAndName = string.Format("Level {0} {1}", enemyLevel.ToString(), enemyName);
+
                         message = TextManager.Instance.GetLocalizedText("youSeeA");
+
+                        // Vanilla's line, but I changed the second parameter from "enemyName" to "enemyLevelAndName".
                         message = message.Replace("%s", enemyLevelAndName);
+
+                        // I changed vanilla's PopupMessage call to an AddHUDText call.
                         DaggerfallUI.AddHUDText(message);
                     }
                     break;

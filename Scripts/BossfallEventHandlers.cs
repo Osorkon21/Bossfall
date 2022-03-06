@@ -2,7 +2,7 @@
 // Copyright:       Copyright (C) 2022 Osorkon, vanilla DFU code Copyright (C) 2009-2022 Daggerfall Workshop
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/Osorkon21/Bossfall, vanilla DFU code https://github.com/Interkarma/daggerfall-unity
-// Original Author: Osorkon, vanilla DFU code Gavin Clayton (interkarma@dfworkshop.net)
+// Original Author: Osorkon, vanilla DFU code Gavin Clayton (interkarma@dfworkshop.net), Hazelnut
 // Contributors:    vanilla DFU code Allofich, Numidium, TheLacus, Lypyl (lypyl@dfworkshop.net), Hazelnut
 // 
 // 
@@ -56,6 +56,22 @@ namespace BossfallMod.Events
 
         // Used to restore my custom shields.
         static ItemData_v1 itemData;
+
+        // Stores references to enemies if game is being loaded so I can easily modify these enemies elsewhere.
+        static Dictionary<ulong, DaggerfallEntityBehaviour> entityDictionary = new Dictionary<ulong, DaggerfallEntityBehaviour>();
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// If game is being restored, this dictionary is populated with enemy references so I can easily restore Bossfall save data.
+        /// </summary>
+        public static Dictionary<ulong, DaggerfallEntityBehaviour> EntityDictionary
+        {
+            get { return entityDictionary; }
+            set { entityDictionary = value; }
+        }
 
         #endregion
 
@@ -211,7 +227,8 @@ namespace BossfallMod.Events
         /// poisons, change enemy starting equipment, give Guards a chance to carry items better than Iron or Steel, slightly
         /// vary monster levels, increase skill caps and skill scaling, change spell kits, change class enemy armor scaling,
         /// and scale loot with enemy level rather than player level. I also perform necessary Bossfall AI setup on enemies. If
-        /// enemy has a custom ID, I only perform necessary Bossfall AI setup and do nothing else.
+        /// enemy has a custom ID, I only perform necessary Bossfall AI setup and do nothing else. I also use this method to
+        /// populate a dictionary of enemy references if game is being loaded so I can restore Bossfall save data elsewhere.
         /// </summary>
         /// <param name="sender">An instance of EnemyEntity.</param>
         /// <param name="args">MobileEnemy, DFCareer, and ItemCollection data.</param>
@@ -281,15 +298,6 @@ namespace BossfallMod.Events
                 {
                     entity.ArmorValues[i] = (sbyte)(mobileEnemy.ArmorValue * 5);
                 }
-
-                // DELETE WHEN IMPLEMENTED
-
-                // Add method of restoring data from instance field, add field of Dictionary<string ID, BossfallSaveData_v1 data>
-                // up top, delete entries after u process a given ID so the next enemy has less to iterate thru
-                // if (savedEnemyID == thisEnemyID && savedBossfallEnemyLevel != 0 (or != null))
-                // {
-                //     entity.Level = savedBossfallEnemyLevel;
-                // }
             }
             else if (entity.EntityType == EntityTypes.EnemyClass)
             {
@@ -431,15 +439,6 @@ namespace BossfallMod.Events
                 if (player.Level > 6 && entity.CareerIndex == (int)MobileTypes.Assassin - 128)
                     entity.Level = UnityEngine.Random.Range(21, 30 + 1);
 
-                // DELETE WHEN IMPLEMENTED
-
-                // Add method of restoring data from instance field, add field of Dictionary<string ID, BossfallSaveData_v1 data>
-                // up top, delete entries after u process a given ID so the next enemy has less to iterate thru
-                // if (savedEnemyID == thisEnemyID && savedBossfallEnemyLevel != 0 (or != null))
-                // {
-                //     entity.Level = savedBossfallEnemyLevel;
-                // }
-
                 // I copied this line from the SetEnemyCareer method in EnemyEntity and modified it for Bossfall.
                 // I re-roll enemy's MaxHealth as it likely wasn't correct the first time around.
                 entity.MaxHealth = FormulaHelper.RollEnemyClassMaxHealth(entity.Level, entity.Career.HitPointsPerLevel);
@@ -539,7 +538,7 @@ namespace BossfallMod.Events
                 DaggerfallLoot.RandomlyAddPotionRecipe(2, items);
             }
 
-            // As a final step, I add essential Bossfall AI components to the enemy. Unity executes components in the order
+            // As a finishing touch, I add essential Bossfall AI components to the enemy. Unity executes components in the order
             // they are attached to a given gameObject, so by destroying EnemyAttack and then re-adding it BossfallEnemyAttack's
             // Update method is executed before EnemyAttack's Update method, which is necessary for Bossfall to function correctly.
             Destroy(entityBehaviour.gameObject.GetComponent<EnemyAttack>());
@@ -548,9 +547,14 @@ namespace BossfallMod.Events
             entityBehaviour.gameObject.AddComponent<BossfallEnemySenses>();
             entityBehaviour.gameObject.AddComponent<EnemyAttack>();
 
-            // DWI
-
-            // Restore CanDetectInvisible bool value 2 enemies here, then delete entity enemy from Dictionary as u'll be done w/it
+            // If game is being loaded, add this enemy to a reference dictionary so I can easily modify this enemy elsewhere.
+            // Keys are unique enemy load IDs, which have already been restored at this point in the load process.
+            if (SaveLoadManager.Instance.LoadInProgress)
+            {
+                DaggerfallEnemy dfEnemy = entityBehaviour.GetComponent<DaggerfallEnemy>();
+                ulong key = dfEnemy.LoadID;
+                entityDictionary.Add(key, entityBehaviour);
+            }
         }
 
         /// <summary>
@@ -892,13 +896,18 @@ namespace BossfallMod.Events
                     ray = new Ray(mainCamera.transform.position, mainCamera.transform.forward);
                 }
 
-                // I don't think this Raycast will ever return false, but I include a null check in case it does.
-                if (Physics.Raycast(ray, out RaycastHit hit, PlayerActivate.TreasureActivationDistance, playerLayerMask))
+                // I don't think this Raycast will ever return false, but I check anyway.
+                if (!Physics.Raycast(ray, out RaycastHit hit, PlayerActivate.TreasureActivationDistance, playerLayerMask))
                 {
-                    if (hit.transform.GetComponent<DaggerfallLoot>() == null)
-                    {
-                        return;
-                    }
+                    Debug.Log("Raycast missed loot container.");
+                    return;
+                }
+
+                // I don't think DaggerfallLoot will ever be null, but I check anyway.
+                if (hit.transform.GetComponent<DaggerfallLoot>() == null)
+                {
+                    Debug.Log("No DaggerfallLoot in RaycastHit.");
+                    return;
                 }
 
                 DaggerfallLoot loot = hit.transform.GetComponent<DaggerfallLoot>();
@@ -1021,22 +1030,36 @@ namespace BossfallMod.Events
             }
         }
 
+        /// <summary>
+        /// Generates items for all dungeon and building interior loot piles.
+        /// </summary>
+        /// <param name="sender">Null.</param>
+        /// <param name="args">The loot pile's location index, loot table key, and ItemCollection.</param>
         public static void BossfallOnTabledLootSpawned(object sender, TabledLootSpawnedEventArgs args)
         {
-            // DELETE WHEN IMPLEMENTED
+            // Variables used in this method. Some are from the event args, split into their base components.
+            ItemCollection items = args.Items;
+            PlayerEnterExit playerEnterExit = GameManager.Instance.PlayerEnterExit;
 
-            // This event handler will alter all loot piles in dungeons, houses, etc. This event will fire only when loot
-            // piles are spawned, all enemy loot spawning is handled in BossfallOnEnemyLootSpawned
-        }
+            // I need to know if player is inside a dungeon as I plan on varying loot contents and quality by dungeon type.
+            // "playerEnterExit.IsPlayerInsideDungeon" isn't set until loot is already generated, so that was a dead end.
+            // Fortunately there was a different property to check.
+            if (playerEnterExit.IsCreatingDungeonObjects)
+            {
+                DFRegion.DungeonTypes playerDungeon = playerEnterExit.Dungeon.Summary.DungeonType;
 
-        public static void BossfallOnStartLoad(SaveData_v1 saveData)
-        {
-            // DELETE WHEN IMPLEMENTED
+                if (!BossfallItemBuilder.GenerateLoot(items, (int)playerDungeon, 0, true))
+                    Debug.Log($"Dungeon loot pile generation failed, {playerDungeon} is invalid or out of range.");
+            }
 
-            // U get save data, load mod save into ur cache at this time so u have it for
-            // EnemyEntity event level restore. As u go thru IDs & restore levels remove IDs from cache that you've already
-            // handled so u progressively have less and less in the cache to iterate thru, should end up w/empty cache @ end
-            // use timing in BossfallOnEnemyLootSpawned event handler for precise time for when 2 delete entry from ur cache
+            // Only other option is a non-dungeon interior loot pile.
+            else
+            {
+                DFRegion.LocationTypes playerLocation = GameManager.Instance.PlayerGPS.CurrentLocationType;
+
+                if (!BossfallItemBuilder.GenerateLoot(items, (int)playerLocation, 0, false))
+                    Debug.Log($"Non-dungeon interior loot pile generation failed, {playerLocation} is invalid or out of range.");
+            }
         }
 
         /// <summary>
@@ -1047,7 +1070,7 @@ namespace BossfallMod.Events
         /// custom shields. As I want shields to act exactly like vanilla's except have different armor values based on
         /// shield material, I found this alternate solution unacceptable. Thus, I wrote this method.
         /// </summary>
-        /// <param name="saveData">Unused save data.</param>
+        /// <param name="saveData">Vanilla save data.</param>
         public static void BossfallOnLoad(SaveData_v1 saveData)
         {
             // Variable used in this method.
@@ -1104,7 +1127,7 @@ namespace BossfallMod.Events
                             player.Items.RemoveItem(item);
 
                             // Add the custom shield to player's inventory.
-                            player.Items.AddItem(newItem);
+                            player.Items.AddItem(newItem, ItemCollection.AddPosition.Front);
 
                             // Special handling for replacing equipped shields.
                             if (wasEquipped)
@@ -1159,7 +1182,7 @@ namespace BossfallMod.Events
                             player.WagonItems.RemoveItem(item);
 
                             // Add the custom shield to player's wagon.
-                            player.WagonItems.AddItem(newItem);
+                            player.WagonItems.AddItem(newItem, ItemCollection.AddPosition.Front);
                         }
                     }
                 }
@@ -1201,7 +1224,7 @@ namespace BossfallMod.Events
                             player.OtherItems.RemoveItem(item);
 
                             // Add custom shield to repair list.
-                            player.OtherItems.AddItem(newItem);
+                            player.OtherItems.AddItem(newItem, ItemCollection.AddPosition.Front);
                         }
                     }
                 }
@@ -1222,7 +1245,6 @@ namespace BossfallMod.Events
             UserInterfaceManager uiManager = sender as UserInterfaceManager;
             DaggerfallTradeWindow tradeWindow = uiManager.TopWindow as DaggerfallTradeWindow;
             DaggerfallInventoryWindow inventoryWindow = DaggerfallUI.Instance.InventoryWindow;
-            PlayerGPS.DiscoveredBuilding buildingDiscoveryData = GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData;
             PlayerEntity player = GameManager.Instance.PlayerEntity;
 
             // Trade window section.
@@ -1231,6 +1253,9 @@ namespace BossfallMod.Events
                 // If no Merchant Items are found, do nothing.
                 if (tradeWindow.MerchantItems != null)
                 {
+                    // I use this to determine how many magic items and soul gems I need to recreate.
+                    PlayerGPS.DiscoveredBuilding buildingDiscoveryData = GameManager.Instance.PlayerEnterExit.BuildingDiscoveryData;
+
                     // This searches for armor.
                     List<DaggerfallUnityItem> merchantArmor = tradeWindow.MerchantItems.SearchItems(ItemGroups.Armor);
 
@@ -1246,8 +1271,8 @@ namespace BossfallMod.Events
                         // I replace everything with custom Bossfall items.
                         tradeWindow.MerchantItems.Clear();
 
-                        // This begins a section of code from vanilla's DaggerfallGuildServicePopupWindow script, modified
-                        // for Bossfall.
+                        // This begins a section of code from vanilla's GetMerchantMagicItems method from the
+                        // DaggerfallGuildServicePopupWindow script, modified for Bossfall.
                         int numOfItems = (buildingDiscoveryData.quality / 2) + 1;
                         int seed = (int)(DaggerfallUnity.Instance.WorldTime.DaggerfallDateTime.ToClassicDaggerfallTime()
                             / DaggerfallDateTime.MinutesPerDay);
@@ -1290,8 +1315,8 @@ namespace BossfallMod.Events
                         // I replace everything with custom Bossfall items.
                         tradeWindow.MerchantItems.Clear();
 
-                        // This begins a section of code from vanilla's DaggerfallGuildServicePopupWindow script, modified
-                        // for Bossfall.
+                        // This begins a section of code from vanilla's GetMerchantMagicItems method from the
+                        // DaggerfallGuildServicePopupWindow script, modified for Bossfall.
                         int numOfItems = (buildingDiscoveryData.quality / 2) + 1;
                         int seed = (int)(DaggerfallUnity.Instance.WorldTime.DaggerfallDateTime.ToClassicDaggerfallTime()
                             / DaggerfallDateTime.MinutesPerDay);
@@ -1315,8 +1340,8 @@ namespace BossfallMod.Events
                         // I replace everything with custom Bossfall items.
                         tradeWindow.MerchantItems.Clear();
 
-                        // This begins a section of code from vanilla's DaggerfallGuildServicePopupWindow script, modified
-                        // for Bossfall.
+                        // This begins a section of code from vanilla's GetMerchantMagicItems method from the
+                        // DaggerfallGuildServicePopupWindow script, modified for Bossfall.
                         int numOfItems = (buildingDiscoveryData.quality / 2) + 1;
                         int seed = (int)(DaggerfallUnity.Instance.WorldTime.DaggerfallDateTime.ToClassicDaggerfallTime()
                             / DaggerfallDateTime.MinutesPerDay);
@@ -1373,7 +1398,7 @@ namespace BossfallMod.Events
                                 tradeWindow.MerchantItems.RemoveItem(item);
 
                                 // Add new custom shield to merchant items.
-                                tradeWindow.MerchantItems.AddItem(newItem);
+                                tradeWindow.MerchantItems.AddItem(newItem, ItemCollection.AddPosition.Front);
                             }
                         }
                     }
@@ -1425,7 +1450,7 @@ namespace BossfallMod.Events
                                     inventoryWindow.LootTarget.Items.RemoveItem(item);
 
                                     // Add new custom shield to loot.
-                                    inventoryWindow.LootTarget.Items.AddItem(newItem);
+                                    inventoryWindow.LootTarget.Items.AddItem(newItem, ItemCollection.AddPosition.Front);
                                 }
                             }
 

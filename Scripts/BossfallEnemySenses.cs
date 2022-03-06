@@ -88,9 +88,18 @@ namespace BossfallMod.EnemyAI
         float classicDespawnYDist = 0f;
 
         /// <summary>
-        /// This bool is true if enemy is a level 20 Mage, Sorcerer, or Nightblade. 
+        /// This is true if enemy is a level 20 Mage, Sorcerer, or Nightblade. 
         /// </summary>
         bool canDetectInvisible;
+
+        /// <summary>
+        /// I added this property.
+        /// </summary>
+        public bool CanDetectInvisible
+        {
+            get { return canDetectInvisible; }
+            set { canDetectInvisible = value; }
+        }
 
         public DaggerfallEntityBehaviour Target
         {
@@ -195,15 +204,28 @@ namespace BossfallMod.EnemyAI
             set { targetRateOfApproach = value; }
         }
 
+        void Awake()
+        {
+            // I moved these following three lines from "Start" to "Awake". I need them for my "canDetectInvisible" check.
+            // This script is added to enemies well after vanilla components are added so there won't be any conflicts.
+            mobile = GetComponent<DaggerfallEnemy>().MobileUnit;
+            entityBehaviour = GetComponent<DaggerfallEntityBehaviour>();
+            enemyEntity = entityBehaviour.Entity as EnemyEntity;
+
+            // Checks if an enemy is a Level 20 Mage, Sorcerer, or Nightblade. Only needs to be checked once. I put this in
+            // "Awake" as then it will be set before I restore its value from Bossfall save data.
+            if (enemyEntity.Level == 20 && (mobile.Enemy.ID == 128 || mobile.Enemy.ID == 131 || mobile.Enemy.ID == 133))
+            {
+                canDetectInvisible = true;
+            }
+        }
+
         void Start()
         {
             // I added the bossfallMotor and senses lines.
             bossfallMotor = GetComponent<BossfallEnemyMotor>();
             senses = GetComponent<EnemySenses>();
 
-            mobile = GetComponent<DaggerfallEnemy>().MobileUnit;
-            entityBehaviour = GetComponent<DaggerfallEntityBehaviour>();
-            enemyEntity = entityBehaviour.Entity as EnemyEntity;
             motor = GetComponent<EnemyMotor>();
             questBehaviour = GetComponent<QuestResourceBehaviour>();
             player = GameManager.Instance.PlayerEntityBehaviour;
@@ -224,12 +246,6 @@ namespace BossfallMod.EnemyAI
 
             if (DaggerfallUnity.Settings.EnhancedCombatAI)
                 FieldOfView = 190;
-
-            // Checks if an enemy is a Level 20 Mage, Sorcerer, or Nightblade. Only needs to be checked once.
-            if (enemyEntity.Level == 20 && (mobile.Enemy.ID == 128 || mobile.Enemy.ID == 131 || mobile.Enemy.ID == 133))
-            {
-                canDetectInvisible = true;
-            }
         }
 
         void FixedUpdate()

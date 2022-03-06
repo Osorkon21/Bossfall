@@ -26,7 +26,7 @@ using UnityEngine;
 namespace BossfallMod.Items
 {
     /// <summary>
-    /// Contains custom loot spawning methods.
+    /// Custom loot spawning methods.
     /// </summary>
     public static class BossfallItemBuilder
     {
@@ -60,7 +60,8 @@ namespace BossfallMod.Items
         static readonly short[] bossfallConditionMultipliersByMaterial = { 2, 3, 2, 2, 2, 1, 1, 1, 1, 1 };
 
         // This array is mostly vanilla code from LootTables, but I change some numbers for Bossfall's custom loot generation.
-        static LootChanceMatrix[] BossfallLootTables = {
+        // I also made the array readonly.
+        static readonly LootChanceMatrix[] BossfallLootTables = {
             new LootChanceMatrix() {key = "-", MinGold = 0, MaxGold = 0, P1 = 0, P2 = 0, C1 = 0, C2 = 0, C3 = 0, M1 = 0, AM = 0, WP = 0, MI = 0, CL = 0, BK = 0, M2 = 0, RL = 0 },
             new LootChanceMatrix() {key = "A", MinGold = 1, MaxGold = 10, P1 = 0, P2 = 0, C1 = 0, C2 = 0, C3 = 0, M1 = 0, AM = 5, WP = 5, MI = 2, CL = 4, BK = 0, M2 = 2, RL = 0 },
             new LootChanceMatrix() {key = "B", MinGold = 0, MaxGold = 0, P1 = 10, P2 = 10, C1 = 0, C2 = 0, C3 = 0, M1 = 0, AM = 0, WP = 0, MI = 0, CL = 0, BK = 0, M2 = 0, RL = 0 },
@@ -87,7 +88,7 @@ namespace BossfallMod.Items
 
         #endregion
 
-        #region Public Methods
+        #region Loot Generation
 
         /// <summary>
         /// Vanilla's method from DaggerfallLoot, comments precede changes or additions I made.
@@ -110,39 +111,41 @@ namespace BossfallMod.Items
         /// <summary>
         /// Vanilla's method from LootTables, comments precede changes or additions I made.
         /// </summary>
-        /// <param name="loot">The loot container to generate loot for.</param>
-        /// <param name="locationIndex">Player's current interior location.</param>
-        /// <param name="enemyLevelModifier">If spawning loot for an enemy, enemy level * 50. Otherwise, 0.</param>
-        /// <returns>True if locationIndex has a valid loot table key, false otherwise.</returns>
-        public static bool GenerateLoot(DaggerfallLoot loot, int locationIndex, int enemyLevelModifier = 0)
+        /// <param name="items">I changed DaggerfallLoot to ItemCollection to better fit event args.</param>
+        /// <param name="locationIndex">Current location.</param>
+        /// <param name="locationModifier">I added this parameter. I plan on varying loot contents/quality by location.</param>
+        /// <param name="isDungeon">I added this parameter. I plan on varying loot contents/quality by location.</param>
+        /// <returns>True if locationIndex yields a valid loot table key, false otherwise.</returns>
+        public static bool GenerateLoot(ItemCollection items, int locationIndex, int locationModifier = 0, bool isDungeon = true)
         {
-            string[] lootTableKeys = {
-            "K", // Crypt
-            "N", // Orc Stronghold
-            "N", // Human Stronghold
-            "N", // Prison
-            "K", // Desecrated Temple
-            "M", // Mine
-            "M", // Natural Cave
-            "Q", // Coven
-            "K", // Vampire Haunt
-            "U", // Laboratory
-            "D", // Harpy Nest
-            "N", // Ruined Castle
-            "L", // Spider Nest
-            "F", // Giant Stronghold
-            "S", // Dragon's Den
-            "N", // Barbarian Stronghold
-            "M", // Volcanic Caves
-            "L", // Scorpion Nest
-            "N", // Cemetery
+            string[] lootTableKeys = {               // Travel map outdoor location mapped to this lootTableKeys index
+            "K", // DungeonTypes Crypt                  LocationTypes TownCity          Walled town
+            "N", // DungeonTypes Orc Stronghold         LocationTypes TownHamlet        Medium town 
+            "N", // DungeonTypes Human Stronghold       LocationTypes TownVillage       Small town
+            "N", // DungeonTypes Prison                 LocationTypes HomeFarms         Grange, etc.
+            "K", // DungeonTypes Desecrated Temple      LocationTypes DungeonLabyrinth  Large dungeon
+            "M", // DungeonTypes Mine                   LocationTypes ReligionTemple    Regional temple
+            "M", // DungeonTypes Natural Cave           LocationTypes Tavern            Pub, etc.
+            "Q", // DungeonTypes Coven                  LocationTypes DungeonKeep       Medium dungeon
+            "K", // DungeonTypes Vampire Haunt          LocationTypes HomeWealthy       Manor, etc.
+            "U", // DungeonTypes Laboratory             LocationTypes ReligionCult      Shrine
+            "D", // DungeonTypes Harpy Nest             LocationTypes DungeonRuin       Small dungeon
+            "N", // DungeonTypes Ruined Castle          LocationTypes HomePoor          Hovel, etc.
+            "L", // DungeonTypes Spider Nest            LocationTypes Graveyard         Cemetery
+            "F", // DungeonTypes Giant Stronghold       LocationTypes Coven             Witch coven
+            "S", // DungeonTypes Dragon's Den           LocationTypes HomeYourShips     Player's ship
+            "N", // DungeonTypes Barbarian Stronghold
+            "M", // DungeonTypes Volcanic Caves
+            "L", // DungeonTypes Scorpion Nest
+            "N", // DungeonTypes Cemetery
             };
 
             if (locationIndex < lootTableKeys.Length)
             {
-                // I reroute the method call to a method in this script. I pass on enemyLevelModifier so loot scales with
-                // enemy level rather than the player's.
-                GenerateItems(lootTableKeys[locationIndex], loot.Items, enemyLevelModifier);
+                // I reroute the method call to a method in this script. I added the (currently unused)
+                // locationModifier parameter at the end as I plan on varying loot pile contents and quality depending
+                // on player's current location. I also replaced "loot.Items" in the second parameter with "items".
+                GenerateItems(lootTableKeys[locationIndex], items, locationModifier);
                 char key = lootTableKeys[locationIndex][0];
                 int alphabetIndex = key - 64;
 
@@ -150,18 +153,16 @@ namespace BossfallMod.Items
                 {
                     int[] mapChances = { 2, 1, 1, 2, 2, 15 };
                     int mapChance = mapChances[alphabetIndex - 10];
-                    DaggerfallLoot.RandomlyAddMap(mapChance, loot.Items);
-                    DaggerfallLoot.RandomlyAddPotion(4, loot.Items);
-                    DaggerfallLoot.RandomlyAddPotionRecipe(2, loot.Items);
+
+                    // In the following three lines I replaced "loot.Items" with "items".
+                    DaggerfallLoot.RandomlyAddMap(mapChance, items);
+                    DaggerfallLoot.RandomlyAddPotion(4, items);
+                    DaggerfallLoot.RandomlyAddPotionRecipe(2, items);
                 }
                 return true;
             }
             return false;
         }
-
-        #endregion
-
-        #region Private Methods
 
         /// <summary>
         /// Vanilla's method from LootTables, comments precede changes or additions I made.
