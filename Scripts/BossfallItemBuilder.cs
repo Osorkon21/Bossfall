@@ -203,7 +203,7 @@ namespace BossfallMod.Items
             // I removed vanilla's formula for gold generation based on player level and replaced it with this
             // awkward-looking formula. This randomly generates gold amounts that don't vary based on player level. When a
             // gold pile is generated for an enemy there's a 20% chance of the playerMod being above 1. The playerMod is
-            // then multiplied by a number between MinGold and MaxGold, which originate from LootTables's DefaultLootTables
+            // then multiplied by a number between MinGold and MaxGold, which originate from this script's BossfallLootTables
             // array. The playerMod can be as high as 20 so the gold pile can be quite large.
 
             // DELETE WHEN IMPLEMENTED

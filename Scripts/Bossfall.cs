@@ -167,13 +167,13 @@ namespace BossfallMod
             // Create instance for save data.
             BossfallSaveData_v1 bossfallSaveData = new BossfallSaveData_v1();
 
-            // Fresh dictionary for enemy data. Not sure this is necessary.
+            // Fresh dictionary instance for enemy data.
             bossfallSaveData.bossfallEnemySaveData = new Dictionary<ulong, BossfallEnemySaveData>();
 
             // I invoke the private SerializableEnemies "get" property accessor in SerializableStateManager using Reflection.
-            // It's easier than calling GetObjectsOfType<DaggerfallEntityBehaviour> and then searching every scene cache for
-            // enemies. I can't call GetEnemyData in SerializableStateManager as that method doesn't return enemy levels or
-            // DaggerfallEntityBehaviour I can then search for enemy levels, so it wouldn't help me.
+            // It's easier than calling GetObjectsOfType<DaggerfallEntityBehaviour> and then searching the permanent scene
+            // cache for enemies. I can't call GetEnemyData in SerializableStateManager as that method doesn't return enemy
+            // levels or DaggerfallEntityBehaviour I can then search for enemy levels, so it wouldn't help me.
             SerializableStateManager serializableStateManager = SaveLoadManager.StateManager;
             Type type = serializableStateManager.GetType();
             PropertyInfo property = type.GetProperty("SerializableEnemies", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -256,7 +256,7 @@ namespace BossfallMod
                 }
             }
 
-            // Return assembled collection of Bossfall save data. Will be null if no enemy data was found.
+            // Return assembled collection of Bossfall save data. Will be empty if no enemy data was found.
             return bossfallSaveData;
         }
 
@@ -272,7 +272,7 @@ namespace BossfallMod
 
             Debug.Log("Bossfall.RestoreSaveData method reached.");
 
-            // Check if incoming object was Bossfall save data.
+            // Check if incoming object is Bossfall save data.
             BossfallSaveData_v1 bossfallSaveData = saveData as BossfallSaveData_v1;
 
             // I don't think this will ever be null, but I check anyway.
@@ -283,6 +283,9 @@ namespace BossfallMod
                 // Remove below Debug.Log lines after testing complete
 
                 Debug.Log("Bossfall.RestoreSaveData received an object that wasn't BossfallSaveData_v1 or it was null. Clearing EntityDictionary and returning.");
+
+                // This dictionary was populated with references to all instantiated enemies earlier in the load process,
+                // and I clear it to avoid potential duplicate entry errors.
                 BossfallEventHandlers.EntityDictionary.Clear();
                 return;
             }
@@ -294,6 +297,9 @@ namespace BossfallMod
                 // Remove below Debug.Log lines after testing complete
 
                 Debug.Log("Bossfall.RestoreSaveData.bossfallEnemySaveData is null. Clearing EntityDictionary and returning.");
+
+                // This dictionary was populated with references to all instantiated enemies earlier in the load process,
+                // and I clear it to avoid potential duplicate entry errors.
                 BossfallEventHandlers.EntityDictionary.Clear();
                 return;
             }

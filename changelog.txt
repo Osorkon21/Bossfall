@@ -1,0 +1,1863 @@
+Project:         Bossfall
+Copyright:       Copyright (C) 2022 Osorkon
+License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
+Source Code:     https://github.com/Osorkon21/Bossfall
+Original Author: Osorkon
+
+Note: This file is a combination of changes made in previous versions and planned upcoming changes, written over several months.
+      The formatting for the upcoming/planned changes section is extremely rough - this is not a file written with the reader in mind.
+      I really don't want to lose this information, so I added it to GitHub as a backup.
+
+Bossfall v1.3.1 Changelog
+
+LOOT:
+
+Reduced armor piece generation chances for enemies that start with equipment
+
+QUESTING:
+
+Activating quest enemies in Info mode displays their level and name at any distance
+
+BOSSFALL v1.3.1 TESTING:
+
+Test built .dfmod w/fresh, newest version of DFU make sure ur mod works w/it and doesn't crash
+Test ur new shields w/D.R.E.A.M. see if they correctly use modded textures (they should work fine)
+Test quest foes in Info mode (make sure "You are too far away" message doesn't pop up & ur custom Level HUD message displays)
+Test every enemy for correct missile/spell predictions after u fix enemy AI w/Reflection
+Test enemy knockbacks w/monsters and classes (male and female classes) make sure u approve?
+Test all enemies for correct move speeds on Vanilla, Fast, and Very Fast settings?
+Test "World of Daggerfall" mod w/new .dfmod, save outdoors, load outdoors, save inside, load inside w/Bossfall and World of Daggerfall running @ same time make sure nothing breaks
+Test immunity HUD msgs make sure they reset when player kills enemy and don't otherwise
+Test all enemies at enemy levels 1, 5, 10, 20 for correct wpn/H2H dmg?
+Test poison infliction make sure u approve of all current Poison infliction methods & Assassins pierce Poison Immunity once player is above level 6 & nothing else does?
+Test all enemy monster armor make sure u approve?
+Test all enemy class armor at enemy levels 1, 10, 20, make sure u approve?
+Make sure Ghosts and Vampire Ancients no longer cast any spells
+Test house containers make sure they contain ur custom enchanted holy items (that means all ur house container loot generation works)
+Make sure enemy spellcasters cast proper number o' spells & u approve
+Test a few arrow firers make sure arrow prefab null reference error doesn't happen
+Test vampire/lycan on enemy death stuff make sure u approve
+Test dungeon entrance flavor msgs w/a few dungeons make sure u approve
+Test skill advancement difficulty on all 3 settings make sure u approve?
+Test character creation make sure u approve
+Test magic item creation make sure ur items r the ones getting created
+Test potion creation make sure Dispel Magic potion (use console 2 create potions) & potion recipe (from Alchemist shops) get created
+Test item creation w/enemies that use starting equipment w/out mods make sure it works & u approve
+Test item creation w/enemies that use starting equipment w/mods (RPR:I mainly) make sure it works & u approve
+Test boss warning HUD msgs on a few bosses & powerful bosses make sure u approve
+Test loot piles make sure they use expanded sprite list & don't w/setting turned OFF & u approve
+Test powerful enemy rarity on both Powerful Enemies Are setting values make sure u approve?
+Test startup quest make sure it pops on new game start
+
+BOSSFALL v1.3.1 TO-DO:
+
+.DFMOD ESSENTIALS TO ADD/FINISH BEFORE v1.3.1 RELEASE:
+
+40 Spell Cost FormulaOverride (remember 2 register it w/RegisterOverride)
+Skill difficulty formula override, use previous skill difficulty tables, vary by Bossfall difficulty setting
+Character creation
+Use ur BossfallMagicItemTemplates 2 create all magic items
+Bossfall startup quest
+Enemy AI 2 stop arrow prefab null reference error
+Clear entire "NOTES" section, move stuff 2 do in v1.4 there, finish stuff to do b4 v1.3.1 releases
+Add all stuff below "NOTES" section up to v1.4 TO-DO
+Add BossfallEnemyDeath event handler 4 vampire/lycan on death stuff in BossfallEnemyMotor 2 make it instanced by enemy? Or do it @ end o' FormulaOverride CalculateAttackDamage? See how u did it in v1.3 for guidance
+Include StreamingAssets/Quests folder alongside .dfmod file in DL package that contains ur altered vanilla quests, add "put this whole folder in StreamingAssets/Quests if u don't wanna fite Assassins early" note
+Include finished/updated/proofread/checked v1.3.1 Changelog alongside StreamingAssets/Quests folder and .dfmod file in DL package
+Add Potion of Dispel Magic
+
+.DFMOD NOTES, CLEAR THESE BEFORE v1.3.1 RELEASE:
+
+Double check all ur item gen methods that handle loot pile, enemy loot table random items, and shop shelf/house container loot gen - make sure mod items are automatically generated when appropriate so u don't need 2 add them manually (I think this is already the case but it never hurts 2 check)
+Move immunity/resistance/weakness HUD msg bools out of BossfallOverrides.CalculateAttackDamage, remove all trace o' them from BossfallOverrides script, add 'em 2 BossfallEnemyMotor instead, make 'em instance per enemy to avoid silly multiple msg situations
+To implement above line u can get DaggerfallEntityBehaviour from EnemyEntity incoming in parameter of CalculateAttackDamage, then GetComponent<BossfallEnemyMotor>() from DaggerfallEntityBehaviour 2 get access to bools
+The note w/list o' item settings & enemies 2 add item settings 4 has been cleared from paper note list, u can toss it when xferred 2 new paper note
+In BFEnemyMotor in spellcast bools include check 4 enemy's current HP if it's full and enemy wants 2 cast Heal return false
+Change Legal Info on NexusMods & 3rd forum post, include blurb about "not all code was written by me, I've marked all code I didn't write, check code for author before using/crediting"
+Read thru all scripts, make sure u remove all unnecessary Debug.Log lines and DWI/DELETE WHEN IMPLEMENTED references (after implementing them ofc) b4 releasing anything
+As final step b4 release, make sure to delete & re-add all Bossfall Scripts, Quests, and Templates to Mod Builder in Unity? To make sure u have the right GUID? Does this matter?
+Go thru all 3 Bossfall AI scripts, check if methods have references, if not delete 'em, check actual game make sure u didn't break anything ofc
+Go thru all 3 Bossfall AI scripts make sure no properties & their underlying values are referenced by the scripts after u implement Reflection to access vanilla AI scripts properties
+In ur enemy loot generation methods, for the 2 random custom items @ the end, use ItemHelper.GetCustomItemsForGroup(ItemGroups.Weapons) or (ItemGroups.Armor) to find custom wpns/armor & if that method returns something add one or two custom items
+Advise users of .dfmod to always put Bossfall last, Meaner Monsters, Unleveled Loot, & RPR:I will likely conflict w/Bossfall
+5189333 is ur Dispel Magic potion key (that uses ur custom Dispel Magic potion recipe)
+Change to Bossfall arrow weights - don't make them weigh anything, carrying around heavy arrows is kinda annoying
+Create a custom SpellRecords.json file? If this will allow u to easily implement previous Bossfall spell changes, DFU will load it and overwrite vanilla's SpellRecords.txt with ur custom data, remember to include it in Bossfall mod Assets
+If u add BossfallEnemyDeath script remember to add this component to custom enemies in BossfallOnLootSpawned method in Bossfall.cs
+Rework ranged/touch spell targeting using Reflection so u don't need ur custom aim methods
+Rework vanilla AI using Reflection so u don't need ur Bossfall custom AI methods to avoid breaking Macadaynu's Language Skill Overhaul mod
+Add FAQ question about "why do spells look so funny when they are fired from enemies?" to NexusMods & 3rd forum post (if u can't fix vanilla aim methods w/Reflection)
+Remember to unsubscribe enemies from OnCastReadySpell when they die (add to ur BossfallOnEnemyDeath event) - only do this if u can't fix vanilla aim methods w/Reflection, if u can delete all Bossfall aim fixing methods & code in every script
+Access AdjustLastPositionY in EnemyMotor using Reflection and then re-enable enemy fall damage while outside in BossfallEnemyMotor
+GameManager.Instance.Dungeon.Summary.DungeonType (or whatever) can be called to see what dungeon type ur entering, use that for ur dungeon entrance flavor msgs, make popup HUD msgs last twice as long as normal? (or SETTING: Make actual msg box popup 2 display ur dungeon entrance flavor txt?)
+Add fastMoveSpeeds array to BossfallEnemyMotor populate it w/Bossfall EnemyBasics MoveSpeed field contents
+Add skill method override to BossfallOverrides, remember 2 register it w/FormulaOverride, use Bossfall skill difficulty that changes w/Bossfall setting values
+Download latest version of all used mods to make sure latest versions work w/Bossfall .dfmod b4 releasing anything
+Update all FAQ questions for relevance after .dfmod release on NexusMods and 3rd forum post
+Check to see if ur mod will work w/DFU 0.13.4, if not update mod requirements w/whatever next version is b4 releasing anything
+Add "why doesn't Disable AI work" FAQ question to NexusMods & 3rd forum post
+Add mod interaction settings so Bossfall is always positioned last? If necessary ofc
+Write Bossfall .dfmod
+After implementing previous version's changes to Bossfall .dfmod add IMPLEMENTED at beginning of changelog line, if u can't do it w/current mod support or w/Reflection add IMPOSSIBLE
+If u put IMPLEMENTED on changelog line u must add changes to v1.3.1 Changelog, edit previous Changelog comments for brevity/clarity, then remove previous Changelog line so u know it's been added & u don't need to add it anymore
+End goal is clear changelog before v1.3.1 as it's all been added (may not happen with v1.3.1 u'll prolly release version that doesn't include all previous changes, but end goal is to add everything no matter how small)
+Update lines of code & comments added or modified in 2 NexusMods credits spots & 3rd forum post, just put lines o' code & comments in .dfmod
+Remove lines of comments from 2 NexusMods credits spots and 3rd forum post
+Update time spent in 2 NexusMods credits spots & 3rd forum post, just put "worked on since mid-October 2021", whatever that value in months is
+
+.DFMOD INVISIBILITY:
+
+Credit "thevm" for the inspiration for these Invis changes
+Give enemies that used to see thru Invis one-time chance to see thru it (checks once per enemy), have it set bool if check succeeds
+Depends on player's Illusion skill, use Lerp to add between 50% chance to see thru Invis @ 1% Illusion skill down to added 0% chance to see thru Invis @ 100% Illusion skill)
+Base chance to see thru Invis increases the more powerful the enemy is (Daedra have like 15-20% chance to see thru it)
+Add HUD msg to tell player which monster can see thru it & why? ("The Imp is not fooled by your clumsy Illusion spell.")
+
+Base chance to see thru Invis @ 100% player Illusion skill (flesh out rest o' list w/all previous enemies that used 2 see thru Invis):
+
+Imp 0
+
+.DFMOD ITEMS:
+
+Nerf glove/boot H2H durability damage slightly (2 for gloves, 3 for boots), credit "thevm" for feedback that led 2 change
+
+.DFMOD LYCANTHROPY:
+
+Custom HUD messages display when player with Lycanthropy kills innocents, I added 37 different messages to avoid repetition
+If player with Lycanthropy kills a Guard "Guard just died." message is replaced w/custom HUD message
+
+.DFMOD VAMPIRISM:
+
+Make heal happen only if player kills enemy, include distance check from GitHub Bossfall branch so player only heals in melee range
+Figure something out that only fires when player kills an enemy and use that
+Edit ur current Vampire msg array, make them generic, not enemy specific
+Edit ur current Vampire msg array for tense make any msg fit any enemy name
+Add 1 to Zombie/FleshAtronach elements in VampireHealAmount array
+Delete current Zombie/FleshAtronach death msgs from Vampire msg array, delete all empty strings from same array as well, delete Harpy msg from same array as well
+Display random msg from separate array filled w/gross msgs if VampireHealAmount array element == 1, msgs are "You retch on old %s blood.", "You gag on foul %s blood.", etc.
+Display random msg from current Vampire msg array if VampireHealAmount array element > 1, call string.Replace(%s) method, put %s in all msgs 2 indicate where to put enemy name
+Add screenshot of Vampire HUD message (an eye-catching msg) to NexusMods, and to forum post somewhere from post 1-3
+Add +10 player HP for Vampire civilian NPC kills, pop up standard Vampire on kill HUD msg, put this check in wherever u end up putting Vampire checks
+
+Vampire players no longer heal w/Hand-to-Hand strikes (as in v1.3), instead they heal after enemy dies, heal amount depends on enemy
+Vampire/blood-related HUD messages appear when Vampire player is healed, replaces "Enemy just died." msg, every enemy has different msg
+
+HP recovery amounts:
+
+Rat 3 HP
+Imp 1 HP
+Giant Bat 3 HP
+Grizzly Bear 75 HP
+Sabertooth Tiger 50 HP
+Spider 9 HP
+Orc 40 HP
+Centaur 50 HP
+Werewolf 40 HP
+Nymph 15 HP
+Slaughterfish 5 HP
+Orc Sergeant 50 HP
+Harpy 15 HP
+Wereboar 50 HP
+Giant 150 HP
+Giant Scorpion 12 HP
+Orc Shaman 45 HP
+Orc Warlord 200 HP
+Daedroth 100 HP
+Vampire 175 HP
+Daedra Seducer 150 HP
+Vampire Ancient 255 HP
+Daedra Lord 255 HP
+Dragonling 15 HP
+Dragonling_Alternate 200 HP
+Dreugh 20 HP
+Lamia 30 HP
+Mage 15 HP
+Spellsword 20 HP
+Battlemage 25 HP
+Sorcerer 15 HP
+Healer 15 HP
+Nightblade 20 HP
+Bard 20 HP
+Burglar 20 HP
+Rogue 25 HP
+Acrobat 15 HP
+Thief 20 HP
+Assassin 200 HP
+Monk 35 HP
+Archer 30 HP
+Ranger 35 HP
+Barbarian 50 HP
+Warrior 45 HP
+Knight 40 HP
+Guard (HALT!) 50 HP
+
+
+BOSSFALL v1.4 TO-DO:
+
+ACROBATICS:
+
+Climbing is way too easy, change base chance of success w/Reflection if possible (also turn off skill check override w/Advanced Climbing)
+Above a certain height instakill falling entities, whatever height from Privateer's Hold top o' big stairs to floor is is ur cutoff, make sure falling from city walls isn't instakill
+Below that falling dmg starts @ 3.8f, dmg is 10f permetrefallen (look @ PlayerHealth for template, use Reflection to implement)
+In BossfallPlayerActivate Update method? check if IsRappelling is true, if it is save the initial Climbing skill checks value and once IsRappelling is false set Climbing checks to starting value (this makes Rappel mode not give Climbing checks)
+
+DISEASE/POISON:
+
+Add Poison that inflicts ur custom Slow effect
+Add Poison that inflicts ur custom Fear effect
+Add Poison that inflicts ur custom Enfeeble effect
+Change AssignEnemyStartingEquipment (or equivalent methods for enemies u want to add poison chance for) method to include ur custom poisons 4 wpn poisons
+Add more poison/disease curing options? With guilds or something? Or thru temples?
+
+DUNGEON LOOT GENERATION:
+
+This section applies 2 both dungeon loot piles & loot table generated enemy items for enemies in said dungeons, does not apply to enemy equipment
+locationModifier = DungeonSize lM * DungeonType lM (Cemetery is just a flat 0.1 lM, not affected by DungeonSize)
+Have two parameters implement what this section gets - both are relative to 1, which is starting gen chance of 75 for while loops in BossfallItemBuilder item gen methods & +0 to enemyLevelModifier (which is enemy level * 50, which is fed into ur BossfallOverrides.RandomMaterial method)
+A locationModifier of 3 will set starting gen chance of 150 for while loops & +250 to enemyLevelModifier, and a 0.01 locationModifier will set starting gen chance of 0 for while loops & -250 to enemyLevelModifier (a +5 or -5 enemy level boost essentially)
+
+No armor/weapons/ingredients/books underwater, it'd erode, gold & Silver & magic items would not so they can still be there
+
+DungeonSize (pull from playerLocation, dbl check u can read this while ur entering dungeon):
+
+DungeonLabyrinth: 1.5 lM
+DungeonKeep: 1 lM
+DungeonRuin: 0.5 lM
+
+DungeonType:
+
+Crypt: 0.66 lM
+Orc Stronghold: 0.75 lM, Orcish somewhat more common
+Human Stronghold: 1 lM
+Prison: 1 lM, enemies have higher chance of poisoned weapons
+Desecrated Temple: 1.5 lM, tons o' Religious Items
+Mine: 0.5 lM Dwarven more common, lots o' Warhammers
+Natural Cave: 0.25 lM, armor/wpns very rare, ingredients abound
+Coven: 1.75 lM, Books/ingredients/magic items very common in Covens, Daedric somewhat more common
+Vampire Haunt: 2 lM, Best loot in the game
+Laboratory: 1 lM, Ingredients/magic items very common
+Harpy Nest: 0.25 lM
+Ruined Castle: 1 lM
+Spider Nest: 0.25 lM, mostly clothing and junk
+Giant Stronghold: 1.25 lM
+Dragon's Den: 0.6 lM, tons o' gold, wpns/armor, higher chance o' magic items, little of everything else as dragons don't collect other stuff
+Barbarian Stronghold: 0.8 lM, higher chance o' Iron/Steel, less chance of every other material, no books
+Volcanic Caves: 1.5 lM
+Scorpion Nest: 0.4 lM, mostly clothing and junk
+Cemetery: 0.1 lM, mostly clothing and junk, this number doesn't change based on DungeonSize, is constant
+
+ENEMY EQUIPMENT:
+
+For enemies that use equipment (under current Bossfall rules) this section determines WHAT KIND of equipment will be generated
+This section does not affect loot table generated items, only enemy starting equipment for enemies that use said equipment
+
+Enemies carry what it looks like they're wielding & their class can use? I think this would be 2 restrictive tho so prolly don't use it
+Enemies who don't wield 2H in their sprites only carry 2H as random loot? This may be too restrictive, mite not wanna use this
+Non-magical or non-spellcasting enemies very rarely carry any ingredients, and almost never good ones
+Spellcasters carry ingredients/books more often & ingredients are on average better quality
+Thief types carry stolen gems/jewelry & more gold (stolen), more maps?
+Bards paintings & maps?
+Spellcasters often carry potions, other enemies (fighters and any others u think of) very rarely do
+Acrobats: lots of high quality clothing 4 exercising or running or w/e
+All cloak-wearing enemies drop cloaks alla time? If u feel like going thru enemy sprites, and I don't feel like it right now
+All class enemies drop clothing, quality depends on enemy
+Healers drop HP, Stamina pots alla time? If u feel like getting that specific w/potion gen
+Make item rarity in ItemTemplates some kind o' key that determines what enemies carry them & how rare they are? Do this at least for wpns/armor?
+
+When finished building item chance/quality list at end of this section, to add this as code, convert + to 3, normal to 2, - to 1, x to 0, add finished array 2 code in BossfallItemBuilder up top as field as follows:
+
+static Dictionary<byte, byte[]> enemyItemGenData = new Dictionary<byte, byte[]>();
+
+where byte = MobileEnemy.ID and byte[] is the enemy item chance/quality list converted to an array
+
+In Bossfall.Init add the actual values to the dictionary? Or can u initialize the dictionary w/values in it already? Figure out how 2 instantiate it and add ur item chance/quality list obv
+
+If u wanna do above method, put number next to symbol first rather than overwriting symbol right away, that way u can dbl check & verify that number matches symbol & is what it should be before deleting symbol
+
+If above idea fails, u have another option, this one facilitates error-checking - still create a new dictionary, but Value is string[] instead of byte[], read the actual strings from the array and throw exceptions if strings do not match what they should (I mite like this way better as I don't have to wonder if I input the right 2 or 3 or 1 as I'll never know the difference unless I check every single enemy for loot repeatedly & I don't really want to do that)
+
+Implement item generation changes from section below this one as follows:
+
+Higher gold amount doubles gold generated in BossfallItemBuilder
+Lower gold amount halves gold generated in BossfallItemBuilder
+
+For higher bow/weapon/armor/magic item quality indicators:
+
+Higher (item) quality raises enemyLevelModifier by 250 for that item group
+Lower (item) quality reduces enemyLevelModifier by 250 for that item group
+
+For 2H, 1H, 1HS, 21H, BC:
+
+Higher chance means const 75% chance enemy will use this wpn kit (this const is split equally among all higher indicators if multiple are present), 25% something else (if nothing else is possible, then Higher chance = 100% chance obv)
+Normal chance total probability must equal twice that of total lower probability if both are present and complications arise
+Lower chance means 1/4 total chance of higher's total chance of occurring, 1/2 total chance of normal's total chance of occurring (see below line for more specific situational guidance)
+Highest indicator always has priority and will get full probability of occurring, no matter what (e.g. if there's 1 higher, 2 normal, and 1 lower indicator, the higher has full 75% chance of occurring, 2 normal must equal a total probability twice that of lower's, so each normal has 8.33% chance of happening, so lower ends up w/8.33% chance of happening)
+If there are multiple wpn kits w/same higher/lower indicator, split up probability evenly between them (e.g. if there are 2 higher indicators and 2 lower, then higher indicators each have 37.5% chance, lower indicators each have 12.5% chance of happening)
+If there is one higher/normal indicator and multiple lower indicators, split up probability evenly between the lower indicators, higher/normal remains 75%/50% chance of happening
+
+While loop generated items:
+
+Make this clothing generation while loop NOT generate any kind of cloak (they're generated elsewhere)  |
+                                                                                                       v
+Higher armor/ingredient/book/religious item/clothing chance raises starting while loop chance in BossfallItemBuilder by 50 for that item group
+Lower armor/ingredient/book/religious item/clothing chance reduces starting while loop chance in BossfallItemBuilder by 50 for that item group
+
+Higher ingredient quality generates from highest quality ingredient list (if that differentiation has already been made in vanilla code, if not make a custom list)
+Normal ingredient quality generates from mid-tier quality ingredient list (if that differentiation has already been made in vanilla code, if not make a custom list)
+Lower ingredient quality generates from lowest quality ingredient list (if that differentiation has already been made in vanilla code, if not make a custom list)
+
+Higher magic item chance raises starting while loop chance in BossfallItemBuilder by 3 for magic item group (or whatever number is necessary to not always be 0 or less if Lower indicator is raised)
+Lower magic item chance reduces starting while loop chance in BossfallItemBuilder by 3 for magic item group (or whatever number is necessary to not always be 0 or less if Lower indicator is raised)
+
+Higher religious item quality can generate all non-custom religious items and all my custom holy items
+Normal religious item quality can generate all non-custom religious items plus custom Holy Water
+Lower religious item quality can generate all non-custom holy items minus Holy Candles (they're worth too much)
+
+Higher clothing quality can generate all clothing
+Normal clothing quality can generate clothing with rarities up to 17 (item rarities are set in ItemTemplates.txt)
+Lower clothing quality can generate clothing with rarities up to 13 (item rarities are set in ItemTemplates.txt)
+
+Non-while loop items - these are chances to generate only 1 item, they'll never generate more than 1:
+
+Higher map chance raises chance by 3 (or whatever number is necessary to not always be 0 or less if Lower indicator is raised)
+Lower map chance reduces chance by 3 (or whatever number is necessary to not always be 0 or less if Lower indicator is raised)
+
+Higher potion chance raises chance by 3
+Lower potion chance reduces chance by 3
+
+Higher potion quality unlocks Bossfall OP potion tier
+Normal potion quality uses standard vanilla potions
+Lower potion quality will be crappy vanilla potions (slowfall, chameleon, shadow form, any other terrible ones I can think of)
+
+Higher potion recipe chance raises chance by 1
+Lower potion recipe chance reduces chance by 1
+
+Higher potion recipe quality unlocks Bossfall OP potion recipe tier
+Normal potion recipe quality uses standard vanilla potion recipes
+Lower potion recipe quality will be crappy vanilla potions (slowfall, chameleon, shadow form, any other terrible ones I can think of)
+
+Higher painting chance is 3
+Normal painting chance is 2
+Lower painting chance is 1
+
+Split incoming Gem/Jewelry chance into 2 separate generation methods with chance at generating 2 items total - 1 gem, 1 jewelry with following probabilities:
+
+Higher gem chance is 5
+Normal gem chance is 3
+Lower gem chance is 1
+
+Higher gem quality can generate a gem of any rarity
+Normal gem quality can generate gems with rarities up to 17 (item rarities are set in ItemTemplates.txt)
+Lower gem quality can generate gems w/rarities up to 13 (item rarities are set in ItemTemplates.txt) - pearls only, I think, if I'm wrong then generate some random nearly worthless tiny chunk of metal from ingredient list
+
+Higher jewelry chance is 15
+Normal jewelry chance is 10
+Lower jewelry chance is 5
+
+Higher jewelry quality can generate jewelry of any rarity
+Normal jewelry quality can generate jewelry with rarities up to 17 (item rarities are set in ItemTemplates.txt)
+Lower jewelry quality can generate jewelry with rarities up to 13 (item rarities are set in ItemTemplates.txt)
+
+Higher cloak chance is 10
+Normal cloak chance is 6
+Lower cloak chance is 2
+
+Higher cloak quality is Formal Cloaks, no Casual Cloaks
+Normal cloak quality is Formal and Casual Cloaks (50/50 split on generation probability)
+Lower cloak quality is Casual Cloaks, no Formal Cloaks
+
+Higher set item chance is 1/5 (VampireAncient, DaedraLord, AncientLich)
+Normal set item chance is 1/15 (Assassin bosses, OrcWarlord, Dragonling_Alternate)
+Lower set item chance is 1/25 (Vampire, Lich)
+Non-boss set item chance is 1/1000
+
+One of each of these symbol types must be represented in the enemy equipment list for each enemy that uses equipment, order must match below list in descending order
+
+Higher gold amount: +G
+Normal gold amount: G
+Lower gold amount: -G
+No gold: xG
+
+Higher weapon quality: +WQ
+Normal weapon quality: WQ
+Lower weapon quality: -WQ
+No weapon: xWQ
+
+Higher bow quality: +BQ
+Normal bow quality: BQ
+Lower bow quality: -BQ
+No bow: xBQ
+
+Higher armor quality: +AQ
+Normal armor quality: AQ
+Lower armor quality: -AQ
+No armor: xAQ
+
+Higher 2H chance: +2H
+Normal 2H chance: 2H
+Lower 2H chance: -2H
+No 2H: x2H
+
+Higher 1H chance: +1H
+Normal 1H chance: 1H
+Lower 1H chance: -1H
+No 1H: x1H
+
+Higher 1H + Shield chance: +1HS
+Normal 1H + Shield chance: 1HS
+Lower 1H + Shield chance: -1HS
+No 1H + Shield: x1HS
+
+Higher 2 1H chance: +21H
+Normal 2 1H chance: 21H
+Lower 2 1H chance: -21H
+No 2 1H: x21H
+
+Higher bow chance: +BC
+Normal bow chance: BC
+Lower bow chance: -BC
+No bow: xBC
+
+Higher armor chance: +AC
+Normal armor chance: AC
+Lower armor chance: -AC
+No armor: xAC
+
+High ingredient chance: +IC
+Normal ingredient chance: IC
+Lower ingredient chance: -IC
+No ingredients: xIC
+
+Higher ingredient quality: +IQ
+Normal ingredient quality: IQ
+Lower ingredient quality: -IQ
+No ingredients: xIQ
+
+Higher magic item chance: +MI
+Normal magic item chance: MI
+Lower magic item chance: -MI
+No magic items: xMI
+
+Higher magic item quality: +MIQ
+Normal magic item quality: MIQ
+Lower magic item quality: -MIQ
+No magic items: xMIQ
+
+Higher book chance: +BK
+Normal book chance: BK
+Lower book chance: -BK
+No books: xBK
+
+Higher potion chance: +PO
+Normal potion chance: PO
+Lower potion chance: -PO
+No potions: xPO
+
+Higher potion quality: +POQ
+Normal potion quality: POQ
+Lower potion quality: -POQ
+No potions: xPOQ
+
+Higher potion recipe chance: +POR
+Normal potion recipe chance: POR
+Lower potion recipe chance: -POR
+No potion recipes: xPOR
+
+Higher potion recipe quality: +PORQ
+Normal potion recipe quality: PORQ
+Lower potion receipe quality: -PORQ
+No potion recipes: xPORQ
+
+Higher map chance: +MC
+Normal map chance: MC
+Lower map chance: -MC
+No map: xMC
+
+Higher religious items chance: +RIC
+Normal religious items chance: RIC
+Lower religious items chance: -RIC
+No religious items: xRIC
+
+Higher religious item quality: +RIQ
+Normal religious item quality: RIQ
+Lower religious item quality: -RIQ
+No religious items: xRIQ
+
+Higher gem/jewelry chance: +GJC
+Normal gem/jewelry chance: GJC
+Lower gem/jewelry chance: -GJC
+No gem/jewelry: xGJC
+
+Higher gem/jewelry quality: +GJQ
+Normal gem/jewelry quality: GJQ
+Lower gem/jewelry quality: -GJQ
+No gem/jewelry: xGJQ
+
+Higher painting chance: +PC
+Normal painting chance: PC
+Lower painting chance: -PC
+No paintings: xPC
+
+Higher clothing chance: +CC
+Normal clothing chance: CC
+Lower clothing chance: -CC
+No clothing: xCC
+
+Higher clothing quality: +CQ
+Normal clothing quality: CQ
+Lower clothing quality: -CQ
+No clothing: xCQ
+
+Higher cloak chance: +CLC
+Normal cloak chance: CLC
+Lower cloak chance: -CLC
+No cloak: xCLC
+
+Higher cloak quality: +CLQ
+Normal cloak quality: CLQ
+Lower cloak quality: -CLQ
+No cloak: xCLQ
+
+Higher set item chance: +SI
+Normal set item chance: SI
+Lower set item chance: -SI
+Non-boss set item chance: xSI
+
+Monsters:
+
+Imp:
+Spriggan:
+Orc:
+Centaur:
+Nymph:
+Orc Sergeant:
+Harpy:
+Skeletal Warrior:
+Giant:
+Zombie:
+Ghost:
+Mummy:
+Orc Shaman:
+Wraith:
+Orc Warlord:
+Frost Daedra:
+Fire Daedra:
+Daedroth:
+Vampire:
+Daedra Seducer:
+Vampire Ancient:
+Daedra Lord:
+Lich:
+Ancient Lich:
+Dragonling_Alternate:
+Dreugh:
+Lamia:
+
+Classes:
+
+Archer: G, xWQ, +BQ, -AQ, x2H, x1H, x1HS, x21H, BC, -AC, -IC, -IQ, -MI, -MIQ, -BK, -PO, -POQ, xPOR, xPORQ, -MC, xRIC, xRIQ, xGJC, xGJQ, xPC, CC, CQ, -CLC, -CLQ, xSI
+Barbarian: xG, -WQ, xBQ, -AQ, +2H, 1H, x1HS, 21H, xBC, +AC, -IC, -IQ, xMI, xMIQ, xBK, xPO, xPOQ, xPOR, xPORQ, xMC, +RIC, -RIQ, -GJC, -GJQ, xPC, -CC, -CQ, xCLC, xCLQ, xSI
+Knight: +G, +WQ, xBQ, +AQ, x2H, x1H, 1HS, x21H, xBC, +AC, -IC, -IQ, MI, MIQ, BK, PO, POQ, xPOR, xPORQ, MC, RIC, RIQ, xGJC, xGJQ, xPC, CC, +CQ, CLC, +CLQ, xSI
+Monk: xG, xWQ, xBQ, xAQ, x2H, x1H, x1HS, x21H, xBC, xAC, xIC, xIQ, MI, MIQ, +BK, PO, POQ, xPOR, xPORQ, -MC, +RIC, +RIQ, xGJC, xGJQ, xPC, -CC, -CQ, -CLC, -CLQ, xSI
+Ranger: -G, xWQ, +BQ, -AQ, x2H, x1H, x1HS, x21H, BC, -AC, +IC, +IQ, MI, MIQ, xBK, PO, POQ, POR, PORQ, +MC, xRIC, xRIQ, xGJC, xGJQ, xPC, +CC, -CQ, +CLC, +CLQ, xSI
+Warrior: G, WQ, BQ, AQ, 2H, 1H, 1HS, 21H, BC, AC, -IC, -IQ, -MI, -MIQ, xBK, -PO, -POQ, xPOR, xPORQ, -MC, xRIC, xRIQ, xGJC, xGJQ, xPC, CC, CQ, CLC, CLQ, xSI
+Battlemage:
+Healer:
+Mage:
+Nightblade:
+Sorcerer:
+Spellsword:
+Acrobat:
+Assassin:
+Bard:
+Burglar:
+Rogue:
+Thief:
+Guard: G, WQ, BQ, AQ, 2H, x1H, 1HS, x21H, BC, +AC, xIC, xIQ, -MI, -MIQ, xBK, PO, POQ, xPOR, xPOQ, xMC, xRIC, xRIQ, xGJC, xGJQ, xPC, CC, CQ, CLC, CLQ, xSI
+
+ENEMY EQUIPMENT GENERATION:
+
+For enemies that use equipment (under current Bossfall rules) this section determines QUANTITY and QUALITY of generated equipment based on location/enemy factors
+
+Instead of using current BossfallItemBuilder AssignEnemyStartingEquipment method, if enemy uses equipment give 'em their own unique equipment creation method w/probabilities 4 each item/item type (for example ingredients on a Mage, wpns on a Warrior), make sure 2 not generate full suits of armor too often
+Equipment generation is altered based on locationModifier which will change depending on where enemy is, time of day, this will affect both quantity of equipment generated and item material rarity gen chances
+For each armor piece check if mod variants are available, if so 60% use vanilla armor piece 40% use a random mod piece, material tier selection chances same for both variants
+Only gen armor that class can use if gen for human class enemy (for equipment gen, loot table gen can be anything)
+Only gen 1 armor piece per protected body part (for equipment gen, loot table gen can be anything)
+For each wpn kit selected to be used (2H, 1H, 1H + SH, 2 1H, BC) check if mod variants 4 that wpn type is available, if so use 60% vanilla wpns and 40% mod variants, only gen one or the other, material tier selection chances same 4 both variants
+Have two parameters implement what this section gets - both are relative to 1, which is starting gen chance of 75 for while loops in BossfallItemBuilder item gen methods & +0 to enemyLevelModifier (which is enemy level * 50, which is fed into ur BossfallOverrides.RandomMaterial method)
+A locationModifier of 3 will set starting gen chance of 150 for while loops & +250 to enemyLevelModifier, and a 0.01 locationModifier will set starting gen chance of 0 for while loops & -250 to enemyLevelModifier (a +5 or -5 enemy level boost essentially)
+
+if (IsGeneratingDungeonObjects)
+locationModifier = DUNGEONLOOTGENERATION.locationModifier
+
+if (isDay && player.IsInLocationRect (or whatever detects if they're in a map pixel w/a location))
+locationModifier = LOCATIONLOOTGENERATION.locationModifierDay
+
+if (isDay && !player.IsInLocationRect (or whatever detects if they're in a map pixel w/a location))
+locationModifier = WILDERNESSLOOTGENERATION.locationModifierDay
+
+if (!isDay && player.IsInLocationRect (or whatever detects if they're in a map pixel w/a location))
+locationModifier = LOCATIONLOOTGENERATION.locationModifierNight
+
+if (!isDay && !player.IsInLocationRect (or whatever detects if they're in a map pixel w/a location))
+locationModifier = WILDERNESSLOOTGENERATION.locationModifierNight
+
+ENEMY SPELLS:
+
+Only allow enemies 2 cast what's in these tables, unless specified include both melee/range variants
+
+Imp: Slow/Wizard's Fire/Shock/Frostbite
+Wraith: Fear/Paralyze/Enfeeble
+Fire Daedra: Current Bossfall kit
+Frost Daedra: Current Bossfall kit
+Daedroth: Anything, no wimpy spells
+Vampire: Vampiric Touch/Energy Leech/Drain Strength/Magicka Leech/Spell Drain/Sleep/Hand of Sleep/any other Drain effects
+Daedra Seducer: Anything, no wimpy spells (perhaps make 'em cast only cunning or tricky spells, similar 2 Nightblade?)
+Daedra Lord: Anything, no wimpy spells
+Lich: Destruction school, only direct HP dmg spells, no wimpy spells
+Ancient Lich: Anything, no wimpy spells
+Mage: Anything
+Battlemage: Destruction school, only direct HP dmg spells
+Healer: Heal, Resist Magic/Elements, Troll's Blood, Shield 
+Nightblade: Paralyze/Silence/Slow/Fear/Enfeeble/Energy Leech/Drain Strength/Spell Drain(melee & ranged variant, I forgot one of their names)/any non-Continuous Dmg Drain effects
+Sorcerer: Anything
+Spellsword: ?? TBD
+
+ITEM SETS:
+
+Item materials listed are for color only
+Currently not using Mace/Flail FPS Weapon sprites, add themed sets that use them? Can't think of any good ones tho
+Give set items ~x5 Steel durability
+Give set items ~x5 Daedric value
+Give set items +30? +40? to-hit bonus (have GetWeaponMaterialModifier in DaggerfallUnityItem return 3? 4?)
+Use SetResistanceFlag in DaggerfallEntity to apply set item resistances, make sure flag is lowered when bonus isn't granted anymore
+Add low % chance of calling GenerateSetItem function in Bossfall custom item generation methods when any items are generated
+Have set items pop up 2nd msg box after item info
+In 2nd msg box for set items show grey/black text list w/current set, turn equipped set items white, search equipped items for set items when player clicks on a set item in "Info" mode in the inventory
+In 2nd msg box for set items below list of equipped/total set items put grey/black list w/bonuses granted w/multiple set items equipped, turn bonuses white if player is currently granted these bonuses
+Make sure u update set effects w/every item equip/unequip
+2 set items +1 bonus, 3 set items +2 bonuses, 5 set items all bonuses, put bonuses in worst-to-best order, make sure list lights up from top to bottom as player equips more of the current set, follow this list pattern for every set
+Add +dmg from sets to ModifyAttackDamage FormulaOverride (or whatever) function in FormulaHelper? Or in CalculateAttackDamage FormulaOverride?
+Give set items (per set, maybe?) unique property or bool so I can search equipped items for all items in the current set w/that property or bool
+Give all set items custom names so player knows they're unique
+Add "set" to "add" console command (or just add custom "create setItem" or "add setItem" console command), creates random set item (so u can test set item generation)
+For ur set items in DaggerfallUnityEnums see if clothing dyes work on weapons, if so use those for set items w/custom colors (in inventory at least, won't look any different on HUD)
+In DaggerfallInventoryWindow u can set background colors for set items in ItemBackgroundColourHandler function
+Use DaggerfallEntityBehaviour.Entity.SetIncreasedArmorValueModifier to boost armor from item sets?
+create SetItemTemplate.txt file, make it an array exactly like ItemTemplates.txt file but w/ur new fields?
+Make set wpns use Magic FPS weapon sprites
+
+MAGE SET
+Purple item background
+Amulet
+Torc
+Gem
+Ring
+Iron Staff 9-16 dmg
++10 Monster language skills (not Etiquette or Streetwise)
++15 all Magic skills
++75 Max Magicka
++1-2 Magicka per in-game minute
+
+WARRIOR SET
+Red item background
++24 Orcish cuirass, left pauldron, right pauldron, greaves
+Orcish Warhammer 9-26 dmg
++10 Swimming
++15 Blunt Weapon
++25% IncreasedWeightAllowanceMultiplier
++64 Fatigue per in-game minute
+
+ASSASSIN SET
+Black item background
++8 Leather left pauldron, right pauldron, cuirass, helm/boots (whatever Tower Shield doesn't protect) (everything not protected by a Tower Shield so the final ability isn't OP as player will have terrible armor for balance)
+Daedric Dagger 9-18 dmg
++10 Stealth
++15 Short Blade
++20 Backstabbing
++Coup de Grace ability - 1% on landed attack of instakill (HUD msg pop-up "Coup de Grace!")
+
+MONK SET
+White item background (to contrast w/random colored clothing)
+Short Shirt, Casual Pants, Bracer, Sandals, Mark
++10 Hand-to-Hand
++15 Critical Strike
++20 Dodging
++5% chance to deal *3 H2H atk dmg (put this in Backstabbing formula in FormulaHelper?)
+
+BARBARIAN SET
+Yellow item background
++11 Chain boots, greaves, cuirass, helm
+Elven War Axe 9-24 dmg
++10 Jumping
++15 Axes
++Poison Immunity
++75 Max Health
+
+KNIGHT SET
+Blue item background
++22 Ebony right pauldron, gauntlets, cuirass, + 12 Tower shield
+Ebony Longsword 5-20 dmg
++10 Etiquette
++15 Long Blade
++Paralysis Immunity
++50% gold from quests
+
+RANGER SET
+Brown item background
++11 Chain boots, helm, gauntlets, cloth amulet
+Mithril Long Bow 9-26 dmg
++10 Streetwise
++15 Archery
++20 Running
++Permanent Shadow Form True
+
+LOCATION LOOT GENERATION:
+
+This applies 2 both non-dungeon interior loot piles (in settlements) & all enemy loot table generated items for outdoor enemies in said locations, does not apply to enemy equipment
+Make locationModifier in code (wherever it's used to generate this type o' loot) multiply rather than add, this will affect material rarity generation rates and how much loot gets generated
+Have two parameters implement what this section gets - both are relative to 1, which is starting gen chance of 75 for while loops in BossfallItemBuilder item gen methods & +0 to enemyLevelModifier (which is enemy level * 50, which is fed into ur BossfallOverrides.RandomMaterial method)
+A locationModifier of 3 will set starting gen chance of 150 for while loops & +250 to enemyLevelModifier, and a 0.01 locationModifier will set starting gen chance of 0 for while loops & -250 to enemyLevelModifier (a +5 or -5 enemy level boost essentially)
+
+
+if (isDay)
+locationModifier = LocationTypesDay lM
+
+if (!isDay)
+locationModifier = LocationTypesNight lM
+
+Make loot piles completely different from dungeon loot piles (I'm thinking greatly reduce gold/valuables, mostly have household items and clothing)
+If player activates a (non-custom) loot pile (see if this is all u need to check), if player fails a Pickpocket check the guards arrive, popup HUD msg box in that case "Hey! That's mine!" or "You hear a shout. You've been spotted!" or "Stop! Thief!"
+
+LocationTypesDay:
+
+TownCity: 1.75 lM
+TownHamlet: 0.75 lM
+TownVillage: 0.5 lM
+HomeFarms: 0.05 lM
+DungeonLabyrinth: 1.25 lM, gen standard adventuring loot
+ReligionTemple: 0.5 lM, lots o' religious items, books, potion recipes & potions
+Tavern: 0.25 lM, lots of empty bottles, higher potion chance
+DungeonKeep: 0.75 lM, gen stardard adventuring loot
+HomeWealthy: 0.25 lM
+ReligionCult: 0.05 lM, lots o' religious items, books, potion recipes & potions
+DungeonRuin: 0.25 lM, gen standard adventuring loot
+HomePoor: 0.01 lM
+Graveyard 0.01 lM, gen standard adventuring loot
+Coven: 0.05 lM, lots o' religious items, books, magic items, higher chance o' Daedric
+
+LocationTypesNight:
+
+TownCity: 2 lM
+TownHamlet: 1 lM
+TownVillage: 0.75 lM
+HomeFarms: 0.25 lM
+DungeonLabyrinth: 1.5 lM, gen standard adventuring loot
+ReligionTemple: 0.75 lM, lots o' religious items, books, potion recipes & potions
+Tavern: 0.5 lM, lots of empty bottles, higher potion chance
+DungeonKeep: 1 lM, gen stardard adventuring loot
+HomeWealthy: 0.5 lM
+ReligionCult: 0.25 lM, lots o' religious items, books, potion recipes & potions
+DungeonRuin: 0.5 lM, gen standard adventuring loot
+HomePoor: 0.1 lM
+Graveyard 0.1 lM, gen standard adventuring loot
+Coven: 0.25 lM, lots o' religious items, books, magic items, higher chance o' Daedric
+
+MISCELLANEOUS:
+
+Credit "thevm" for this fix - armor durability is being dmged even if player fully blocks all incoming dmg w/Shield, make it so if Shield blocks all dmg armor doesn't get dmged
+Rework Spell Absorption Special Advantage and from the Item Maker - make it not 100%. Similar to how the spell Spell Absorption works? Or dependent on your WIL? Once rework's done, re-enable Spell Absorption from character creation & from Item Maker
+Add avatar to DFWorkshop & NexusMods (the Ancient Lich pose from Bossfall cover picture?)
+De-link extended enemy activation distance from DisplayEnemyLevel ON setting? Currently only displays msgs for enemies at longer range than vanilla if that setting is ON, change it if it really matters to you...
+Rework Pickpocket using Reflection?
+If it's a mod-added enemy, they won't have a moveSpeed set by ur moveSpeed arrays and will break the game. Set up a workaround for this
+
+QUESTING:
+
+Refine quest gold generation to be more reasonable, potentially raise minimum gold range from 10
+If possible increase dungeon quest rewards across the board, and check if quest sends u to kill a boss and greatly raise reward in that case
+
+SHOPS:
+
+Shop material tier caps and material rarities based on shop quality level:
+
+Rusty relics: 89%? Iron, 10%? Steel, 1%? Elven (I am making these numbers up, they're subject to change ofc)
+Sturdy shelves: Mostly Iron, sometimes Steel, rarely Elven, very rarely Dwarven
+Average: Mostly Iron and Steel, sometimes Elven, rarely Dwarven, very rarely Mithril/Adamantium
+Better appointed: Mostly Iron/Steel, Elven fairly common, sometimes Dwarven, rarely Mithril/Adamantium, very rarely Ebony
+Incense: use standard random 0-1024 + 1 roll from RandomMaterial (in other words make no changes to current Incense shop item rarity)
+
+General stores/pawn shops buy wpns/armor but don't repair them
+General stores rarely stock short blades (never better than Steel?) and leather armor (or modded leather armor [never better than Steel?]), that's only wpn/armor types/materials they stock
+Pawn shops rarely stock wpns/armor (can be anything, of any material tier [material tier caps from store quality will apply as normal]) but it's always between 10-50% durability (follow below line's precise durability range probabilities)
+Pawn shop items are always damaged, on average 30% durability, goes from 10%-50% durability, weight it so 10-17 and 43-50 is very rare, 18-24 and 36-42 is pretty rare, and 25-35 is common
+Pawn shops stock way more junk items, they don't stock nearly enough stuff as of now
+Armorers/weaponsmiths stock and repair all types of wpns/armor (obviously)
+
+For ur store material tier caps make separate GenerateRandomMaterial method for each store quality tier w/diff probabilities? or add check for store quality to RandomMaterial method and implement store quality difference there?
+
+SPELLS:
+
+Mod template to use for new spells is in EntityEffectBroker in RegisterCustomEffectDemo & RaiseOnRegisterCustomEffectsEvent methods (do u want to use this w/ur new spells? prolly cuz u won't have a classic effect key)
+
+ADD Enfeeble - all target types 'cept caster only, reduces target wpn damage (~33%?)
+ADD Fear - all target types 'cept caster only, reduces target armor (~33%?) & target accuracy (~33%?)
+ADD Polymorph spell - all target types 'cept caster only, (use Wabbajack or Morph Self effect), enemies can't use it, very expensive, costs and chance of success same as Disintegrate, Alteration school, morphs enemy into random other enemy (feed it thru seteEntityDefaults to set lvl n stuff) w/new loot (to avoid polymorphing Ancient Liches into Rats and getting a bunch of Daedric), what would it do if a monster reflected it??? Hmm... that's a big problem... would it change u into a random monster? Now that would be insane work... doubt it'll be very practical as it might not work and might create an Ancient Lich but it'd be fun for sure
+ADD Slow spell - all target types 'cept caster only, reduces movespeed by 33%? or 50%?
+ADD Haste spell - player caster only, boosts Running skill (~25?)
+ADD to bosses some kind of Summon Nasties spell (1-3 vermin, golems, or undead), make HUD msg pop up so player knows enemies are summoned
+
+REWORK Balyna's Balm - heals 15 HP/cast
+REWORK Heal - heals 50 HP per cast/potion
+REWORK Stamina - heals 30 Fatigue per cast/potion
+REWORK Regeneration - a flat 10? 15? HP/magic round
+REWORK Shield spell (make it block 50%? 100%? more incoming damage)
+REWORK so Holy Water/Dagger/Tome work 100% of the time rather than by player lvl (u could change how Dispel Undead/Daedra work or add custom spells I suppose)
+REWORK low Magicka cost spells so they tally skill less, make high cost spells tally more? Some kind of skillTallyCounter, similar to runningTallyCounter, high MP cost spells raise counter more? Trying to figure out a way to make 5 MP cost spells not so efficient for training...
+REWORK Create Item spell to not create stuff player can't use, check player's forbidden material & forbidden armor types to do this, then add very low base chance (0.1% at player spell skill level of 1%?) of higher (Adamantium cap?) tier material generation for wpns or armor, increase high tier material creation chance as player spell skill level increases, also increase material tier cap (up to Ebony?) at player spell skill level of 100%, credit "thevm" for this
+REWORK Shield spell - refresh magnitude on re-cast before the spell expires (i.e. refresh Shield strength even if the end of the magic round hasn't happened and removed effects, so once Shield is broken and before it's removed on the new magic round you can re-cast Shield and re-up the magnitude w/out having to wait. If u do this make Shield stackable? Could be cool)
+
+POTIONS:
+
+ADD Haste potion - boosts Running skill by ~25
+ADD Regeneration potion (if not already present)
+ADD Magicka Regeneration potion (4 Magicka/round for 250? rounds) Expensive
+ADD potion of Full Healing (make Heal True do this)
+ADD potion of Full Healing for Mana (Restore Power True)
+ADD potion of Full Healing for Stamina (Stamina True)
+ADD potion of Restoration True (heal EVERYTHING to full, costs 2500? gold)
+ADD the really OP potions to bosses only (Restoration True, Long term Magicka Regeneration, OP HP Regen potion are only really really good ones I can think of)
+
+REWORK Dispel Magic potion so it doesn't clear player's Teleport anchor(s) - credit "thevm" for this fix
+
+WILDERNESS LOOT GENERATION:
+
+Only will apply 2 enemy loot table generated items for enemies spawned outdoors in map pixels that don't contain a location (wilderness areas), does not apply to enemy equipment
+Loot content/quality scales on difficulty of enemies that can spawn current climate and scales by whether it's day/night
+Have two parameters implement what this section gets - both are relative to 1, which is starting gen chance of 75 for while loops in BossfallItemBuilder item gen methods & +0 to enemyLevelModifier (which is enemy level * 50, which is fed into ur BossfallOverrides.RandomMaterial method)
+A locationModifier of 3 will set starting gen chance of 150 for while loops & +250 to enemyLevelModifier, and a 0.01 locationModifier will set starting gen chance of 0 for while loops & -250 to enemyLevelModifier (a +5 or -5 enemy level boost essentially)
+
+
+if (isDay)
+locationModifier = WildernessTypesDay lM
+
+if (!isDay)
+locationModifier = WildernessTypesNight lM
+
+WildernessTypesDay:
+
+DesertDay: 1.5 lM
+MountainDay: 0.5 lM
+MountainWoodsDay: 0.5 lM
+RainforestSwampDay: 0.75 lM
+SubtropicalDay: 0.75 lM
+WoodlandsDay: 0.5 lM
+HauntedWoodlandsDay: 1.75 lM
+
+WildernessTypesNight:
+
+DesertNight: 0.75 lM
+MountainNight: 1.5 lM
+MountainWoodsNight: 1.25 lM
+RainforestSwampNight: 1 lM
+SubtropicalNight: 1 lM
+WoodlandsNight: 0.75 lM
+HauntedWoodlandsNight: 2 lM
+
+
+BOSSFALL v1.5 TO-DO:
+
+Clone HDD onto SSD, put SSD into comp remove HDD
+Superwipe HDD, once securely wiped dispose of it (or keep it for a backup?)
+Get Discord (join DFU mod channel - Lysandus' Tomb) https://discord.gg/2x97zbGZxj is Discord link
+Look up "FullSerializer" (is it a Unity or C# thing?) and the difference between declaring/using/invoking that and the "[Serializable]" thing u see everywhere
+Look up "[fsObject()]" and what it does (it's a sub-class? attribute? property? of "FullSerializer" I would think), I think it marks individual "GameObjects" to be "fully serialized", whatever that means and actually does
+Give Spriggans 3 "lives", make 'em more powerful w/each life as described in DF Chronicles
+If a nymph drains you below 0 fatigue, advance time by 14 days and FillVitalSigns(). Teleport them into a random dungeon, minus all their gold - reasoning is while you were exhausted you couldn't resist her nymphly charms and became her puppet for 2 weeks. She stole all your gold (it's shiny and pretty) and left you alone finally because she got bored. Potentially add quest to hunt her down for revenge - she could leave a note on your body roughly translated as "thanks for all the fun and your shiny gold, signed Aetheria" written in Nymph, you gotta take it to a local Nymph expert at a Mages Guild who will turn beet-red and refuse to translate it word-for-word (it's too scandalous) but will tell you it's a well-known Nymph who hangs out at such and such dungeon, make sure u flag quest X for adult/nudity
+Write some Bossfall-specific quests, replace "Quests for Grown-Ups", use any good ideas from the existing plot outlines you wrote
+Add some Bossfall-specific dungeons 2 go w/ur Bossfall-specific quests? If ur motivated 2 do so
+Add a way to pop up potion maker outside of temple potion mixer service - if u "use" a cauldron or pot or something (you can use RegisterCustomActivation in PlayerActivate for either a model or a flat (a sprite I think) to do custom actions on activation of said model or flat)? Make potion mixing this way require an empty bottle per potion? You may have to add empty bottles to random loot generation?
+SETTING: Make dungeons serializable (save their contents), reset yearly on 1st of Morning Star
+SETTING: Once u serialize dungeons make quests always send u to a new non-visited dungeon first, once all dungeons in region are visited then quests will send u to already visited dungeons
+SETTING: Make visited/non-visited dungeon lists reset yearly on 1st of Morning Star. Dungeons will respawn on that date, maybe syncing visited dungeon list to reset on that date is a good idea?
+Nerf shop stealing, make almost all shelf wpns/armor Iron if in shop after open hours - for Alchemists almost always generate from crappy ingredient lists, for Pawn Shops almost never let holy items/gems generate, for clothing shops almost never let Priest/ess Robes, Khajiit Suits & the like generate (like 1% chance of shelf item generation at regular loot odds, so it will be huge nerf to stealing), save the shelf contents for the open/closed block of time (to avoid "loot an entire shelf of crappy Iron stuff, close/reopen it, more items appear, loot it again" exploit loop), no more (so for-sale items effectively reset every 24 hours, like vanilla)
+Fix inconsistent class generation questions (for example the Mage template - if you answer "Mercantile" you get bio notes about swimming, if you answer "Swimming" you get bio notes about talking and haggling with merchants?
+SETTING:? Implement execution if player is guilty of murder - send 'em to a Prison but remove all their items and gold first (a brutal punishment, so maybe add it as a setting)
+Use RemoveItem in a for loop to remove all of player's items when executing player for crime & before sending them to a prison, make sure to unequip all items if equipped, update equipped armor values after each armor item unequipped, and avoid removing quest items
+SETTING:? overhaul enemy combat movement/AI, give enemies custom AI for more variety over v1.2's one-size-fits-all AI
+SETTING:? create runAway bool in EnemyMotor, true once enemy is below 1/8 HP (only if they don't have Adrenaline Rush & not Undead, if they do they keep fighting 'til they die), put in delay of 0.3-0.8 for non-perfect runAway reflexes, pop up HUD message "The (insert enemy name) turns to run."
+SETTING:? If runAway is true outside enemy runs for it (original vector is raycast straight from player's camera facing at time bool turns true, so it should look like they turn tail and bolt, you'll have to put in some building/in location pixel checks so they don't try to run through the side of a building) at movement speed x1.5-2.0, after 5-10 seconds if they pass a check of minimum distance to player they disappear (use DestroyGameObject), if check fails (player is chasing) they keep running until check runs again, repeat until distance check passes or enemy dies
+SETTING:? If runAway is true inside somehow get them outside of player camera raycast hit and once they're out of range for 1-2 seconds (and they pass a minimum distance to player check) DestroyGameObject so they disappear
+SETTING:? If enemy is magic user once runAway is true (they turn and run as normal) start a random timer from 0.3-~3-5 seconds, if they're still below 1/8 HP (they might cast Heal while running, if so they break out of runAway and keep fighting) play Magic spell cast sound, show sparkles effect, DestroyGameObject so they disappear, pop up HUD message "The (insert enemy name) teleports away."
+SETTING:? Once runAway is true send monster on initial vector = player's camera, on updates (or once they hit an obstacle) send out raycasts at 90 degrees to left and right, also send out angled raycasts at ~45 degrees (whatever degree works best for stairs) to their left/right to check for passageways, have 'em run towards an opening at least once they hit an obstacle perhaps sooner, maybe if random.range is 0 out of 0-1 send 'em thru the first opening so it looks like they duck for cover ASAP
+SETTING:? Do not ever let quest monsters/enemies use runAway as that would likely break quest, put in quest target check on runAway initialization check
+SETTING:? U can use slope check in line ~1276 of EnemyMotor where it does check.Up.y++ to check for upward slopes
+SETTING:? Give Thieves/Burglars/Rogues/Acrobats a random chance to take one/two of ur items and some gold, add it to theirs, then they run away (use runAway bool/function)
+
+
+Bossfall v1.3 Changelog
+
+ENEMIES:
+
+Changed which enemies see Invisible: (thanks yabay for the new See Invisible list!)
+
+All bosses (except Orc Warlords, they're not the brightest)
+Daedra Seducers
+Level 20 Mage/Sorcerer/Nightblade
+
+Enemy immunities reworked - some previously useless weapon types now do significantly reduced damage (thanks cantcomeupwithsomething for the damage scaling idea!)
+All HUD weakness/resistance/immunity messages changed for clarity's sake, now only pop up once per enemy
+
+Spriggan:
+Axe deals x2 damage
+Blunt Weapon deals x1 dmg
+Long Blade deals x1 dmg, suffers x2 durability dmg
+Short Blade deals 1/2 dmg, suffers x2 durability dmg
+Hand-to-Hand deals 1/4 dmg, player suffers 1 HP dmg
+Archery Immune
+
+Zombie/Flesh Atronach:
+Axe deals x2 damage
+Blunt Weapon/Long Blade deals x1 dmg
+Short Blade deals 1/2 dmg
+Hand-to-Hand deals 1/3 dmg
+Archery deals 1/4 dmg
+
+Skeletal Warrior:
+Blunt Weapon deals x2 damage
+Axe/Hand-to-Hand deals x1 dmg
+Long Blade deals 1/2 dmg, suffers x2 durability dmg
+Short Blade deals 1/3 dmg, suffers x3 durability dmg
+Archery Immune
+
+Giant Scorpion:
+Axe deals x2 damage
+Blunt Weapon/Long Blade/Short Blade deals x1 dmg
+Hand-to-Hand deals 1/2 dmg, player suffers 1 HP dmg
+Archery deals 1/3 dmg
+
+Ghost/Wraith:
+Silver weapons/gloves/boots deal x1 dmg
+Immune to all other materials
+
+Mummy:
+Axe/Long Blade deals x2 damage
+Blunt Weapon/Short Blade/Hand-to-Hand deals x1 dmg
+Archery deals 1/2 dmg
+
+Gargoyle:
+Blunt Weapon deals x1 damage, suffers x2 durability dmg
+Axe deals x1 dmg, suffers x3 durability dmg
+Long Blade deals 1/2 dmg, suffers x4 durability dmg
+Short Blade deals 1/3 dmg, suffers x4 durability dmg
+Hand-to-Hand Immune, player suffers 2 HP dmg
+Archery Immune
+
+Iron Atronach:
+Blunt Weapon deals x1 damage, suffers x3 durability dmg
+Axe deals 1/2 dmg, suffers x4 durability dmg
+Long Blade deals 1/3 dmg, suffers x5 durability dmg
+Short Blade deals 1/4 dmg, suffers x5 durability dmg
+Hand-to-Hand Immune, player suffers 3 HP dmg
+Archery Immune
+
+Fire Atronach:
+Player suffers 2 HP damage per landed Hand-to-Hand attack
+
+Ice Atronach:
+Axe deals x1 damage, suffers x2 durability dmg
+Blunt Weapon deals x1 dmg
+Long Blade deals 1/2 dmg, suffers x3 durability dmg
+Short Blade deals 1/3 dmg, suffers x4 durability dmg
+Hand-to-Hand Immune, player suffers 2 HP dmg
+Archery Immune
+
+Fire Daedra:
+Player suffers 4 HP damage per landed Hand-to-Hand attack
+
+Vampire/Lich/Vampire Ancient/Ancient Lich:
+Silver weapons/gloves/boots deal x2 damage
+All other materials deal x1 dmg
+
+Werewolf/Wereboar:
+Silver weapons/gloves/boots deal x1 damage
+All other materials deal 1/2 dmg
+
+ITEMS:
+
+Shield armor scales with material tier, now shields made of high tier materials are actually useful
+An Iron Tower Shield grants 3 armor, an Elven Tower Shield grants 5 armor, a Daedric Tower Shield grants 10 armor
+Leather/Chain/Steel/Silver shield armor values unchanged
+Enchanted Boots/Gauntlets broken by H2H durability damage disappear from inventory like other broken magic items
+
+MAGIC ITEMS:
+
+Holy Water displays custom HUD message when used
+
+MISCELLANEOUS CODE CHANGES:
+
+If it feels to you like v1.3 features less gameplay changes than previous major versions, I agree - I spent tons of time improving my code efficiency
+Player likely won't notice any of the below changes but I mention them due to the time/energy investment
+Greatly increased efficiency of Bossfall enemy move speed and AI code
+Greatly increased efficiency of Bossfall FormulaHelper code, mostly in attack formulas
+Changed saves/loads to save/restore enemy level and all level-dependent values (human enemy damage & armor, spell damage, skill levels)
+Backwards compatible w/old Bossfall saves & non-Bossfall saves, this adds an "enemyLevel" line to all enemies in your save file
+Improved vanilla mod support by reverting to vanilla DFU code in a few places and moving my changes elsewhere to not conflict w/mods
+
+SETTINGS:
+
+"Bossfall" settings section added to Advanced Settings top bar after Accessibility section
+Click the "Use Recommended Settings" button to set everything to the settings I recommend
+Settings default to Bossfall v1.2.1 values so current Bossfall players don't have to mess around with settings unless they want to
+
+"Powerful Enemies Are:" (I recommend LESS COMMON) Determines how often powerful enemies spawn, also tweaks other enemy rarities
+"More Common" is Bossfall v1.2.1 spawn frequency, "Less Common" is rebalance I did for v1.3
+
+"Enemy Move Speed" (I recommend FAST) Switch between vanilla enemy movespeed and two faster options
+"Very Fast" is Bossfall v1.2.1 speed, "Fast" is rebalance I did for v1.3
+
+"Skill Advancement Difficulty" (I recommend HARD) Switch between vanilla skill advancement difficulty and two harder options
+"Hard" is rebalance I did for Bossfall v1.3, "Extremely Hard" is v1.2.1 difficulty, IMO suitable for only the most patient adventurers
+
+"Boss Proximity Warning" (I recommend ON) HUD warning message when (non-Assassin) boss nearby, detection radius half a dungeon block
+
+"Display Enemy Level" (I recommend ON) Activating an enemy in Info/Talk/Grab mode displays enemy's level as well as name
+
+"Alternate Loot Piles" (I recommend ON) Uses expanded vanilla sprite list so loot piles have some visual variety
+May not work perfectly with graphics mods like D.R.E.A.M. and Handpainted Models
+
+SKILLS:
+
+Player will start climbing much more frequently at low Climbing skill levels
+
+VAMPIRISM:
+
+If player is a Vampire, they heal 2 HP every landed Hand-to-Hand attack
+
+
+Bossfall v1.2.1 Changelog
+
+CHARACTER CREATION:
+
+BOSSFALL essentially requires a custom super-powered character, so I rebalanced custom character creation
+Moved default custom class HP/Level to 20 rather than 8, did not increase default skill advancement difficulty
+Most advantages are cheaper, most disadvantages drop difficulty dagger much more
+Reducing HP/Level below 20 drops difficulty dagger much more per point
+
+COMBAT MECHANICS:
+
+Restored enemy strafe timer to vanilla functionality (not working right previously due to my error)
+
+DUNGEONS:
+
+Streamlined random selection of enemies, dungeons may load a bit faster
+Sabertooth Tigers/Grizzly Bears removed from Mine dungeon types, more Giant Bats and Rats
+
+ITEMS:
+
+I noticed I reduced Weapon generation in General Stores. I forgot to add that to v1.2 Changelog
+
+
+Bossfall v1.2 Changelog
+
+BANKING:
+
+You can only have one bank loan at a time, different regions will not loan you more
+Defaulting on any loan will permanently ban player from getting another loan from any region
+Bank loans charge 20% interest rather than 10%
+
+BOSS INFO:
+
+Assassins will switch to having boss stats once player is Level 7 or higher (2 levels higher than v1.1)
+Assassin weapon poison bypasses Poison Immunity once player is Level 7 or higher (Immunity bypass didn't work in v1.1)
+
+BOSS STAT CHANGES:
+
+Vampires, Vampire Ancients, and Alternate Dragonlings will do much less than stated dmg if player is a Vampire
+"avg dmg/atk" accounts for multiple instances of damage per attack animation (from Assassins, Orc Warlords, and Daedra Lords)
+"avg dmg/atk" is average dmg monster will inflict in one attack animation
+Large Assassin damage nerf now that they bypass Poison Immunity
+Large Daedra Lord damage nerf to better match average damage of other bosses
+Boss damage scales smoother, likely will have no game impact but I like consistency
+
+Vampire
+55-85 dmg
+70 avg dmg/atk (-3 nerf)
+
+Lich
+60-90 dmg
+75 avg dmg/atk
+
+Assassin
+39-67 dmg
+106 avg dmg/atk (-40 nerf)
+-8 Armor (It was -16 in v1.1 due to my error)
+
+Alternate Dragonling
+95-125 dmg
+110 avg dmg/atk (+5 buff)
+
+Orc Warlord
+42-73 dmg
+115 avg dmg/atk (+5 buff)
+
+Daedra Lord
+30-60 dmg
+120 avg dmg/atk (-40 nerf)
+
+Vampire Ancient
+110-140 dmg
+125 avg dmg/atk (-3 nerf)
+
+Ancient Lich
+115-145 dmg
+130 avg dmg/atk (-5 nerf)
+
+COMBAT:
+
+Gauntlet/boot material affects player's Hand-to-Hand to-hit roll, scales just like vanilla weapon materials
+Gauntlet material affects player's punch to-hit, boot material affects player's kick to-hit
+Leather/Chain/Steel/Silver do not alter player's to-hit
+Successful Hand-to-Hand attacks damage player's glove/boot durability based on if attack is punch/kick
+Silver gauntlets/boots will damage Ghosts/Wraiths/Werewolves/etc. if player is using Hand-to-Hand
+If you're wearing silver gauntlets you must use punch attacks to damage Ghosts/Wraiths/etc.
+If you're wearing silver boots you must use kick attacks to damage Ghosts/Wraiths/etc.
+
+COMBAT MECHANICS:
+
+I don't want non-sentient or stupid enemies to retreat, so these enemies always charge:
+
+Rat
+Giant Bat
+Grizzly Bear
+Sabertooth Tiger
+Spider
+Slaughterfish
+Skeletal Warrior
+Giant
+Zombie
+Ghost
+Mummy
+Giant Scorpion
+Gargoyle
+Wraith
+Barbarian
+
+Archers/Rangers never move in to attack if they can see player, always retreat, player must rush them
+Archer/Ranger movespeed nerfed to reduce annoyance factor when rushing them
+None of these changes apply if Enhanced Combat AI is disabled
+
+DISEASE/POISON:
+
+Bossfall v1.1 incorrectly stated a rare spider/scorpion poison bypassed Poison Immunity when it did not
+This has been corrected, spider/scorpion has 0.1%/hit of inflicting Drothweed that bypasses Poison Immunity
+Spider/Giant Scorpion poison chance nerfed to 10% per hit, I fixed buggy Spider/Scorpion poison formula
+Non-boss poisoned weapons will not bypass Resistance or Immunity
+Moved non-boss poisoned weapon chance back to vanilla 5%
+
+DUNGEON ENCOUNTER TABLES:
+
+Centaurs aren't in any dungeons, Imps are never found outside dungeons (I forgot to add this to v1.1 changelog)
+Every encounter table has been rewritten, no longer using any code from Jay_H's "Unleveled Mobs"
+
+Human Stronghold - Sorcerers removed, replaced with Mages
+Prison - Mages removed, replaced with Sorcerers
+Desecrated Temple - Barbarians/Harpies added, less Daedra Seducers/Giant Bats
+Natural Cave - Sabertooth Tigers removed, more Rats
+Crypt - Sabertooth Tigers/Grizzly Bears/Spiders removed, more Skeletons/Zombies/Mummies
+Orc Stronghold - more Orc Sergeants/Orc Shamans, less Orcs
+Spider Nest - Ghosts added, less Mummies
+Barbarian Stronghold - Harpies added, slightly less Barbarians
+Cemetery - Added Ghosts (they're rare), less Giant Bats
+Underwater - Added Ghosts & Wraiths (they're very rare), less Lamias and Ice Atronachs, more Skeletons
+Default building - every human enemy, vermin, Assassin boss
+Guildhall - every human enemy, vermin, Alternate Dragonling boss
+Temple - every human enemy, vermin, Orc Warlord boss
+Palace, House 1 - every human enemy, vermin, Daedra Lord boss
+House 2 - every human enemy, vermin, Vampire boss
+House 3 - every human enemy, vermin, Ancient Lich boss
+
+ENEMIES:
+
+Human enemies are unleveled once player hits Level 7, 2 levels higher than v1.1 (this includes Guards. HALT!)
+Human enemies switch to Hand-to-Hand if that's more damaging than their weapon
+Thus, human enemies do much more damage at higher levels (they switch to H2H around enemy level 5)
+I thought this H2H check was already in v1.1 but I read the formula wrong
+In v1.1 I applied human enemy armor incorrectly, armor did not scale with their level
+This has been corrected, human enemies have 4 armor @ Level 1 (slightly better than Imp armor), scales up to -4 armor @ Level 20 (slightly worse than Daedra Seducer armor)
+Bards pacified by Etiquette, Barbarians/Rangers by Streetwise
+Using Hand-to-Hand against Fire Atronachs/Fire Daedra damages player (if in wereform player won't take dmg)
+If using Enhanced Combat AI enemy move speed will not be reduced while enemy is melee attacking
+
+ENEMY STAT CHANGES:
+
+No longer using any stats from Ralzar's "Meaner Monsters"
+
+Rat
+7 Armor (+1 buff)
+
+Spriggan
+6 Armor (+1 buff)
+
+Giant Bat
+5 Armor (-1 nerf)
+
+Grizzly Bear
+6 Armor (+1 buff)
+
+Sabertooth Tiger
+4 Armor (+1 buff)
+
+Orc
+Level 5 (-1 nerf)
+
+Nymph
+4 Armor (+1 buff)
+
+Orc Sergeant
+25 Max Damage (-5 nerf)
+Level 11 (-2 nerf)
+2 Armor (-1 nerf)
+
+Zombie
+5 Armor (+1 buff)
+
+Mummy
+2 Armor (+1 buff)
+
+Orc Shaman
+55-165 HP (+12-36 buff)
+Level 16 (+3 buff)
+-2 Armor (+2 buff)
+
+Gargoyle
+-1 Armor (+1 buff)
+
+Frost Daedra
+0 Armor (-1 nerf)
+
+Daedroth
+198 Max HP (-2 nerf)
+
+Dragonling
+30 Max Damage (+3 buff)
+40-120 HP (+15-45 buff)
+
+Iron Atronach
+198 Max HP (-2 nerf)
+
+Lamia
+0 Armor (-2 nerf)
+
+GAMEPLAY:
+
+Building identification in "Info" mode range doubled
+Removed the check I put in for switching to Hand-to-Hand if player can't be harmed by enemy's weapon, that check already exists in vanilla DFU code
+Shortened most HUD messages when attacking enemies that are immune to your weapon for brevity's sake
+After a successful Pickpocket skill check on a human enemy or townsperson, 10% of the time you'll pilfer up to 100 gold pieces, 90% of the time you'll find nothing
+Thus, Pickpocketing is 3.3 times more profitable (I never liked how pointless it was in vanilla)
+Regardless of whether you find any gold, a successful Pickpocket check will count toward your Thieves Guild initiation letter
+
+ITEMS:
+
+Material generation chances fixed, Daedric possible from any enemy, store, or loot pile, not just high level enemies (major oops)
+Rebalanced weapon durabilities, all weapon types use same scale (If you're using RPR:I that'll overwrite a few weapon durabilities)
+Daggers have greater durability, bows slightly more, Long Blades/Axes/Blunt Weapons much less
+No longer using any item stats from Hazelnut & Ralzar's "Roleplay and Realism: Items"
+Changed a few miscellaneous item stats/weights
+
+LOOT:
+
+Gauntlets are now generated as regular enemy equipment (if using RPR:I this change will be hard to notice)
+Changed high tier material chances - non-boss human enemies and Daedra will drop somewhat less good loot
+High level bosses (anything other than Liches & Vampires) will drop significantly more Daedric
+If using RPR:I Cemetery loot piles won't contain armor/weapons (Cemeteries were too profitable w/RPR:I)
+If not using RPR:I Cemetery loot piles are now more profitable
+
+LYCANTHROPY:
+
+Transforming into werewolf/wereboar no longer restores player to maximum health
+If in wereform equipped gloves/boots aren't damaged and don't give +to-hit bonuses to Hand-to-Hand attacks
+If in wereform player can damage enemies that are normally immune to Hand-to-Hand
+
+MAGIC ITEMS:
+
+Holy Water, Holy Daggers, and Holy Tomes cast Dispel Undead/Undead/Daedra on use, have 1/3/3 charges
+Holy items generate as normal in high quality Pawn Shops and as random loot from enemies, loot piles and house containers
+They will not dispel Undead/Daedra 100% of the time, success rate depends on player level (just like regular Dispel spells)
+Most useless magic item effects replaced, some names changed
+"Item of Teleportation" has Recall as Cast When Used power
+Pacify Undead/Humanoid/Animal & Charm added as Cast When Used powers (in case player can't outrun a boss)
+Dispel Magic is now a Potion, recipes spawn normally (so player can get rid of Continuous Damage effects)
+Potions of Restore Power restore 50 Magicka, doesn't scale w/player level
+Regular magic items found as loot or in stores will never be Holy Water, Holy Daggers, or Holy Tomes
+
+NON-DUNGEON ENCOUNTER TABLES (completely reworked for v1.2):
+
+Mountain Woods use Mountain spawn tables in town at night and in wilderness during the day, use new, unique encounter table in wilderness at night
+Swamps use Rainforest encounter tables
+
+Desert, in location, night - all human enemies, rare Werewolf/Wereboar/Gargoyle, Vampire boss
+Desert, not in location, day - Giant Scorpions, Dragonlings, Nymphs, Daedra Seducer, Fire Atronachs, Rangers, Gargoyles, Fire Daedra, Alternate Dragonling boss
+Desert, not in location, night - Rangers, Gargoyles, Mummy/Skeletons/Ghost/Wraith, Lich & Ancient Lich bosses
+Mountain/Mountain Woods, in location, night - all human enemies, rare Werewolf/Wereboar/Grizzly Bear, Assassin boss
+Mountain/Mountain Woods, not in location, day - all human enemies, orcs & sergeants, Grizzly Bear/Centaur/Giant/Harpy/Spriggan, Lich boss
+Mountain, not in location, night - Rangers/Barbarians, Werewolf/Wereboar, Frost Daedra/Ice Atronachs, undead, Grizzly Bear/Gargoyle/Spriggan, Vampire Ancient boss
+Mountain Woods, not in location, night - same enemies as Mountains not in location @ night, but less Frost Daedra/Ice Atronachs/Gargoyles/lycanthropes, more Spriggans/Rangers/Barbarians, Ancient Lich boss
+Rainforest/Swamp, in location, night - all human enemies, rare Werewolf/Wereboar/Spider/Daedroth, Alternate Dragonling boss
+Rainforest/Swamp, not in location, day - all humans & orcs, Spider/Sabertooth Tiger/Spriggan/Nymph/Daedroth/Daedra Seducer, Orc Warlord boss
+Rainforest/Swamp, not in location, night - all humans & orcs, undead, Spider/Sabertooth Tiger/Giant Bat/Spriggan/Daedroth/lycanthropes, Daedra Lord boss
+Subtropical, in location, night - all human enemies, rare Werewolf/Wereboar/Sabertooth Tiger, Assassin boss
+Subtropical, not in location, day - all humans & orcs, Spider/Sabertooth Tiger/Spriggan/Rat/Centaur/Nymph/Daedroth/Daedra Seducer, Daedra Lord boss
+Subtropical, not in location, night - all humans & orcs, Spider/Rat/Giant Bat/Sabertooth Tiger/Spriggan/Daedroth/lycanthropes, undead, Vampire Ancient boss
+Woodlands, in location, night - all human enemies, rare Werewolf/Wereboar/Spriggan, Vampire boss
+Woodlands, not in location, day - all human enemies, orcs & sergeants, Grizzly Bear/Spider/Centaur/Giant/Spriggan/Rat, Alternate Dragonling boss
+Woodlands, not in location, night - all human enemies, orcs & sergeants, Grizzly Bear/Spider/Spriggan/Rat/Giant Bat/lycanthropes, undead, Orc Warlord boss
+Haunted Woodlands, in location, night - all human enemies, Ghosts & Wraiths, rare Werewolf/Wereboar/Flesh Atronach, Vampire & Vampire Ancient bosses
+Haunted Woodlands, not in location, day - undead, Spriggans, lycanthropes, Flesh Atronachs, Lich & Ancient Lich bosses
+Haunted Woodlands, not in location, night - undead, lycanthropes, Flesh Atronachs, Vampire, Lich, Vampire Ancient & Ancient Lich bosses
+
+SHOPS:
+
+Reduced overall item generation chances in shops, shop quality now has huge impact on what's available
+Fancy clothing and other expensive-looking items are only in high quality shops
+Cuirasses, gauntlets, tower shields, and best-in-slot weapons are not in low quality shops
+If using RPR:I you will find Wakazashis, Katanas & Dai-Katanas in low quality shops
+Shops of average quality or better that are not libraries or bookstores will stock far fewer books
+Shops below average quality (sturdy shelves, rusty relics) that are not libraries or bookstores will never stock books
+General stores stock less armor, Booksellers stock lots more books
+
+SKILLS:
+
+In v1.1 I went overboard on skill advancement difficulty
+Medical/Stealth/Running/Orcish/Harpy/Giantish/Daedric easier to level
+All weapons/spells/Dodging/Critical Strike easier to level
+Backstabbing much easier to level
+Etiquette/Streetwise are exercised with human enemies even if you don't pacify them
+Reduced language skill tallies from successful pacification from 3 to 1
+Running will correctly level up at higher Running skill levels
+
+SPELLS:
+
+Regenerate effect removed from SpellMaker
+Fire Daedra spell kit now includes God's Fire
+
+
+Bossfall v1.1 Changelog
+
+BOSS INFO:
+
+Bosses have 1% chance of spawning, on average one boss every 4 block dungeon
+Assassin, Alternate Dragonling, Vampire, Vampire Ancient move speed buffed
+Due to limited selection boss doesn't always fit environment/dungeon type
+Every boss sees Invisible
+Mana for 30 spells at Levels 21-25, infinite mana at 26-30
+All bosses drop loot, often loaded with Daedric
+Vampire/Lich soul gems cost 750,000 gold, all other bosses 1,500,000
+Vampire/Lich soul gems worth 7,500 Enchantment Points, all other bosses 15,000 (except Assassins, you can't bind human souls)
+Assassins removed from aboveground (non-dungeon) vanilla quests intended to be easy
+
+BOSS STATS:
+
+Vampire
+46-100 dmg
+80-240 HP
+-6 armor
+Level 21-25
+Spellcaster
+Silver x2 dmg
+
+Lich
+50-100 dmg
+80-240 HP
+-7 armor
+Level 21-25
+Spellcaster
+Silver x2 dmg
+
+Assassin
+39-126 dmg
+100-300 HP
+-8 armor
+Level 21-30
+Poisoned weapon that bypasses immunity (if using RPR:I Assassins have vanilla 60% chance of poisoned weapon)
+
+Alternate Dragonling
+76-135 dmg
+130-390 HP
+-9 armor
+Level 21-30
+
+Orc Warlord
+40-70 dmg
+150-450 HP
+-10 armor
+Level 21-30
+
+Daedra Lord
+50-70 dmg
+170-510 HP
+-11 armor
+Level 26-30
+Spellcaster
+
+Vampire Ancient
+101-155 dmg
+180-540 HP
+-12 armor
+Level 26-30
+Silver x2 dmg
+
+Ancient Lich
+100-170 dmg
+200-600 HP
+-13 armor
+Level 26-30
+Spellcaster
+Silver x2 dmg
+
+CHARACTER CREATION:
+
+Resistances/Immunities more expensive
+Spell Absorption too expensive to use
+Everything else cheaper/same cost
+Custom classes start w/Steel Longsword
+Spellswords/custom wizard classes start w/Balyna's Balm
+You can drop attributes to 1
+Miscellaneous skills start at 1 to 4
+
+COMBAT MECHANICS:
+
+Enemies fire bows/spells more often & while closer & from farther away, back up & turn faster, retreat & strafe less frequently, strafe faster
+Enemy accuracy buffed
+Vanilla weapon material requirements to hit certain monsters removed
+Some enemies immune to certain weapon types/materials & attacking them may damage your weapon. Don't punch anything harder than your fist
+Enemy attack speed unleveled. Equal to vanilla attack speed at player level 10 with greater random variation
+Body parts hit with equal likelihood
+Weaponless attacks damage armor/shields of targets
+All Steel weapons have minimum damage of 1
+Enemies who use weapons switch to Hand-To-Hand if their weapon won't damage player in wereform
+Attack fatigue cost tripled
+Knockbacks nerfed to reduce stunlocks
+Enemy Strength added to their Hand-to-Hand attack damage, formula same as player's
+
+CRIME & PUNISHMENT:
+
+Legal reputation loss for most crimes changed. Loan default more severe (-30), murder tanks rep (-50)
+All fines doubled, banishment less likely
+Murder carries severe penalties (minimum 12 years & 120K fine)
+Dark Brotherhood chance of averting murder/assault conviction increased (if you're a guildmember)
+Hostile guards use Knight animations, move faster, shoot arrows, hit harder, and see Invisible. HALT!
+Guards wield weapons of any material (not true if using RPR:I). HALT!
+If player is level 1-4, Guards will be up to 2 levels below or 12 levels above player. HALT! 
+Once player is at least level 5, Guards are usually level 9-22 and can be up to 30. HALT!
+
+DISEASE/POISON:
+
+Spiders/Giant Scorpions don't paralyze, they have 22% chance/hit to inflict resistable poison, 2% chance/hit to inflict Drothweed that bypasses immunity
+Enemies with poisoned weapons are 5x rarer but always bypass immunity (if using RPR:I enemies have vanilla 5% chance for poisoned weapon)
+Drugs can be weapon poisons (If using RPR:I, drugs will not be weapon poisons)
+Rats only give you the Plague
+Vampires/Vampire Ancients can give you any disease
+Skeletal Warriors have 2% chance of inflicting disease
+Giant Bats have 5% chance of disease (up from 2%)
+Mummies have 2% chance of disease (down from 5%)
+Zombies have 5% chance of disease (up from 2%)
+
+DUNGEON SPAWN TABLES:
+
+Crypt - medium difficulty, undead, Wraith ranged threat, Vampire Ancient boss
+Orc Stronghold - medium, Orcs, Orc Sergeants, vermin, Orc Shaman ranged threat, Orc Warlord boss
+Human Stronghold - hard, lawful humans, vermin, Healer/Sorcerer ranged threat, Assassin boss
+Prison - hard, criminals, vermin, Mage/Spellsword ranged threat, Assassin boss
+Desecrated Temple - hard, Daedra Seducers, Imps, vermin, criminals, low level undead, Mage/Sorcerer ranged threat, Ancient Lich boss
+Mine - medium, vermin, animals, Iron Atronachs/Gargoyles, Lich ranged threat and boss
+Natural Cave - easy, vermin, animals, Spriggans, Rangers, Nymphs, Vampire ranged threat and boss
+Coven - very hard, undead, every Daedra and every spellcasting human as ranged threats, Daedra Lord boss
+Vampire Haunt - impossible, Ghosts/Wraiths as angry spirits of the dead (vampires gotta eat), lots of Vampires as ranged threats, Vampire Ancient boss
+Laboratory - hard, Imps, Gargoyles, all Atronachs, all spellcasters as ranged threats, Orc Warlord boss
+Harpy Nest - easy, vermin, lots of Harpies, Lich ranged threat and boss
+Ruined Castle - hard, vermin, every human enemy, all spellcasters as ranged threat, Assassin boss
+Spider Nest - easy (if you're immune to Poison), low level undead, lots of spiders, Ancient Lich ranged threat and boss
+Giant Stronghold - hard, vermin, lots of Giants, Vampire ranged threat and boss
+Dragon's Den - medium, lots of Dragonlings and their arch-nemesis Knights, Mage ranged threat, Alternate Dragonling boss
+Barbarian Stronghold - medium, vermin, lots of Barbarians, Healer ranged threat, Assassin boss
+Volcanic Cave - very hard, Fire Atronachs, Dragonlings, Daedra Seducers, Fire Daedra/Daedroth ranged threats, Alternate Dragonling/Daedra Lord bosses
+Scorpion Nest - medium (if you're immune to Poison), vermin, lots of Giant Scorpions, Lich ranged threat and boss
+Cemetery - very easy, criminals, vermin, low level undead, Vampire ranged threat and boss
+
+ENEMIES: 
+
+Most undead move as slow as molasses. Flying enemies move faster. Underwater enemies slower. Thief types fast. Spellcasting humans slower. Spiders, Giant Bats, Alternate Dragonlings, Assassins, Werewolves, Vampires, Vampire Ancients extremely fast
+If there's ever a mod that adds new enemies, they will use vanilla movespeed formula
+Human class enemy hand-to-hand/weapon damage scales with their level. Minimum dmg not changed, max dmg has (enemy level * 2) added to dmg range roll
+Human class enemy armor scales with their level (Assassins excluded. Their armor doesn't change once player is at least level 5). Armor values are decreased by 5/level
+Enemy skill levels have higher cap (180 rather than vanilla 100), scale up faster (+7 skill/level rather than vanilla +5/level)
+All non-boss enemies have minimum damage of 1 (not true for human class enemies using Hand-To-Hand or for enemies w/Bonus to Hit: Humanoids or a Weapon Expertise)
+Orcs/Centaurs aren't loot fountains
+Bards/Sorcerers pacified by Streetwise
+Zombies see Invisible
+
+ENEMY LEVELS:
+
+Human enemies unleveled (only kicks in once player is at least level 5)
+
+3% Levels 1-5
+17% Levels 6-8
+60% Levels 9-12
+17% Levels 13-15
+3% Levels 16-20
+
+Breakdown by level
+
+1/3% Level 1
+1/3% Level 2
+1/3% Level 3
+1% Level 4
+1% Level 5
+3% Level 6
+5% Level 7
+9% Level 8
+13% Level 9
+17% Level 10
+17% Level 11
+13% Level 12
+9% Level 13
+5% Level 14
+3% Level 15
+1% Level 16
+1% Level 17
+1/3% Level 18
+1/3% Level 19
+1/3% Level 20
+
+Non-human monster levels randomly vary up and down a bit. Careful around Imps in Privateer's Hold
+If player is Level 1-4, all non-Guard (HALT!) human class enemies will be within 2 levels of the player
+If there's ever a mod that adds new monsters or class enemies, they will be unleveled
+
+ENEMY STATS:
+
+Rat
+1-3 dmg
+6-18 HP
+8 armor
+Level 1-3
+5% chance to inflict Plague
+
+Imp
+1-10 dmg
+8-24 HP
+5 armor
+Level 1-4
+Spellcaster
+
+Spriggan
+1-12 dmg
+14-42 HP
+7 armor
+Level 1-5
+Axe only
+
+Giant Bat
+1-7 dmg
+8-24 HP
+4 armor
+Level 1-5
+5% chance to inflict disease
+
+Grizzly Bear
+1-18 dmg
+33-99 HP
+7 armor
+Level 2-6
+
+Sabertooth Tiger
+1-21 dmg
+25-75 HP
+5 armor
+Level 2-6
+
+Spider
+1-8 dmg
+14-42 HP
+5 armor
+Level 2-6
+22% chance/hit to inflict resistable poison, 2% chance/hit to inflict Drothweed that bypasses immunity
+
+Orc
+1-12 dmg
+24-72 HP
+7 armor
+Level 4-8
+
+Centaur
+1-15 dmg
+20-60 HP
+6 armor
+Level 3-7
+
+Werewolf
+1-24 dmg
+33-99 HP
+0 armor
+Level 10-14
+Silver only
+
+Nymph
+1-10 dmg
+15-45 HP
+5 armor
+Level 4-8
+
+Slaughterfish
+1-12 dmg
+20-60 HP
+5 armor
+Level 5-9
+
+Orc Sergeant
+1-30 dmg
+50-150 HP
+1 armor
+Level 11-15
+
+Harpy
+1-23 dmg
+25-75 HP
+5 armor
+Level 6-10
+
+Wereboar
+1-48 dmg
+44-132 HP
+2 armor
+Level 10-14
+Silver only
+
+Skeletal Warrior
+1-19 dmg
+17-51 HP
+4 armor
+Level 6-10
+2% chance to inflict disease
+Blunt Weapon, Hand-to-Hand, or Axe only
+
+Giant
+1-30 dmg
+70-210 HP
+4 armor
+Level 10-14
+
+Zombie
+1-15 dmg
+33-99 HP
+6 armor
+Level 5-9
+5% chance to inflict disease
+Immune to Archery/Hand-to-Hand/Short Blade
+Axe x2 dmg
+
+Ghost
+1-30 dmg
+5-15 HP
+-4 armor
+Level 9-13
+Silver only
+
+Mummy
+1-25 dmg
+45-135 HP
+3 armor
+Level 8-12
+2% chance to inflict disease
+Immune to Archery
+
+Giant Scorpion
+1-30 dmg
+33-99 HP
+1 armor
+Level 10-14
+Immune to Archery/Hand-to-Hand
+22% chance/hit to inflict resistable poison, 2% chance/hit to inflict Drothweed that bypasses immunity
+
+Orc Shaman
+1-35 dmg
+43-129 HP
+0 armor
+Level 11-15
+Spellcaster
+
+Gargoyle
+1-50 dmg
+50-150 HP
+0 armor
+Level 12-16
+Blunt Weapon only
+
+Wraith
+1-45 dmg
+10-30 HP
+-8 armor
+Level 13-17
+Spellcaster
+Silver only
+
+Frost Daedra
+1-100 dmg
+35-105 HP
+-1 armor
+Level 15-19
+Ice Bolt, Ice Storm, Frostbite
+
+Fire Daedra
+1-50 dmg
+60-180 HP
+-3 armor
+Level 15-19
+Fireball, Fire Storm
+
+Daedroth
+1-50 dmg
+66-200 HP
+-4 armor
+Level 16-20
+Spellcaster
+
+Daedra Seducer
+1-90 dmg
+75-225 HP
+-5 armor
+Level 17-20
+Spellcaster
+
+Dragonling
+1-27 dmg
+25-75 HP
+3 armor
+Level 8-12
+
+Fire Atronach
+15-33 dmg
+40-120 HP
+3 armor
+Level 14-18
+Silver only
+
+Iron Atronach
+15-43 dmg
+66-200 HP
+2 armor
+Level 14-18
+Blunt Weapon only
+
+Flesh Atronach
+15-28 dmg
+60-180 HP
+4 armor
+Level 14-18
+Immune to Archery/Hand-to-Hand/Short Blade
+Axe x2 dmg
+
+Ice Atronach
+15-38 dmg
+50-150 HP
+3 armor
+Level 14-18
+Blunt Weapon or Axe only
+
+Dreugh
+7-20 dmg
+22-66 HP
+5 armor
+Level 6-10
+
+Lamia
+15-33 dmg
+51-153 HP
+-2 armor
+Level 14-18
+
+GAMEPLAY:
+
+Training nerfed. At difficulty dagger of 1.0, my goal is 1 training/level-up until skill level 20, 2 trainings/level-up until 35, etc.
+Training cap is 95
+Quest rewards unleveled, you'll usually get 10-200 gold (unless it's a faction quest, then rewards are unchanged from vanilla), you can rarely get a level 20 amount
+Falling damage doubled, starts at lower heights. Falling 2 blocks is 25 dmg. Damage then increases 10/meter fallen
+Climbing nerfed, success depends almost entirely on your skill level
+Rappel mode gives no Climbing skill checks
+50 Luck no climbing skill check bonus, 1 Luck 5% penalty, 100 Luck 5% bonus
+Strength weapon damage bonus halved
+
+ITEMS:
+
+General stores buy/sell armor
+Weapon/armor durability nerfed. Durability decreases as material tier increases
+Shield armor bonus doubled
+Most item weights changed, gems are worth more (weapon/armor weights/costs unchanged)
+Item rarities changed, best-in-slot and best-in-weapon-skill equipment rarer
+Enchantment capacities of some weapons changed
+Some weapon durabilities changed
+Arrows actually weigh something
+
+LOOT:
+
+Loot unleveled, Daedric available at level 1
+Rarity of all materials above Steel increased
+Enemy equipment scales to their level. High level enemy = high chance of great loot
+Reduced plate generation chance to 10%
+Luck does not influence loot drops, chances are static
+Gold piles unleveled, level 20 gold piles possible but rare
+Arrows spawn w/maximum 30 per stack
+
+MAGIC ITEMS/ENCHANTMENTS:
+
+Found magic item durability decreased, some names changed (artifacts unchanged)
+Found magic items never have "Absorbs Spells" power (artifacts still can, artifact powers unchanged)
+Found magic items can have "Spell Resistance" and "Shalidor's Mirror" as Cast When Used power
+Empty Soul Gems cost 50,000 gold, filled Soul Gem prices adjusted accordingly
+"Repairs Objects" Enchantment removed from Item Maker
+"Absorbs Spells" Enchantment removed from Item Maker
+"Enhances Skill" Enchantment 10x more expensive (does not change value of "Item of Venom Spitting")
+"Increased Weight Allowance" Enchantment 10x more expensive
+"Featherweight" Enchantment 10x more expensive
+"Strengthens Armor" Enchantment 21.5x more expensive, buffs armor by -7 rather than -5
+
+MONSTER SPAWNING:
+
+Spawns are random, pick from curated list of 100, list changes for each dungeon type/environment
+High level enemies rare
+Werewolves/Wereboars removed from dungeons
+Heat-loving/tolerant monsters in desert/rainforest/subtropical wilderness, cold-loving/tolerant monsters in mountain wilderness
+Orcs and humans spawn anywhere, but rarely in wilderness at night and never in daytime deserts or mountain nights
+Rangers/Barbarians are outdoorsy types, in no dungeons except Natural Caves and Barbarian Strongholds, they spawn in mountain nights and desert days
+Spawn frequency reduced
+
+SKILLS:
+
+All monster language skills much easier to level. Slightly less easy for monsters that can appear frequently (Orcs, Daedra, Giants, Harpies)
+Jumping/Climbing much tougher. Running incredibly hard
+Medical tougher
+All Spells dramatically harder. Thaumaturgy/Restoration not more difficult than the rest
+Mercantile much harder
+All fighting skills (Dodging, Backstabbing, Critical Strike, all Weapons) far more difficult. Archery no longer easier than the rest
+Stealth way harder
+
+SPELLS:
+
+Enemies cast 2 spells at levels 1-7
+Enemies cast 3 spells at levels 8-12
+Enemies cast 4 spells at levels 13-15
+Enemies cast 5 spells at levels 16-17
+Enemies cast 6 spells at levels 18-19
+Enemies cast 8 spells at level 20
+Bosses cast 30 spells at levels 21-25
+Bosses cast infinite spells at levels 26-30
+
+Enemy spell variety increased, every spellcaster uses same kit (except Frost & Fire Daedra). Includes Sphere of Negation
+Didn't add Hand of Decay as monsters spam you with it in melee range
+Enemy spell costs no longer vary based on player spell skill level
+Continuous Damage: Health removed from Spellmaker. Wildfire still available for purchase, does impact dmg but nothing over time
+Enemies cast Caster Only spells at range, they cast Shalidor's Mirror, Spell Resistance, Heal
+Ghosts/Vampire Ancients cast no spells
+If you & a monster are reflecting spells, spell will bounce between you until someone's reflection fails a save

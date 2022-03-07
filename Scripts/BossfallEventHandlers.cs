@@ -3,8 +3,7 @@
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/Osorkon21/Bossfall, vanilla DFU code https://github.com/Interkarma/daggerfall-unity
 // Original Author: Osorkon, vanilla DFU code Gavin Clayton (interkarma@dfworkshop.net), Hazelnut
-// Contributors:    vanilla DFU code Allofich, Numidium, TheLacus, Lypyl (lypyl@dfworkshop.net), Hazelnut
-// 
+// Contributors:    vanilla DFU code Allofich, Hazelnut, Lypyl (lypyl@dfworkshop.net), Numidium, TheLacus
 // 
 // Notes: This script uses code from several vanilla scripts. Comments indicate authorship, please verify
 //        authorship before crediting. When in doubt compare to vanilla DFU's source code.
@@ -38,14 +37,6 @@ namespace BossfallMod.Events
     /// </summary>
     public class BossfallEventHandlers : MonoBehaviour
     {
-        // DWI
-
-        // Clear this script using standard citing methods, recheck entire script as u changed a lot
-
-        // DWI
-
-        // check contributors when done clearing make sure u have listed all, remove all that don't apply
-
         #region Fields
 
         // Spell lists for BossfallOnEnemyLootSpawned event handler. Based on arrays from vanilla's EnemyEntity script.
@@ -738,8 +729,8 @@ namespace BossfallMod.Events
                         // the amount of books on Bookseller shelves.
                         else if (itemGroup == ItemGroups.Books && buildingType == DFLocation.BuildingTypes.Bookseller)
                         {
-                            int bookMod = (shopQuality + (UnityEngine.Random.Range(-5, 5 + 1)));
-                            for (int j = 0; j <= bookMod; ++j)
+                            int bookMod = shopQuality + UnityEngine.Random.Range(-5, 5 + 1);
+                            for (int j = 0; j <= bookMod; j++)
                             {
                                 items.AddItem(ItemBuilder.CreateRandomBook());
                             }

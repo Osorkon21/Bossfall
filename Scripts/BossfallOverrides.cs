@@ -2215,10 +2215,10 @@ namespace BossfallMod.Formulas
             // Guards move very fast. Their level sort of scales with player's level until player is level 7 - I say
             // "sort of" because they always get a random level boost of 0 to 10 at any player level, so "scales" is not very
             // accurate as their level will vary wildly. Once player is level 7 Guards can be levels 1-30 but on average will
-            // be around level 15. If you're not using "Roleplay and Realism: Items" Guard equipment scales with their level, which
-            // means Guards will likely drop a ton of Daedric once player is level 7. Their armor isn't changed by their equipment -
-            // it scales with their level - and they can do incredible damage at higher levels. HP unchanged from vanilla. They will
-            // also happily riddle you with arrows. Lawbreakers beware! And by the way... HALT!
+            // be around level 15. Guard equipment scales with their level, which means Guards will likely drop a ton of
+            // Daedric once player is level 7. Their armor isn't changed by their equipment - it scales with their level - and
+            // they can do incredible damage at higher levels. HP unchanged from vanilla. They will also happily riddle you
+            // with arrows. Lawbreakers beware! And by the way... HALT!
             new MobileEnemy()
             {
                 ID = 146,
