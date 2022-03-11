@@ -5,7 +5,7 @@
 // Original Author: Osorkon, vanilla DFU code Gavin Clayton (interkarma@dfworkshop.net)
 // Contributors:    vanilla DFU code Allofich
 // 
-// Notes: This script uses code from vanilla's EnemyAttack and DaggerfallMissile scripts. Comments indicate authorship,
+// Notes: This script uses code from vanilla DFU's EnemyAttack script. Comments indicate authorship,
 //        please verify authorship before crediting. When in doubt compare to vanilla DFU's source code.
 //
 
@@ -18,45 +18,47 @@ using DaggerfallWorkshop.Game.Items;
 using DaggerfallWorkshop.Game.MagicAndEffects;
 using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using DaggerfallWorkshop.Game.Utility;
+using System;
+using System.Reflection;
 using UnityEngine;
 
 namespace BossfallMod.EnemyAI
 {
     /// <summary>
-    /// Counterpart to vanilla's EnemyAttack. Used for Bossfall enemy AI.
+    /// Bossfall enemy AI.
     /// </summary>
     [RequireComponent(typeof(BossfallEnemySenses))]
     [RequireComponent(typeof(EnemySenses))]
     public class BossfallEnemyAttack : MonoBehaviour
     {
+        #region Fields
+
         // I reduced the minRangedDistance by 60 and doubled the maxRangedDistance. I got annoyed at
         // how easy it was to kite enemies at long range without them ever shooting back. Enemies will also fire
         // arrows and spells at the normal Enhanced AI "stopDistance" instead of standing there staring at you.
         public const float minRangedDistance = 180 * MeshReader.GlobalScale;
         public const float maxRangedDistance = 4096 * MeshReader.GlobalScale;
-        public float MeleeDistance = 2.25f;
-        public float ClassicMeleeDistanceVsAI = 1.5f;
-        public float MeleeTimer = 0;
-        public DaggerfallMissile ArrowMissilePrefab;
 
-        // I added the bossfallSenses, bossfallMotor, and attack fields.
-        BossfallEnemyMotor bossfallMotor;
-        BossfallEnemySenses bossfallSenses;
+        // I added the attack field.
         EnemyAttack attack;
 
+        EnemyMotor motor;
         EnemySenses senses;
         EnemySounds sounds;
         MobileUnit mobile;
         DaggerfallEntityBehaviour entityBehaviour;
         int damage = 0;
 
+        #endregion
+
+        #region Unity
+
         void Start()
         {
-            // I added the bossfallMotor, bossfallSenses, and attack lines.
-            bossfallMotor = GetComponent<BossfallEnemyMotor>();
-            bossfallSenses = GetComponent<BossfallEnemySenses>();
+            // I added the attack line.
             attack = GetComponent<EnemyAttack>();
 
+            motor = GetComponent<EnemyMotor>();
             senses = GetComponent<EnemySenses>();
             sounds = GetComponent<EnemySounds>();
             mobile = GetComponent<DaggerfallEnemy>().MobileUnit;
@@ -74,11 +76,13 @@ namespace BossfallMod.EnemyAI
             if (mobile && mobile.IsPlayingOneShot() && mobile.OneShotPauseActionsWhilePlaying())
                 return;
 
-            // I changed the call to EnemyAttack's MeleeTimer instead of Bossfall's.
+            // I changed the call to vanilla's MeleeTimer field.
             attack.MeleeTimer -= Time.deltaTime;
 
-            // I changed the call to EnemyAttack's MeleeTimer instead of Bossfall's.
+            // I changed the call to vanilla's MeleeTimer field.
             if (attack.MeleeTimer < 0)
+
+                // I changed the call to vanilla's MeleeTimer field.
                 attack.MeleeTimer = 0;
 
             EnemyEntity entity = entityBehaviour.Entity as EnemyEntity;
@@ -89,12 +93,14 @@ namespace BossfallMod.EnemyAI
 
             mobile.FrameSpeedDivisor = entity.Stats.PermanentSpeed / speed;
 
-            // I changed the call to EnemyAttack's MeleeTimer instead of Bossfall's.
+            // I changed the call to vanilla's MeleeTimer field.
             if (GameManager.ClassicUpdate && (DFRandom.rand() % speed >= (speed >> 3) + 6 && attack.MeleeTimer == 0))
             {
+                // I rerouted the method call to a method in this script.
                 if (!MeleeAnimation())
                     return;
 
+                // I rerouted the method call to a method in this script.
                 ResetMeleeTimer();
             }
         }
@@ -107,12 +113,18 @@ namespace BossfallMod.EnemyAI
 
             if (mobile.DoMeleeDamage)
             {
+                // I rerouted the method call to a method in this script.
                 MeleeDamage();
                 mobile.DoMeleeDamage = false;
             }
             else if (mobile.ShootArrow)
             {
-                ShootBow();
+                // I call vanilla's ShootBow method from the EnemyAttack script here using Reflection, I had trouble
+                // instantiating an arrow prefab using this script.
+                Type type = attack.GetType();
+                MethodInfo methodInfo = type.GetMethod("ShootBow", BindingFlags.Instance | BindingFlags.NonPublic);
+                methodInfo.Invoke(attack, null);
+
                 mobile.ShootArrow = false;
                 DaggerfallAudioSource dfAudioSource = GetComponent<DaggerfallAudioSource>();
 
@@ -121,44 +133,48 @@ namespace BossfallMod.EnemyAI
             }
         }
 
+        #endregion
+
+        #region Public Methods
+
         public void ResetMeleeTimer()
         {
             // I increased the range up and down by 500 and removed MeleeTimer variation by player level. Enemies
             // attack on average as fast as they do at a vanilla player level of 10, but with greater random variation. I
             // also changed the call to EnemyAttack's MeleeTimer instead of Bossfall's. This was done so in case other mods
             // are changing the MeleeTimer Bossfall will properly take these changes into account.
-            attack.MeleeTimer = Random.Range(1000, 3500 + 1);
+            attack.MeleeTimer = UnityEngine.Random.Range(1000, 3500 + 1);
 
-            // I changed the call to EnemyAttack's MeleeTimer instead of Bossfall's.
+            // I changed the call to vanilla's MeleeTimer field.
             attack.MeleeTimer += 450 * ((int)GameManager.Instance.PlayerEntity.Reflexes - 2);
 
-            // I changed the calls to EnemyAttack's MeleeTimer instead of Bossfall's.
+            // I changed the call to vanilla's MeleeTimer field.
             if (attack.MeleeTimer < 0)
+
+                // I changed the call to vanilla's MeleeTimer field.
                 attack.MeleeTimer = 0;
 
-            // I changed the call to EnemyAttack's MeleeTimer instead of Bossfall's.
+            // I changed the call to vanilla's MeleeTimer field.
             attack.MeleeTimer /= 980;
         }
+
+        #endregion
 
         #region Private Methods
 
         private bool MeleeAnimation()
         {
-            // If the vanilla field or property can be set from outside the script, I call the vanilla version.
-            // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
-            if (bossfallSenses.TargetInSight && senses.TargetIsWithinYawAngle(22.5f, senses.LastKnownTargetPos))
+            if (senses.TargetInSight && senses.TargetIsWithinYawAngle(22.5f, senses.LastKnownTargetPos))
             {
-                // I changed the call to EnemyAttack's MeleeDistance instead of Bossfall's.
+                // I changed the call to vanilla's MeleeDistance field.
                 float distance = attack.MeleeDistance;
 
-                // If the vanilla field or property can be set from outside the script, I call the vanilla version.
-                // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
                 if (!DaggerfallUnity.Settings.EnhancedCombatAI && senses.Target != GameManager.Instance.PlayerEntityBehaviour)
+
+                    // I changed the call to vanilla's ClassicMeleeDistanceVsAI field.
                     distance = attack.ClassicMeleeDistanceVsAI;
 
-                // If the vanilla field or property can be set from outside the script, I call the vanilla version.
-                // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
-                if (bossfallSenses.DistanceToTarget > distance + senses.TargetRateOfApproach)
+                if (senses.DistanceToTarget > distance + senses.TargetRateOfApproach)
                     return false;
 
                 mobile.ChangeEnemyState(MobileStates.PrimaryAttack);
@@ -181,8 +197,6 @@ namespace BossfallMod.EnemyAI
                 EnemyEntity entity = entityBehaviour.Entity as EnemyEntity;
                 EnemyEntity targetEntity = null;
 
-                // If the vanilla field or property can be set from outside the script, I call the vanilla version.
-                // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
                 if (senses.Target != null && senses.Target != GameManager.Instance.PlayerEntityBehaviour)
                     targetEntity = senses.Target.Entity as EnemyEntity;
 
@@ -193,26 +207,21 @@ namespace BossfallMod.EnemyAI
 
                 damage = 0;
 
-                // If the vanilla field or property can be set from outside the script, I call the vanilla version.
-                // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
-                if (senses.Target != null && bossfallSenses.TargetInSight && (bossfallSenses.DistanceToTarget <= 0.25f
-                    || (bossfallSenses.DistanceToTarget <= attack.MeleeDistance && senses.TargetIsWithinYawAngle(35.156f, senses.Target.transform.position))))
+                // I changed the call to vanilla's MeleeDistance field.
+                if (senses.Target != null && senses.TargetInSight && (senses.DistanceToTarget <= 0.25f
+                    || (senses.DistanceToTarget <= attack.MeleeDistance && senses.TargetIsWithinYawAngle(35.156f, senses.Target.transform.position))))
                 {
-                    // If the vanilla field or property can be set from outside the script, I call the vanilla version.
-                    // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
                     if (senses.Target == GameManager.Instance.PlayerEntityBehaviour)
+
+                        // I rerouted the method call to a method in this script.
                         damage = ApplyDamageToPlayer(weapon);
                     else
-                        // If the vanilla field or property can be set from outside the script, I call the vanilla version.
-                        // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
+                        // I rerouted the method call to a method in this script.
                         damage = ApplyDamageToNonPlayer(weapon, senses.transform.forward);
                 }
-                // If the vanilla field or property can be set from outside the script, I call the vanilla version.
-                // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
-                else if (bossfallMotor.Bashing && senses.LastKnownDoor != null && senses.DistanceToDoor <= attack.MeleeDistance && !senses.LastKnownDoor.IsOpen)
+                // I changed the call to vanilla's MeleeDistance field.
+                else if (motor.Bashing && senses.LastKnownDoor != null && senses.DistanceToDoor <= attack.MeleeDistance && !senses.LastKnownDoor.IsOpen)
                 {
-                    // If the vanilla field or property can be set from outside the script, I call the vanilla version.
-                    // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
                     senses.LastKnownDoor.AttemptBash(false);
                 }
                 else
@@ -229,33 +238,6 @@ namespace BossfallMod.EnemyAI
                         gender = Genders.Female;
                 
                     sounds.PlayCombatVoice(gender, true);
-                }
-            }
-        }
-
-        private void ShootBow()
-        {
-            if (entityBehaviour)
-            {
-                DaggerfallMissile missile = Instantiate(ArrowMissilePrefab);
-                if (missile)
-                {
-                    missile.Caster = entityBehaviour;
-                    missile.TargetType = TargetTypes.SingleTargetAtRange;
-                    missile.ElementType = ElementTypes.None;
-                    missile.IsArrow = true;
-
-                    // EnhancedCombatAI aiming doesn't work with Bossfall AI. This fixes arrow aiming.
-                    // I copied code from DaggerfallMissile and modified it to work with Bossfall.
-                    if (DaggerfallUnity.Settings.EnhancedCombatAI)
-                    {
-                        Vector3 predictedPosition = bossfallSenses.PredictNextTargetPos(25.0f);
-
-                        if (predictedPosition == EnemySenses.ResetPlayerPos)
-                            missile.CustomAimDirection = entityBehaviour.transform.forward;
-                        else
-                            missile.CustomAimDirection = (predictedPosition - entityBehaviour.transform.position).normalized;
-                    }
                 }
             }
         }
@@ -300,9 +282,12 @@ namespace BossfallMod.EnemyAI
                         playerEntity.HaveShownSurrenderToGuardsDialogue = true;
                     }
                     else if (playerEntity.CurrentHealth > damage || !playerEntity.SurrenderToCityGuards(false))
+
+                        // I rerouted the method call to a method in this script.
                         SendDamageToPlayer();
                 }
                 else
+                    // I rerouted the method call to a method in this script.
                     SendDamageToPlayer();
             }
             else
@@ -314,20 +299,12 @@ namespace BossfallMod.EnemyAI
         // I removed the "Item" prefix in the line below.
         private int ApplyDamageToNonPlayer(DaggerfallUnityItem weapon, Vector3 direction, bool bowAttack = false)
         {
-            // If the vanilla field or property can be set from outside the script, I call the vanilla version.
-            // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
             if (senses.Target == null)
                 return 0;
 
             EnemyEntity entity = entityBehaviour.Entity as EnemyEntity;
-
-            // If the vanilla field or property can be set from outside the script, I call the vanilla version.
-            // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
             EnemyEntity targetEntity = senses.Target.Entity as EnemyEntity;
             EnemySounds targetSounds = senses.Target.GetComponent<EnemySounds>();
-
-            // If the vanilla field or property can be set from outside the script, I call the vanilla version.
-            // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
             EnemyMotor targetMotor = senses.Target.transform.GetComponent<EnemyMotor>();
             damage = FormulaHelper.CalculateAttackDamage(entity, targetEntity, false, 0, weapon);
 
@@ -337,9 +314,6 @@ namespace BossfallMod.EnemyAI
             if (damage > 0)
             {
                 targetSounds.PlayHitSound(weapon);
-
-                // If the vanilla field or property can be set from outside the script, I call the vanilla version.
-                // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
                 EnemyBlood blood = senses.Target.transform.GetComponent<EnemyBlood>();
                 CharacterController targetController = senses.Target.transform.GetComponent<CharacterController>();
                 Vector3 bloodPos = senses.Target.transform.position + targetController.center;
@@ -372,12 +346,8 @@ namespace BossfallMod.EnemyAI
                     targetMotor.KnockbackDirection = direction;
                 }
 
-                // If the vanilla field or property can be set from outside the script, I call the vanilla version.
-                // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
                 if (DaggerfallUnity.Settings.CombatVoices && senses.Target.EntityType == EntityTypes.EnemyClass && Dice100.SuccessRoll(40))
                 {
-                    // If the vanilla field or property can be set from outside the script, I call the vanilla version.
-                    // Otherwise, I redirect calls to the field or property's Bossfall counterpart.
                     var targetMobileUnit = senses.Target.GetComponentInChildren<MobileUnit>();
                     Genders gender;
                     if (targetMobileUnit.Enemy.Gender == MobileGender.Male || targetEntity.MobileEnemy.ID == (int)MobileTypes.Knight_CityWatch)
@@ -423,6 +393,8 @@ namespace BossfallMod.EnemyAI
             if (messageBoxButton == DaggerfallMessageBox.MessageBoxButtons.Yes)
                 GameManager.Instance.PlayerEntity.SurrenderToCityGuards(true);
             else
+
+                // I rerouted the method call to a method in this script.
                 SendDamageToPlayer();
         }
 

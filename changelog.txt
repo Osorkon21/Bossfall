@@ -10,6 +10,10 @@ Note: This file is a combination of changes made in previous versions and planne
 
 Bossfall v1.3.1 Changelog
 
+ITEMS:
+
+Arrow weights restored to vanilla values (in previous Bossfall versions arrows weighed something, I found this annoying)
+
 LOOT:
 
 Reduced armor piece generation chances for enemies that start with equipment
@@ -20,6 +24,10 @@ Activating quest enemies in Info mode displays their level and name at any dista
 
 BOSSFALL v1.3.1 TESTING:
 
+Test ur Enemy Level HUD msgs make sure they still work & u approve
+Test 2 see if ur instance conversion breaks anything (in other words try to test everything, sigh)
+Test if ur shields are still generated and replace vanilla's in all cases? U did change how inventory window detection works but u already checked a bit... does this matter? Do u really need 2 do this again? I don't think so...
+Test if ur inventory & trade window (and any other window detections u add) detection in BossfallOnWindowChange detects D.R.E.A.M. (and any other mods that u think might need 2 be checked) versions of these windows (I think it should? Unless it's registering a custom UI window instance... then ur in trouble)
 Test built .dfmod w/fresh, newest version of DFU make sure ur mod works w/it and doesn't crash
 Test ur new shields w/D.R.E.A.M. see if they correctly use modded textures (they should work fine)
 Test quest foes in Info mode (make sure "You are too far away" message doesn't pop up & ur custom Level HUD message displays)
@@ -39,7 +47,7 @@ Test a few arrow firers make sure arrow prefab null reference error doesn't happ
 Test vampire/lycan on enemy death stuff make sure u approve
 Test dungeon entrance flavor msgs w/a few dungeons make sure u approve
 Test skill advancement difficulty on all 3 settings make sure u approve?
-Test character creation make sure u approve
+Test character creation, check "goals" section in CHARACTER CREATION section for guidelines on what 2 check, make sure u approve
 Test magic item creation make sure ur items r the ones getting created
 Test potion creation make sure Dispel Magic potion (use console 2 create potions) & potion recipe (from Alchemist shops) get created
 Test item creation w/enemies that use starting equipment w/out mods make sure it works & u approve
@@ -53,44 +61,36 @@ BOSSFALL v1.3.1 TO-DO:
 
 .DFMOD ESSENTIALS TO ADD/FINISH BEFORE v1.3.1 RELEASE:
 
-40 Spell Cost FormulaOverride (remember 2 register it w/RegisterOverride)
-Skill difficulty formula override, use previous skill difficulty tables, vary by Bossfall difficulty setting
 Character creation
 Use ur BossfallMagicItemTemplates 2 create all magic items
+40 Spell Cost FormulaOverride (remember 2 register it w/RegisterOverride)
+Add Potion of Dispel Magic
+Skill difficulty formula override, use previous skill difficulty tables, vary by Bossfall difficulty setting
 Bossfall startup quest
-Enemy AI 2 stop arrow prefab null reference error
+Clear 1 paper note
 Clear entire "NOTES" section, move stuff 2 do in v1.4 there, finish stuff to do b4 v1.3.1 releases
 Add all stuff below "NOTES" section up to v1.4 TO-DO
 Add BossfallEnemyDeath event handler 4 vampire/lycan on death stuff in BossfallEnemyMotor 2 make it instanced by enemy? Or do it @ end o' FormulaOverride CalculateAttackDamage? See how u did it in v1.3 for guidance
 Include StreamingAssets/Quests folder alongside .dfmod file in DL package that contains ur altered vanilla quests, add "put this whole folder in StreamingAssets/Quests if u don't wanna fite Assassins early" note
 Include finished/updated/proofread/checked v1.3.1 Changelog alongside StreamingAssets/Quests folder and .dfmod file in DL package
-Add Potion of Dispel Magic
 
 .DFMOD NOTES, CLEAR THESE BEFORE v1.3.1 RELEASE:
 
+Fix broken enemy AI (something with ur implementation of Reflection broke quite a bit - enemies don't update ur position and don't attack, and they don't follow "alwaysCharges" rules... hmm)
+Respond 2 latest post on NexusMods - I don't want to add random beasts as bosses as I need some way 2 make them unique so player knows, and unless there's some popup msg on mouse hover... anyway respond fully 2 post
 Double check all ur item gen methods that handle loot pile, enemy loot table random items, and shop shelf/house container loot gen - make sure mod items are automatically generated when appropriate so u don't need 2 add them manually (I think this is already the case but it never hurts 2 check)
-Move immunity/resistance/weakness HUD msg bools out of BossfallOverrides.CalculateAttackDamage, remove all trace o' them from BossfallOverrides script, add 'em 2 BossfallEnemyMotor instead, make 'em instance per enemy to avoid silly multiple msg situations
 To implement above line u can get DaggerfallEntityBehaviour from EnemyEntity incoming in parameter of CalculateAttackDamage, then GetComponent<BossfallEnemyMotor>() from DaggerfallEntityBehaviour 2 get access to bools
-The note w/list o' item settings & enemies 2 add item settings 4 has been cleared from paper note list, u can toss it when xferred 2 new paper note
 In BFEnemyMotor in spellcast bools include check 4 enemy's current HP if it's full and enemy wants 2 cast Heal return false
 Change Legal Info on NexusMods & 3rd forum post, include blurb about "not all code was written by me, I've marked all code I didn't write, check code for author before using/crediting"
 Read thru all scripts, make sure u remove all unnecessary Debug.Log lines and DWI/DELETE WHEN IMPLEMENTED references (after implementing them ofc) b4 releasing anything
 As final step b4 release, make sure to delete & re-add all Bossfall Scripts, Quests, and Templates to Mod Builder in Unity? To make sure u have the right GUID? Does this matter?
-Go thru all 3 Bossfall AI scripts, check if methods have references, if not delete 'em, check actual game make sure u didn't break anything ofc
-Go thru all 3 Bossfall AI scripts make sure no properties & their underlying values are referenced by the scripts after u implement Reflection to access vanilla AI scripts properties
 In ur enemy loot generation methods, for the 2 random custom items @ the end, use ItemHelper.GetCustomItemsForGroup(ItemGroups.Weapons) or (ItemGroups.Armor) to find custom wpns/armor & if that method returns something add one or two custom items
 Advise users of .dfmod to always put Bossfall last, Meaner Monsters, Unleveled Loot, & RPR:I will likely conflict w/Bossfall
 5189333 is ur Dispel Magic potion key (that uses ur custom Dispel Magic potion recipe)
-Change to Bossfall arrow weights - don't make them weigh anything, carrying around heavy arrows is kinda annoying
 Create a custom SpellRecords.json file? If this will allow u to easily implement previous Bossfall spell changes, DFU will load it and overwrite vanilla's SpellRecords.txt with ur custom data, remember to include it in Bossfall mod Assets
 If u add BossfallEnemyDeath script remember to add this component to custom enemies in BossfallOnLootSpawned method in Bossfall.cs
-Rework ranged/touch spell targeting using Reflection so u don't need ur custom aim methods
-Rework vanilla AI using Reflection so u don't need ur Bossfall custom AI methods to avoid breaking Macadaynu's Language Skill Overhaul mod
-Add FAQ question about "why do spells look so funny when they are fired from enemies?" to NexusMods & 3rd forum post (if u can't fix vanilla aim methods w/Reflection)
-Remember to unsubscribe enemies from OnCastReadySpell when they die (add to ur BossfallOnEnemyDeath event) - only do this if u can't fix vanilla aim methods w/Reflection, if u can delete all Bossfall aim fixing methods & code in every script
-Access AdjustLastPositionY in EnemyMotor using Reflection and then re-enable enemy fall damage while outside in BossfallEnemyMotor
 GameManager.Instance.Dungeon.Summary.DungeonType (or whatever) can be called to see what dungeon type ur entering, use that for ur dungeon entrance flavor msgs, make popup HUD msgs last twice as long as normal? (or SETTING: Make actual msg box popup 2 display ur dungeon entrance flavor txt?)
-Add fastMoveSpeeds array to BossfallEnemyMotor populate it w/Bossfall EnemyBasics MoveSpeed field contents
+Add fastMoveSpeeds array to BossfallOverrides populate it w/Bossfall EnemyBasics MoveSpeed field contents
 Add skill method override to BossfallOverrides, remember 2 register it w/FormulaOverride, use Bossfall skill difficulty that changes w/Bossfall setting values
 Download latest version of all used mods to make sure latest versions work w/Bossfall .dfmod b4 releasing anything
 Update all FAQ questions for relevance after .dfmod release on NexusMods and 3rd forum post
@@ -104,6 +104,15 @@ End goal is clear changelog before v1.3.1 as it's all been added (may not happen
 Update lines of code & comments added or modified in 2 NexusMods credits spots & 3rd forum post, just put lines o' code & comments in .dfmod
 Remove lines of comments from 2 NexusMods credits spots and 3rd forum post
 Update time spent in 2 NexusMods credits spots & 3rd forum post, just put "worked on since mid-October 2021", whatever that value in months is
+
+.DFMOD CHARACTER CREATION:
+
+Goals for v1.3.1:
+
+Make custom class HP/lvl start @ 20 w/no extra difficulty adjustment, start @ 0
+Make all canned class HP/lvl start @ 20 w/no extra difficulty adjustment or other changes
+Overwrite vanilla special advantage costs with ur own
+Dropping HP below 20 gives -4 to difficulty rather than -2 per point of HP dropped
 
 .DFMOD INVISIBILITY:
 
@@ -123,7 +132,7 @@ Nerf glove/boot H2H durability damage slightly (2 for gloves, 3 for boots), cred
 
 .DFMOD LYCANTHROPY:
 
-Custom HUD messages display when player with Lycanthropy kills innocents, I added 37 different messages to avoid repetition
+Custom HUD messages display when player with Lycanthropy kills innocents (townspeople and Guards), I added 37 different messages
 If player with Lycanthropy kills a Guard "Guard just died." message is replaced w/custom HUD message
 
 .DFMOD VAMPIRISM:
@@ -139,8 +148,9 @@ Display random msg from current Vampire msg array if VampireHealAmount array ele
 Add screenshot of Vampire HUD message (an eye-catching msg) to NexusMods, and to forum post somewhere from post 1-3
 Add +10 player HP for Vampire civilian NPC kills, pop up standard Vampire on kill HUD msg, put this check in wherever u end up putting Vampire checks
 
-Vampire players no longer heal w/Hand-to-Hand strikes (as in v1.3), instead they heal after enemy dies, heal amount depends on enemy
-Vampire/blood-related HUD messages appear when Vampire player is healed, replaces "Enemy just died." msg, every enemy has different msg
+Vampire players are healed when they kill anything with fresh blood, heal amount depends on entity killed
+Custom HUD messages are displayed when Vampire player kills an entity, replaces "(enemy) just died." msg, I added 45 different msgs
+Custom HUD messages are displayed when entity has old blood (Zombies and Flesh Atronachs), I added 14 different msgs
 
 HP recovery amounts:
 

@@ -33,49 +33,47 @@ using UnityEngine;
 namespace BossfallMod.Events
 {
     /// <summary>
-    /// Contains Bossfall's event handlers and associated data.
+    /// Bossfall event handlers and associated data.
     /// </summary>
     public class BossfallEventHandlers : MonoBehaviour
     {
         #region Fields
 
         // Spell lists for BossfallOnEnemyLootSpawned event handler. Based on arrays from vanilla's EnemyEntity script.
-        static readonly byte[] BossfallFrostDaedraSpells = { 0x10, 0x14, 0x03 };
-        static readonly byte[] BossfallFireDaedraSpells = { 0x0E, 0x19, 0x20 };
-        static readonly byte[] BossfallGenericSpells = { 0x08, 0x0E, 0x1D, 0x1F, 0x32, 0x33, 0x19, 0x1C, 0x43, 0x34, 0x17, 0x10,
+        readonly byte[] BossfallFrostDaedraSpells = new byte[] { 0x10, 0x14, 0x03 };
+        readonly byte[] BossfallFireDaedraSpells = new byte[] { 0x0E, 0x19, 0x20 };
+        readonly byte[] BossfallGenericSpells = new byte[] { 0x08, 0x0E, 0x1D, 0x1F, 0x32, 0x33, 0x19, 0x1C, 0x43, 0x34, 0x17, 0x10,
             0x14, 0x09, 0x1B, 0x1E, 0x20, 0x23, 0x24, 0x27, 0x35, 0x36, 0x37, 0x40 };
 
         // Used to restore my custom shields.
-        static ItemData_v1 itemData;
-
-        // Stores references to enemies if game is being loaded so I can easily modify these enemies elsewhere.
-        static Dictionary<ulong, DaggerfallEntityBehaviour> entityDictionary = new Dictionary<ulong, DaggerfallEntityBehaviour>();
+        ItemData_v1 itemData = new ItemData_v1();
 
         #endregion
 
         #region Properties
 
         /// <summary>
+        /// Returns the only instance of BossfallEventHandlers.
+        /// </summary>
+        public static BossfallEventHandlers Instance { get { return Bossfall.Instance.GetComponent<BossfallEventHandlers>(); } }
+
+        /// <summary>
         /// If game is being restored, this dictionary is populated with enemy references so I can easily restore Bossfall save data.
         /// </summary>
-        public static Dictionary<ulong, DaggerfallEntityBehaviour> EntityDictionary
-        {
-            get { return entityDictionary; }
-            set { entityDictionary = value; }
-        }
+        public Dictionary<ulong, DaggerfallEntityBehaviour> EntityDictionary { get; }
+            = new Dictionary<ulong, DaggerfallEntityBehaviour>();
 
         #endregion
 
         #region Private Methods
 
         /// <summary>
-        /// This method is vanilla's, pulled from PlayerActivate. I changed the method to be static but changed nothing else.
-        /// It checks if struck object is an enemy.
+        /// This method is vanilla's, pulled from PlayerActivate. It checks if struck object is an enemy.
         /// </summary>
         /// <param name="hitInfo">RaycastHit info.</param>
         /// <param name="mobileEnemy">The object being checked.</param>
         /// <returns>True if struck object is an enemy.</returns>
-        static bool MobileEnemyCheck(RaycastHit hitInfo, out DaggerfallEntityBehaviour mobileEnemy)
+        bool MobileEnemyCheck(RaycastHit hitInfo, out DaggerfallEntityBehaviour mobileEnemy)
         {
             mobileEnemy = hitInfo.transform.GetComponent<DaggerfallEntityBehaviour>();
 
@@ -84,12 +82,25 @@ namespace BossfallMod.Events
 
         #endregion
 
+        #region Coroutines
+
+        // DWI
+
+        // Finish implementing this commented out method once testing complete
+
+        // IEnumerator OverwriteAdvDisValues()
+        // {
+
+        // }
+
+        #endregion
+
         #region Event Handlers
 
         /// <summary>
         /// This method performs setup on the PlayerObject. If successful doing so, it never runs again.
         /// </summary>
-        public static void BossfallOnRespawnerComplete()
+        public void BossfallOnRespawnerComplete()
         {
             if (GameManager.Instance.PlayerObject != null)
             {
@@ -108,7 +119,7 @@ namespace BossfallMod.Events
         /// Bossfall's unleveled encounter tables. I do this to avoid destroying main quest fixed dungeon enemies.
         /// </summary>
         /// <param name="args">DaggerfallDungeon instance of the dungeon being entered and an empty StaticDoor instance.</param>
-        public static void BossfallOnTransitionDungeonInterior(PlayerEnterExit.TransitionEventArgs args)
+        public void BossfallOnTransitionDungeonInterior(PlayerEnterExit.TransitionEventArgs args)
         {
             // No enemies will be present at this point if game is being loaded, so don't run this method.
             if (SaveLoadManager.Instance.LoadInProgress)
@@ -182,7 +193,7 @@ namespace BossfallMod.Events
                                     {
                                         // Spawns an underwater enemy using Bossfall's expanded encounter tables.
                                         GameObject[] waterEnemy = GameObjectHelper.CreateFoeGameObjects(
-                                            adjustedPosition, BossfallEncounterTables.ChooseRandomEnemy(true));
+                                            adjustedPosition, BossfallEncounterTables.Instance.ChooseRandomEnemy(true));
 
                                         // Use already created "Random Enemies" node as parent transform.
                                         waterEnemy[0].transform.parent = randomEnemiesNode.transform;
@@ -194,7 +205,7 @@ namespace BossfallMod.Events
                                     {
                                         // Spawns a non-water enemy using Bossfall's expanded encounter tables.
                                         GameObject[] nonWaterEnemy = GameObjectHelper.CreateFoeGameObjects(
-                                            adjustedPosition, BossfallEncounterTables.ChooseRandomEnemy(false));
+                                            adjustedPosition, BossfallEncounterTables.Instance.ChooseRandomEnemy(false));
 
                                         // Use already created "Random Enemies" node as parent transform.
                                         nonWaterEnemy[0].transform.parent = randomEnemiesNode.transform;
@@ -223,7 +234,7 @@ namespace BossfallMod.Events
         /// </summary>
         /// <param name="sender">An instance of EnemyEntity.</param>
         /// <param name="args">MobileEnemy, DFCareer, and ItemCollection data.</param>
-        public static void BossfallOnEnemyLootSpawned(object sender, EnemyLootSpawnedEventArgs args)
+        public void BossfallOnEnemyLootSpawned(object sender, EnemyLootSpawnedEventArgs args)
         {
             // Variables I use in this method. Some are from the event args, split into their base components.
             DaggerfallEntityBehaviour entityBehaviour = (sender as EnemyEntity).EntityBehaviour;
@@ -241,9 +252,9 @@ namespace BossfallMod.Events
                 // then re-adding it BossfallEnemyAttack's Update method is executed before EnemyAttack's Update method, which
                 // is necessary for Bossfall to function correctly.
                 Destroy(entityBehaviour.gameObject.GetComponent<EnemyAttack>());
-                entityBehaviour.gameObject.AddComponent<BossfallEnemyAttack>();
-                entityBehaviour.gameObject.AddComponent<BossfallEnemyMotor>();
                 entityBehaviour.gameObject.AddComponent<BossfallEnemySenses>();
+                entityBehaviour.gameObject.AddComponent<BossfallEnemyMotor>();
+                entityBehaviour.gameObject.AddComponent<BossfallEnemyAttack>();
                 entityBehaviour.gameObject.AddComponent<EnemyAttack>();
                 return;
             }
@@ -469,7 +480,7 @@ namespace BossfallMod.Events
             }
 
             // I send loot generation to a custom method so I can scale loot table items with enemy level.
-            BossfallItemBuilder.GenerateItems(mobileEnemy.LootTableKey, items, entity.Level * 50);
+            BossfallItemBuilder.Instance.GenerateItems(mobileEnemy.LootTableKey, items, entity.Level * 50);
 
             // I based this section below on a part of the SetEnemyCareer method in EnemyEntity and modified it for Bossfall.
             // If enemy is in this list, they start with equipment and it scales with their level.
@@ -483,7 +494,7 @@ namespace BossfallMod.Events
             {
                 // I send the call to a custom item generation method. I use all three possible variants - the third is
                 // never used for enemy classes in vanilla. Adds more variety.
-                BossfallItemBuilder.AssignEnemyStartingEquipment(player, entity, UnityEngine.Random.Range(0, 2 + 1));
+                BossfallItemBuilder.Instance.AssignEnemyStartingEquipment(player, entity, UnityEngine.Random.Range(0, 2 + 1));
             }
 
             // This if/else if is based on a section of the SetEnemyCareer method in EnemyEntity, modified for Bossfall.
@@ -533,9 +544,9 @@ namespace BossfallMod.Events
             // they are attached to a given gameObject, so by destroying EnemyAttack and then re-adding it BossfallEnemyAttack's
             // Update method is executed before EnemyAttack's Update method, which is necessary for Bossfall to function correctly.
             Destroy(entityBehaviour.gameObject.GetComponent<EnemyAttack>());
-            entityBehaviour.gameObject.AddComponent<BossfallEnemyAttack>();
-            entityBehaviour.gameObject.AddComponent<BossfallEnemyMotor>();
             entityBehaviour.gameObject.AddComponent<BossfallEnemySenses>();
+            entityBehaviour.gameObject.AddComponent<BossfallEnemyMotor>();
+            entityBehaviour.gameObject.AddComponent<BossfallEnemyAttack>();
             entityBehaviour.gameObject.AddComponent<EnemyAttack>();
 
             // If game is being loaded, add this enemy to a reference dictionary so I can easily modify this enemy elsewhere.
@@ -544,7 +555,7 @@ namespace BossfallMod.Events
             {
                 DaggerfallEnemy dfEnemy = entityBehaviour.GetComponent<DaggerfallEnemy>();
                 ulong key = dfEnemy.LoadID;
-                entityDictionary.Add(key, entityBehaviour);
+                EntityDictionary.Add(key, entityBehaviour);
             }
         }
 
@@ -555,7 +566,7 @@ namespace BossfallMod.Events
         /// </summary>
         /// <param name="spellList">The spell list to assign to the enemy.</param>
         /// <param name="enemyEntity">The enemy to assign the spell list to.</param>
-        static void SetEnemySpells(byte[] spellList, EnemyEntity enemyEntity)
+        void SetEnemySpells(byte[] spellList, EnemyEntity enemyEntity)
         {
             // This deletes enemy's vanilla spellbook.
             for (int i = 0; i < enemyEntity.SpellbookCount(); i++)
@@ -637,7 +648,7 @@ namespace BossfallMod.Events
         /// </summary>
         /// <param name="sender">An instance of PlayerActivate.</param>
         /// <param name="args">LootContainerTypes container identifier and ItemCollection items.</param>
-        public static void BossfallOnContainerLootSpawned(object sender, ContainerLootSpawnedEventArgs args)
+        public void BossfallOnContainerLootSpawned(object sender, ContainerLootSpawnedEventArgs args)
         {
             // Variables I use in this method. Some are from the event args, split into their base components.
             PlayerEntity player = GameManager.Instance.PlayerEntity;
@@ -763,13 +774,13 @@ namespace BossfallMod.Events
 
                                             // I replaced "playerEntity.Level" with 0 to unlevel loot. I also call a different item
                                             // creation method.
-                                            item = BossfallItemBuilder.CreateWeapon(j + Weapons.Dagger, FormulaHelper.RandomMaterial(0));
+                                            item = BossfallItemBuilder.Instance.CreateWeapon(j + Weapons.Dagger, FormulaHelper.RandomMaterial(0));
                                         else if (itemGroup == ItemGroups.Armor)
 
                                             // I replaced "playerEntity.Level" with 0 in the FormulaHelper method call to unlevel
                                             // loot. I also call a different item creation method and replaced "playerEntity" with
                                             // "player" in the first and second parameters.
-                                            item = BossfallItemBuilder.CreateArmor(player.Gender, player.Race, j + Armor.Cuirass, FormulaHelper.RandomArmorMaterial(0));
+                                            item = BossfallItemBuilder.Instance.CreateArmor(player.Gender, player.Race, j + Armor.Cuirass, FormulaHelper.RandomArmorMaterial(0));
                                         else if (itemGroup == ItemGroups.MensClothing)
                                         {
                                             // I replaced "playerEntity" with "player" in the line below.
@@ -787,7 +798,7 @@ namespace BossfallMod.Events
                                             // I replaced "playerEntity.Level" with 0 in the first parameter to unlevel loot. I
                                             // also call a different item creation method and replace "playerEntity" with "player"
                                             // in the second and third parameters.
-                                            item = BossfallItemBuilder.CreateRandomMagicItem(0, player.Gender, player.Race);
+                                            item = BossfallItemBuilder.Instance.CreateRandomMagicItem(0, player.Gender, player.Race);
                                         }
                                         else
                                         {
@@ -803,15 +814,15 @@ namespace BossfallMod.Events
                                             // Holy Water, Holy Daggers, and Holy Tomes may be on the shelf.
                                             if (item.IsOfTemplate(ItemGroups.ReligiousItems, (int)ReligiousItems.Holy_water))
                                             {
-                                                item = BossfallItemBuilder.CreateHolyWater();
+                                                item = BossfallItemBuilder.Instance.CreateHolyWater();
                                             }
                                             else if (item.IsOfTemplate(ItemGroups.ReligiousItems, (int)ReligiousItems.Holy_dagger))
                                             {
-                                                item = BossfallItemBuilder.CreateHolyDagger();
+                                                item = BossfallItemBuilder.Instance.CreateHolyDagger();
                                             }
                                             else if (item.IsOfTemplate(ItemGroups.ReligiousItems, (int)ReligiousItems.Holy_tome))
                                             {
-                                                item = BossfallItemBuilder.CreateHolyTome();
+                                                item = BossfallItemBuilder.Instance.CreateHolyTome();
                                             }
                                         }
                                         items.AddItem(item);
@@ -835,7 +846,7 @@ namespace BossfallMod.Events
                                             WeaponMaterialTypes material = FormulaHelper.RandomMaterial(0);
 
                                             // I reroute the method call to a custom method.
-                                            BossfallItemBuilder.ApplyWeaponMaterial(item, material);
+                                            BossfallItemBuilder.Instance.ApplyWeaponMaterial(item, material);
                                         }
                                         else if (itemGroup == ItemGroups.Armor)
                                         {
@@ -844,7 +855,7 @@ namespace BossfallMod.Events
 
                                             // I reroute the method call to a custom method. I also replaced "playerEntity"
                                             // with "player" in the second and third parameter.
-                                            BossfallItemBuilder.ApplyArmorSettings(item, player.Gender, player.Race, material);
+                                            BossfallItemBuilder.Instance.ApplyArmorSettings(item, player.Gender, player.Race, material);
                                         }
 
                                         items.AddItem(item);
@@ -963,7 +974,7 @@ namespace BossfallMod.Events
                                 // I replaced "playerEntity.Level" with 0 in the first parameter to unlevel loot. I
                                 // also call a different item creation method and replace "playerEntity" with "player"
                                 // in the second and third parameters.
-                                item = BossfallItemBuilder.CreateRandomMagicItem(0, player.Gender, player.Race);
+                                item = BossfallItemBuilder.Instance.CreateRandomMagicItem(0, player.Gender, player.Race);
                             }
                             else if (itemGroup == ItemGroups.Books)
                             {
@@ -975,13 +986,13 @@ namespace BossfallMod.Events
 
                                     // I replaced "playerEntity.Level" with 0 to unlevel loot. I also call a different item
                                     // creation method.
-                                    item = BossfallItemBuilder.CreateRandomWeapon(0);
+                                    item = BossfallItemBuilder.Instance.CreateRandomWeapon(0);
                                 else if (itemGroup == ItemGroups.Armor)
 
                                     // I replaced "playerEntity.Level" with 0 in the first parameter to unlevel loot. I
                                     // also call a different item creation method and replace "playerEntity" with "player"
                                     // in the second and third parameters.
-                                    item = BossfallItemBuilder.CreateRandomArmor(0, player.Gender, player.Race);
+                                    item = BossfallItemBuilder.Instance.CreateRandomArmor(0, player.Gender, player.Race);
                                 else
                                 {
                                     System.Array enumArray = DaggerfallUnity.Instance.ItemHelper.GetEnumArray(itemGroup);
@@ -994,15 +1005,15 @@ namespace BossfallMod.Events
                                     // they can generate in some taverns, but I never checked anything beyond that.
                                     if (item.IsOfTemplate(ItemGroups.ReligiousItems, (int)ReligiousItems.Holy_water))
                                     {
-                                        item = BossfallItemBuilder.CreateHolyWater();
+                                        item = BossfallItemBuilder.Instance.CreateHolyWater();
                                     }
                                     else if (item.IsOfTemplate(ItemGroups.ReligiousItems, (int)ReligiousItems.Holy_dagger))
                                     {
-                                        item = BossfallItemBuilder.CreateHolyDagger();
+                                        item = BossfallItemBuilder.Instance.CreateHolyDagger();
                                     }
                                     else if (item.IsOfTemplate(ItemGroups.ReligiousItems, (int)ReligiousItems.Holy_tome))
                                     {
-                                        item = BossfallItemBuilder.CreateHolyTome();
+                                        item = BossfallItemBuilder.Instance.CreateHolyTome();
                                     }
                                 }
                             }
@@ -1026,7 +1037,7 @@ namespace BossfallMod.Events
         /// </summary>
         /// <param name="sender">Null.</param>
         /// <param name="args">The loot pile's location index, loot table key, and ItemCollection.</param>
-        public static void BossfallOnTabledLootSpawned(object sender, TabledLootSpawnedEventArgs args)
+        public void BossfallOnTabledLootSpawned(object sender, TabledLootSpawnedEventArgs args)
         {
             // Variables used in this method. Some are from the event args, split into their base components.
             ItemCollection items = args.Items;
@@ -1039,7 +1050,7 @@ namespace BossfallMod.Events
             {
                 DFRegion.DungeonTypes playerDungeon = playerEnterExit.Dungeon.Summary.DungeonType;
 
-                if (!BossfallItemBuilder.GenerateLoot(items, (int)playerDungeon, 0, true))
+                if (!BossfallItemBuilder.Instance.GenerateLoot(items, (int)playerDungeon, 0, true))
                     Debug.Log($"Dungeon loot pile generation failed, {playerDungeon} is invalid or out of range.");
             }
 
@@ -1048,7 +1059,7 @@ namespace BossfallMod.Events
             {
                 DFRegion.LocationTypes playerLocation = GameManager.Instance.PlayerGPS.CurrentLocationType;
 
-                if (!BossfallItemBuilder.GenerateLoot(items, (int)playerLocation, 0, false))
+                if (!BossfallItemBuilder.Instance.GenerateLoot(items, (int)playerLocation, 0, false))
                     Debug.Log($"Non-dungeon interior loot pile generation failed, {playerLocation} is invalid or out of range.");
             }
         }
@@ -1062,7 +1073,7 @@ namespace BossfallMod.Events
         /// shield material, I found this alternate solution unacceptable. Thus, I wrote this method.
         /// </summary>
         /// <param name="saveData">Vanilla save data.</param>
-        public static void BossfallOnLoad(SaveData_v1 saveData)
+        public void BossfallOnLoad(SaveData_v1 saveData)
         {
             // Variable used in this method.
             PlayerEntity player = GameManager.Instance.PlayerEntity;
@@ -1223,19 +1234,21 @@ namespace BossfallMod.Events
         }
 
         /// <summary>
-        /// This method checks if the inventory or trade windows are being opened. If they are, it searches for vanilla shields
-        /// among loot or shop items and replaces them with my custom shields. In combination with BossfallOnLoad, it replaces
-        /// every vanilla shield with custom shields. It also replaces all vanilla magic items and soul gems with Bossfall's
-        /// magic items and soul gems.
+        /// This method checks if the inventory, trade, custom class creation, and custom class creation Advantage/Disadvantage
+        /// windows are being opened. If inventory or trade windows are found, it searches for vanilla shields among loot or shop
+        /// items and replaces them with my custom shields, and also replaces all vanilla magic items and soul gems with Bossfall's
+        /// magic items and soul gems. If class creation windows are found DWI// FINISH THIS ONCE DONE WRITING THIS METHOD
         /// </summary>
         /// <param name="sender">An instance of UserInterfaceManager.</param>
         /// <param name="args">Null.</param>
-        public static void BossfallOnWindowChange(object sender, EventArgs args)
+        public void BossfallOnWindowChange(object sender, EventArgs args)
         {
             // Variables used in this method. Some are from the parameters, split into their base components.
             UserInterfaceManager uiManager = sender as UserInterfaceManager;
             DaggerfallTradeWindow tradeWindow = uiManager.TopWindow as DaggerfallTradeWindow;
-            DaggerfallInventoryWindow inventoryWindow = DaggerfallUI.Instance.InventoryWindow;
+            DaggerfallInventoryWindow inventoryWindow = uiManager.TopWindow as DaggerfallInventoryWindow;
+            CreateCharCustomClass customClassWindow = uiManager.TopWindow as CreateCharCustomClass;
+            CreateCharSpecialAdvantageWindow advDisWindow = uiManager.TopWindow as CreateCharSpecialAdvantageWindow;
             PlayerEntity player = GameManager.Instance.PlayerEntity;
 
             // Trade window section.
@@ -1272,7 +1285,7 @@ namespace BossfallMod.Events
                         for (int i = 0; i <= numOfItems; i++)
                         {
                             // Since I pass 0 as the first parameter, these magic items will be unleveled.
-                            DaggerfallUnityItem magicItem = BossfallItemBuilder.CreateRandomMagicItem(0, player.Gender, player.Race);
+                            DaggerfallUnityItem magicItem = BossfallItemBuilder.Instance.CreateRandomMagicItem(0, player.Gender, player.Race);
                             magicItem.IdentifyItem();
                             tradeWindow.MerchantItems.AddItem(magicItem);
                         }
@@ -1292,7 +1305,7 @@ namespace BossfallMod.Events
                             }
                             else
                             {
-                                magicItem = BossfallItemBuilder.CreateRandomlyFilledSoulTrap();
+                                magicItem = BossfallItemBuilder.Instance.CreateRandomlyFilledSoulTrap();
                             }
 
                             tradeWindow.MerchantItems.AddItem(magicItem);
@@ -1316,7 +1329,7 @@ namespace BossfallMod.Events
                         for (int i = 0; i <= numOfItems; i++)
                         {
                             // Since I pass 0 as the first parameter, these magic items will be unleveled.
-                            DaggerfallUnityItem magicItem = BossfallItemBuilder.CreateRandomMagicItem(0, player.Gender, player.Race);
+                            DaggerfallUnityItem magicItem = BossfallItemBuilder.Instance.CreateRandomMagicItem(0, player.Gender, player.Race);
                             magicItem.IdentifyItem();
                             tradeWindow.MerchantItems.AddItem(magicItem);
                         }
@@ -1351,7 +1364,7 @@ namespace BossfallMod.Events
                             }
                             else
                             {
-                                magicItem = BossfallItemBuilder.CreateRandomlyFilledSoulTrap();
+                                magicItem = BossfallItemBuilder.Instance.CreateRandomlyFilledSoulTrap();
                             }
 
                             tradeWindow.MerchantItems.AddItem(magicItem);
@@ -1398,7 +1411,6 @@ namespace BossfallMod.Events
                     tradeWindow.Refresh();
                 }
             }
-
             // Converts shields in loot piles and corpses to my custom shields whenever player is looting anything.
             else if (inventoryWindow != null)
             {
@@ -1450,6 +1462,31 @@ namespace BossfallMod.Events
                         }
                     }
                 }
+            }
+            // Character creation section.
+            else if (customClassWindow != null)
+            {
+                // DWI
+
+                // Delete Debug.log lines when testing complete
+
+                Debug.Log("Custom class creation window detected.");
+            }
+            // Character creation Special Advantage/Disadvantage section.
+            else if (advDisWindow != null)
+            {
+                // DWI
+
+                // Delete Debug.Log lines when testing complete
+
+                Debug.Log("Advantage/disadvantage window detected.");
+
+                // DWI
+
+                // Finish implementing this commented out coroutine after testing
+
+                // StartCoroutine(OverwriteAdvDisValues());
+
             }
         }
 

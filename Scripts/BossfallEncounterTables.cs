@@ -13,24 +13,26 @@ using DaggerfallConnect;
 using DaggerfallConnect.Arena2;
 using DaggerfallWorkshop;
 using DaggerfallWorkshop.Game;
+using UnityEngine;
 
 namespace BossfallMod.Utility
 {
     /// <summary>
-    /// Counterpart to vanilla's RandomEncounters.
+    /// Bossfall enemy selection.
     /// </summary>
-    public static class BossfallEncounterTables
+    public class BossfallEncounterTables : MonoBehaviour
     {
-        #region Encounter Tables
+        #region Fields
 
         /// <summary>
         /// The EncounterTables array's skeleton is from vanilla DFU's RandomEncounters script. I rewrote
         /// all the Enemies arrays. I greatly increased the length of every Enemies array so I could make bosses rarer. I
         /// also added a lot more enemy variety. I implemented enemy variation by climate. Enemies I thought would prefer cold
         /// or warm climates are rarer or don't appear in climates not matching their preference. Most dungeons have themes
-        /// and I give a quick overview of what to expect above each encounter table.
+        /// and I give a quick overview of what to expect above each encounter table. I also changed the array to be a private
+        /// readonly instance field.
         /// </summary>
-        static RandomEncounterTable[] EncounterTables = new RandomEncounterTable[]
+        readonly RandomEncounterTable[] EncounterTables = new RandomEncounterTable[]
         {
             new RandomEncounterTable()
             {
@@ -6739,15 +6741,24 @@ namespace BossfallMod.Utility
 
         #endregion
 
-        #region Enemy Selection
+        #region Properties
 
         /// <summary>
-        /// Most of this random enemy selection method is from vanilla's RandomEncounters script. Comments precede
-        /// changes or additions I made.
+        /// Returns the only instance of BossfallEncounterTables.
+        /// </summary>
+        public static BossfallEncounterTables Instance { get { return Bossfall.Instance.GetComponent<BossfallEncounterTables>(); } }
+
+        #endregion
+
+        #region Public Methods
+
+        /// <summary>
+        /// Most of this random enemy selection method is from vanilla's RandomEncounters script, changed to be an
+        /// instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <param name="chooseUnderWaterEnemy">True if spawning enemy underwater.</param>
         /// <returns>Random enemy type picked from appropriate encounter table.</returns>
-        public static MobileTypes ChooseRandomEnemy(bool chooseUnderWaterEnemy)
+        public MobileTypes ChooseRandomEnemy(bool chooseUnderWaterEnemy)
         {
             int encounterTableIndex = 0;
             PlayerEnterExit playerEnterExit = GameManager.Instance.PlayerEnterExit;
@@ -6895,7 +6906,7 @@ namespace BossfallMod.Utility
                 }
             }
 
-            // I erased most of what vanilla's method has here but I kept this necessary variable.
+            // I erased most of what vanilla's method has here but I kept this necessary declaration.
             RandomEncounterTable encounterTable = EncounterTables[encounterTableIndex];
 
             // If the "Powerful Enemies Are" setting is "More Common" randomly pick an enemy from the first 100
@@ -6903,9 +6914,9 @@ namespace BossfallMod.Utility
             // at the end of each encounter table and didn't change the first 100. So, by picking only from the first 100,
             // the "More Common" setting uses v1.2.1 enemy rarities. I don't think this setting is balanced so I recommend
             // using "Less Common".
-            if (Bossfall.PowerfulEnemiesAre == 0)
+            if (Bossfall.Instance.PowerfulEnemiesAre == 0)
             {
-                return encounterTable.Enemies[UnityEngine.Random.Range(0, 100)];
+                return encounterTable.Enemies[Random.Range(0, 100)];
             }
 
             // In Bossfall there are two types of random spawns. The first is dungeon enemies that spawn at set points
@@ -6916,7 +6927,7 @@ namespace BossfallMod.Utility
             // - and this random selection is how Bossfall implements unleveled enemies. How often a specific enemy spawns is
             // determined by probabilities - that enemy has a (amount of times enemy is listed / length of the encounter table)
             // percent chance of spawning every time this function is called.
-            return encounterTable.Enemies[UnityEngine.Random.Range(0, encounterTable.Enemies.Length)];
+            return encounterTable.Enemies[Random.Range(0, encounterTable.Enemies.Length)];
         }
 
         #endregion

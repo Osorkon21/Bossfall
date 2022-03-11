@@ -28,40 +28,44 @@ namespace BossfallMod.Items
     /// <summary>
     /// Custom loot spawning methods.
     /// </summary>
-    public static class BossfallItemBuilder
+    public class BossfallItemBuilder : MonoBehaviour
     {
         #region Fields
 
         // Vanilla's field from ItemBuilder. It was private and I needed it here.
         const int chooseAtRandom = -1;
 
-        // Vanilla's array from ItemBuilder. It was private and I needed it here.
-        static readonly short[] weightMultipliersByMaterial = { 4, 5, 4, 4, 3, 4, 4, 2, 4, 5 };
+        // Vanilla's array from ItemBuilder, changed to be an instance field. It was private and I needed it here.
+        readonly short[] weightMultipliersByMaterial = new short[] { 4, 5, 4, 4, 3, 4, 4, 2, 4, 5 };
 
-        // Vanilla's array from ItemBuilder. It was private and I needed it here.
-        static readonly short[] valueMultipliersByMaterial = { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512 };
+        // Vanilla's array from ItemBuilder, changed to be an instance field. It was private and I needed it here.
+        readonly short[] valueMultipliersByMaterial = new short[] { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512 };
 
-        // Vanilla's arrays from ItemBuilder for enchanted item calculations. They were private and I needed them here.
-        static readonly int[] extraSpellPtsEnchantPts = { 0x1F4, 0x1F4, 0x1F4, 0x1F4, 0xC8, 0xC8, 0xC8, 0x2BC, 0x320, 0x384, 0x3E8 };
-        static readonly int[] potentVsEnchantPts = { 0x320, 0x384, 0x3E8, 0x4B0 };
-        static readonly int[] regensHealthEnchantPts = { 0x0FA0, 0x0BB8, 0x0BB8 };
-        static readonly int[] vampiricEffectEnchantPts = { 0x7D0, 0x3E8 };
-        static readonly int[] increasedWeightAllowanceEnchantPts = { 0x190, 0x258 };
-        static readonly int[] improvesTalentsEnchantPts = { 0x1F4, 0x258, 0x258 };
-        static readonly int[] goodRepWithEnchantPts = { 0x3E8, 0x3E8, 0x3E8, 0x3E8, 0x3E8, 0x1388 };
-        static readonly int[][] enchantmentPtsForItemPowerArrays = { null, null, null, extraSpellPtsEnchantPts, potentVsEnchantPts, regensHealthEnchantPts,
-                                                                    vampiricEffectEnchantPts, increasedWeightAllowanceEnchantPts, null, null, null, null, null,
-                                                                    improvesTalentsEnchantPts, goodRepWithEnchantPts};
-        static readonly ushort[] enchantmentPointCostsForNonParamTypes = { 0, 0x0F448, 0x0F63C, 0x0FF9C, 0x0FD44, 0, 0, 0, 0x384, 0x5DC, 0x384, 0x64, 0x2BC };
+        // Vanilla's arrays from ItemBuilder for enchanted item calculations, changed to be instance fields. They
+        // were private and I needed them here.
+        readonly int[] extraSpellPtsEnchantPts = new int[] { 0x1F4, 0x1F4, 0x1F4, 0x1F4, 0xC8, 0xC8, 0xC8, 0x2BC, 0x320,
+            0x384, 0x3E8 };
+        readonly int[] potentVsEnchantPts = new int [] { 0x320, 0x384, 0x3E8, 0x4B0 };
+        readonly int[] regensHealthEnchantPts = new int[] { 0x0FA0, 0x0BB8, 0x0BB8 };
+        readonly int[] vampiricEffectEnchantPts = new int[] { 0x7D0, 0x3E8 };
+        readonly int[] increasedWeightAllowanceEnchantPts = new int[] { 0x190, 0x258 };
+        readonly int[] improvesTalentsEnchantPts = new int[] { 0x1F4, 0x258, 0x258 };
+        readonly int[] goodRepWithEnchantPts = new int[] { 0x3E8, 0x3E8, 0x3E8, 0x3E8, 0x3E8, 0x1388 };
+        readonly ushort[] enchantmentPointCostsForNonParamTypes = new ushort[] { 0, 0x0F448, 0x0F63C, 0x0FF9C, 0x0FD44,
+            0, 0, 0, 0x384, 0x5DC, 0x384, 0x64, 0x2BC };
+
+        // I assign vanilla's value to this field in Awake - I changed every field to be non-static so I can't refer to
+        // non-static fields in other field initializers.
+        int[][] enchantmentPtsForItemPowerArrays;
 
         // This array is used to greatly reduce high tier material durability. Durability decreases as material tier increases.
         // I want high tier materials to be treated like the powerful weapons they are - very useful, but they won't last long.
         // I think that makes it more exciting when the player finds something good.
-        static readonly short[] bossfallConditionMultipliersByMaterial = { 2, 3, 2, 2, 2, 1, 1, 1, 1, 1 };
+        readonly short[] bossfallConditionMultipliersByMaterial = new short[] { 2, 3, 2, 2, 2, 1, 1, 1, 1, 1 };
 
-        // This array is mostly vanilla code from LootTables, but I change some numbers for Bossfall's custom loot generation.
-        // I also made the array readonly.
-        static readonly LootChanceMatrix[] BossfallLootTables = {
+        // This array is mostly vanilla code from LootTables, but I changed it to be a readonly instance method. I also changed
+        // some numbers for Bossfall's custom loot generation.
+        readonly LootChanceMatrix[] BossfallLootTables = new LootChanceMatrix[] {
             new LootChanceMatrix() {key = "-", MinGold = 0, MaxGold = 0, P1 = 0, P2 = 0, C1 = 0, C2 = 0, C3 = 0, M1 = 0, AM = 0, WP = 0, MI = 0, CL = 0, BK = 0, M2 = 0, RL = 0 },
             new LootChanceMatrix() {key = "A", MinGold = 1, MaxGold = 10, P1 = 0, P2 = 0, C1 = 0, C2 = 0, C3 = 0, M1 = 0, AM = 5, WP = 5, MI = 2, CL = 4, BK = 0, M2 = 2, RL = 0 },
             new LootChanceMatrix() {key = "B", MinGold = 0, MaxGold = 0, P1 = 10, P2 = 10, C1 = 0, C2 = 0, C3 = 0, M1 = 0, AM = 0, WP = 0, MI = 0, CL = 0, BK = 0, M2 = 0, RL = 0 },
@@ -88,15 +92,37 @@ namespace BossfallMod.Items
 
         #endregion
 
+        #region Properties
+
+        /// <summary>
+        /// Returns the only instance of BossfallItemBuilder.
+        /// </summary>
+        public static BossfallItemBuilder Instance { get { return Bossfall.Instance.GetComponent<BossfallItemBuilder>(); } }
+
+        #endregion
+
+        #region Unity
+
+        void Awake()
+        {
+            // I assign vanilla's value to the field here, I can't do it in field initialization as I changed all fields
+            // to be non-static.
+            enchantmentPtsForItemPowerArrays = new int[][] { null, null, null, extraSpellPtsEnchantPts, potentVsEnchantPts,
+                regensHealthEnchantPts, vampiricEffectEnchantPts, increasedWeightAllowanceEnchantPts, null, null, null, null,
+                null, improvesTalentsEnchantPts, goodRepWithEnchantPts};
+        }
+
+        #endregion
+
         #region Loot Generation
 
         /// <summary>
-        /// Vanilla's method from DaggerfallLoot, comments precede changes or additions I made.
+        /// Vanilla's method from DaggerfallLoot, changed to be an instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <param name="LootTableKey">The loot table key.</param>
         /// <param name="collection">The item collection being altered.</param>
         /// <param name="enemyLevelModifier">If spawning loot for an enemy, enemy level * 50. Otherwise, 0.</param>
-        public static void GenerateItems(string LootTableKey, ItemCollection collection, int enemyLevelModifier = 0)
+        public void GenerateItems(string LootTableKey, ItemCollection collection, int enemyLevelModifier = 0)
         {
             // I reroute the call to a method in this script.
             LootChanceMatrix matrix = GetMatrix(LootTableKey);
@@ -109,14 +135,14 @@ namespace BossfallMod.Items
         }
 
         /// <summary>
-        /// Vanilla's method from LootTables, comments precede changes or additions I made.
+        /// Vanilla's method from LootTables, changed to be an instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <param name="items">I changed DaggerfallLoot to ItemCollection to better fit event args.</param>
         /// <param name="locationIndex">Current location.</param>
         /// <param name="locationModifier">I added this parameter. I plan on varying loot contents/quality by location.</param>
         /// <param name="isDungeon">I added this parameter. I plan on varying loot contents/quality by location.</param>
         /// <returns>True if locationIndex yields a valid loot table key, false otherwise.</returns>
-        public static bool GenerateLoot(ItemCollection items, int locationIndex, int locationModifier = 0, bool isDungeon = true)
+        public bool GenerateLoot(ItemCollection items, int locationIndex, int locationModifier = 0, bool isDungeon = true)
         {
             string[] lootTableKeys = {               // Travel map outdoor location mapped to this lootTableKeys index
             "K", // DungeonTypes Crypt                  LocationTypes TownCity          Walled town
@@ -165,11 +191,11 @@ namespace BossfallMod.Items
         }
 
         /// <summary>
-        /// Vanilla's method from LootTables, comments precede changes or additions I made.
+        /// Vanilla's method from LootTables, changed to be an instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <param name="key">Key of matrix to get.</param>
         /// <returns>LootChanceMatrix.</returns>
-        static LootChanceMatrix GetMatrix(string key)
+        LootChanceMatrix GetMatrix(string key)
         {
             // I reroute this call to an array contained in this script.
             for (int i = 0; i < BossfallLootTables.Length; i++)
@@ -186,13 +212,13 @@ namespace BossfallMod.Items
         }
 
         /// <summary>
-        /// Vanilla's method from LootTables, comments precede changes or additions I made.
+        /// Vanilla's method from LootTables, changed to be an instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <param name="matrix">Loot chance matrix.</param>
         /// <param name="playerEntity">Player entity.</param>
         /// <param name="enemyLevelModifier">If spawning loot for an enemy, enemy level * 50. Otherwise, 0.</param>
         /// <returns>DaggerfallUnityItem array.</returns>
-        static DaggerfallUnityItem[] GenerateRandomLoot(LootChanceMatrix matrix, PlayerEntity playerEntity, int enemyLevelModifier = 0)
+        DaggerfallUnityItem[] GenerateRandomLoot(LootChanceMatrix matrix, PlayerEntity playerEntity, int enemyLevelModifier = 0)
         {
             float chance;
             List<DaggerfallUnityItem> items = new List<DaggerfallUnityItem>();
@@ -346,12 +372,12 @@ namespace BossfallMod.Items
         }
 
         /// <summary>
-        /// This method is entirely vanilla's. I copied it from LootTables as it was private and I needed it here.
+        /// Vanilla's method from LootTables, changed to be an instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <param name="chance">Generation chance.</param>
         /// <param name="ingredientGroup">Which ingredient group to generate items from.</param>
         /// <param name="targetItems">Item list to add generated ingredient to.</param>
-        static void RandomIngredient(float chance, ItemGroups ingredientGroup, List<DaggerfallUnityItem> targetItems)
+        void RandomIngredient(float chance, ItemGroups ingredientGroup, List<DaggerfallUnityItem> targetItems)
         {
             while (Dice100.SuccessRoll((int)chance))
             {
@@ -361,10 +387,10 @@ namespace BossfallMod.Items
         }
 
         /// <summary>
-        /// Vanilla's method from ItemBuilder, comments precede changes or additions I made.
+        /// Vanilla's method from ItemBuilder, changed to be an instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <returns>A new religious item.</returns>
-        static DaggerfallUnityItem CreateRandomReligiousItem()
+        DaggerfallUnityItem CreateRandomReligiousItem()
         {
             Array enumArray = DaggerfallUnity.Instance.ItemHelper.GetEnumArray(ItemGroups.ReligiousItems);
             int groupIndex = UnityEngine.Random.Range(0, enumArray.Length);
@@ -386,7 +412,7 @@ namespace BossfallMod.Items
         /// This new function creates Holy Water that casts Holy Word on use.
         /// </summary>
         /// <returns>Enchanted Holy Water.</returns>
-        public static DaggerfallUnityItem CreateHolyWater()
+        public DaggerfallUnityItem CreateHolyWater()
         {
             DaggerfallUnityItem holyWater = new DaggerfallUnityItem(ItemGroups.ReligiousItems, 4);
             holyWater.legacyMagic = new DaggerfallEnchantment[] { new DaggerfallEnchantment() { type = EnchantmentTypes.CastWhenUsed, param = 58 } };
@@ -399,7 +425,7 @@ namespace BossfallMod.Items
         /// This new function creates a Holy Dagger that casts Holy Word on use.
         /// </summary>
         /// <returns>Enchanted Holy Dagger.</returns>
-        public static DaggerfallUnityItem CreateHolyDagger()
+        public DaggerfallUnityItem CreateHolyDagger()
         {
             DaggerfallUnityItem holyDagger = new DaggerfallUnityItem(ItemGroups.ReligiousItems, 11);
             holyDagger.legacyMagic = new DaggerfallEnchantment[] { new DaggerfallEnchantment() { type = EnchantmentTypes.CastWhenUsed, param = 58 } };
@@ -412,7 +438,7 @@ namespace BossfallMod.Items
         /// This new function creates a Holy Tome that casts Banish Daedra on use.
         /// </summary>
         /// <returns>Enchanted Holy Tome.</returns>
-        public static DaggerfallUnityItem CreateHolyTome()
+        public DaggerfallUnityItem CreateHolyTome()
         {
             DaggerfallUnityItem holyTome = new DaggerfallUnityItem(ItemGroups.ReligiousItems, 12);
             holyTome.legacyMagic = new DaggerfallEnchantment[] { new DaggerfallEnchantment() { type = EnchantmentTypes.CastWhenUsed, param = 57 } };
@@ -422,10 +448,10 @@ namespace BossfallMod.Items
         }
 
         /// <summary>
-        /// Vanilla's method from ItemBuilder, comments precede changes or additions I made.
+        /// Vanilla's method from ItemBuilder, changed to be an instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <returns>A randomly filled soul trap.</returns>
-        public static DaggerfallUnityItem CreateRandomlyFilledSoulTrap()
+        public DaggerfallUnityItem CreateRandomlyFilledSoulTrap()
         {
             MobileTypes soul = MobileTypes.None;
             while (soul == MobileTypes.None)
@@ -450,12 +476,12 @@ namespace BossfallMod.Items
         }
 
         /// <summary>
-        /// Vanilla's method from ItemBuilder, comments precede changes or additions I made.
+        /// Vanilla's method from ItemBuilder, changed to be an instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <param name="weapon">Which weapon to generate.</param>
         /// <param name="material">What material the weapon should have.</param>
         /// <returns>A new weapon.</returns>
-        public static DaggerfallUnityItem CreateWeapon(Weapons weapon, WeaponMaterialTypes material)
+        public DaggerfallUnityItem CreateWeapon(Weapons weapon, WeaponMaterialTypes material)
         {
             int groupIndex = DaggerfallUnity.Instance.ItemHelper.GetGroupIndex(ItemGroups.Weapons, (int)weapon);
             DaggerfallUnityItem newItem = new DaggerfallUnityItem(ItemGroups.Weapons, groupIndex);
@@ -476,11 +502,11 @@ namespace BossfallMod.Items
         }
 
         /// <summary>
-        /// Vanilla's method from ItemBuilder, comments precede changes or additions I made.
+        /// Vanilla's method from ItemBuilder, changed to be an instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <param name="enemyLevelModifier">If spawning loot for an enemy, enemy level * 50. Otherwise, 0.</param>
         /// <returns>A random weapon.</returns>
-        public static DaggerfallUnityItem CreateRandomWeapon(int enemyLevelModifier)
+        public DaggerfallUnityItem CreateRandomWeapon(int enemyLevelModifier)
         {
             ItemHelper itemHelper = DaggerfallUnity.Instance.ItemHelper;
             Array enumArray = itemHelper.GetEnumArray(ItemGroups.Weapons);
@@ -513,11 +539,11 @@ namespace BossfallMod.Items
         }
 
         /// <summary>
-        /// Vanilla's method from ItemBuilder, comments precede changes or additions I made.
+        /// Vanilla's method from ItemBuilder, changed to be an instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <param name="weapon">The weapon to apply material to.</param>
         /// <param name="material">The material to apply to the weapon.</param>
-        public static void ApplyWeaponMaterial(DaggerfallUnityItem weapon, WeaponMaterialTypes material)
+        public void ApplyWeaponMaterial(DaggerfallUnityItem weapon, WeaponMaterialTypes material)
         {
             weapon.nativeMaterialValue = (int)material;
 
@@ -531,7 +557,7 @@ namespace BossfallMod.Items
         }
 
         /// <summary>
-        /// Vanilla's method from ItemBuilder, comments precede changes or additions I made.
+        /// Vanilla's method from ItemBuilder, changed to be an instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <param name="gender">Gender armor is created for.</param>
         /// <param name="race">Race armor is created for.</param>
@@ -539,7 +565,7 @@ namespace BossfallMod.Items
         /// <param name="material">Material of armor.</param>
         /// <param name="variant">Visual variant of armor. If -1, a random variant is chosen.</param>
         /// <returns>DaggerfallUnityItem</returns>
-        public static DaggerfallUnityItem CreateArmor(Genders gender, Races race, Armor armor, ArmorMaterialTypes material, int variant = -1)
+        public DaggerfallUnityItem CreateArmor(Genders gender, Races race, Armor armor, ArmorMaterialTypes material, int variant = -1)
         {
             int groupIndex = DaggerfallUnity.Instance.ItemHelper.GetGroupIndex(ItemGroups.Armor, (int)armor);
             DaggerfallUnityItem newItem = new DaggerfallUnityItem(ItemGroups.Armor, groupIndex);
@@ -573,13 +599,13 @@ namespace BossfallMod.Items
         }
 
         /// <summary>
-        /// Vanilla's method from ItemBuilder, comments precede changes or additions I made.
+        /// Vanilla's method from ItemBuilder, changed to be an instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <param name="enemyLevelModifier">If spawning loot for an enemy, enemy level * 50. Otherwise, 0.</param>
         /// <param name="gender">Gender armor is created for.</param>
         /// <param name="race">Race armor is created for.</param>
         /// <returns>DaggerfallUnityItem</returns>
-        public static DaggerfallUnityItem CreateRandomArmor(int enemyLevelModifier, Genders gender, Races race)
+        public DaggerfallUnityItem CreateRandomArmor(int enemyLevelModifier, Genders gender, Races race)
         {
             ItemHelper itemHelper = DaggerfallUnity.Instance.ItemHelper;
             Array enumArray = itemHelper.GetEnumArray(ItemGroups.Armor);
@@ -623,14 +649,14 @@ namespace BossfallMod.Items
         }
 
         /// <summary>
-        /// Vanilla's method from ItemBuilder, comments precede changes or additions I made.
+        /// Vanilla's method from ItemBuilder, changed to be an instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <param name="armor">The armor to apply settings to.</param>
         /// <param name="gender">Player's gender.</param>
         /// <param name="race">Player's race.</param>
         /// <param name="material">Armor material type of the armor.</param>
         /// <param name="variant">If 0 or more, use that specific variant. If less than 0, randomly assign a variant.</param>
-        public static void ApplyArmorSettings(DaggerfallUnityItem armor, Genders gender, Races race, ArmorMaterialTypes material, int variant = 0)
+        public void ApplyArmorSettings(DaggerfallUnityItem armor, Genders gender, Races race, ArmorMaterialTypes material, int variant = 0)
         {
             if (gender == Genders.Female)
 
@@ -656,11 +682,11 @@ namespace BossfallMod.Items
         }
 
         /// <summary>
-        /// Vanilla's method from ItemBuilder, comments precede changes or additions I made.
+        /// Vanilla's method from ItemBuilder, changed to be an instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <param name="armor">The armor item to apply material to.</param>
         /// <param name="material">What material to apply to the armor.</param>
-        static void ApplyArmorMaterial(DaggerfallUnityItem armor, ArmorMaterialTypes material)
+        void ApplyArmorMaterial(DaggerfallUnityItem armor, ArmorMaterialTypes material)
         {
             armor.nativeMaterialValue = (int)material;
 
@@ -684,13 +710,13 @@ namespace BossfallMod.Items
         }
 
         /// <summary>
-        /// Vanilla's method from ItemBuilder, comments precede changes or additions I made.
+        /// Vanilla's method from ItemBuilder, changed to be an instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <param name="enemyLevelModifier">If spawning loot for an enemy, enemy level * 50. Otherwise, 0.</param>
         /// <param name="gender">Player's gender.</param>
         /// <param name="race">Player's race.</param>
         /// <returns>An enchanted item.</returns>
-        public static DaggerfallUnityItem CreateRandomMagicItem(int enemyLevelModifier, Genders gender, Races race)
+        public DaggerfallUnityItem CreateRandomMagicItem(int enemyLevelModifier, Genders gender, Races race)
         {
             // I pass on enemyLevelModifier so loot scales with enemy level rather than player's. I also reroute the method
             // call to a method in this script. I send the "chooseAtRandom" call to a field in this script, which I copied
@@ -699,7 +725,7 @@ namespace BossfallMod.Items
         }
 
         /// <summary>
-        /// Vanilla's method from ItemBuilder, comments precede changes or additions I made.
+        /// Vanilla's method from ItemBuilder, changed to be an instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <param name="chosenItem">An integer index of the item to create, or -1 for a random one.</param>
         /// <param name="enemyLevelModifier">If spawning loot for an enemy, enemy level * 50. Otherwise, 0.</param>
@@ -707,7 +733,7 @@ namespace BossfallMod.Items
         /// <param name="race">The race to create an item for.</param>
         /// <returns>DaggerfallUnityItem</returns>
         /// <exception cref="Exception">When a base item cannot be created.</exception>
-        static DaggerfallUnityItem CreateRegularMagicItem(int chosenItem, int enemyLevelModifier, Genders gender, Races race)
+        DaggerfallUnityItem CreateRegularMagicItem(int chosenItem, int enemyLevelModifier, Genders gender, Races race)
         {
             byte[] itemGroups0 = { 2, 3, 6, 10, 12, 14, 25 };
             byte[] itemGroups1 = { 2, 3, 6, 12, 25 };
@@ -832,12 +858,12 @@ namespace BossfallMod.Items
         }
 
         /// <summary>
-        /// Vanilla's method from ItemBuilder, comments precede changes or additions I made.
+        /// Vanilla's method from ItemBuilder, changed to be an instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <param name="item">Item to have its properties modified.</param>
         /// <param name="material">Material to use to apply properties.</param>
         /// <returns>DaggerfallUnityItem</returns>
-        static DaggerfallUnityItem SetItemPropertiesByMaterial(DaggerfallUnityItem item, WeaponMaterialTypes material)
+        DaggerfallUnityItem SetItemPropertiesByMaterial(DaggerfallUnityItem item, WeaponMaterialTypes material)
         {
             // I reroute the array call to an array contained in this script.
             item.value *= 3 * valueMultipliersByMaterial[(int)material];
@@ -855,12 +881,12 @@ namespace BossfallMod.Items
         }
 
         /// <summary>
-        /// Vanilla's method from ItemBuilder, comments precede changes or additions I made.
+        /// Vanilla's method from ItemBuilder, changed to be an instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <param name="item">The item to calculate weight of.</param>
         /// <param name="material">The material of the item.</param>
         /// <returns>Item weight, rounded to the nearest quarter kg.</returns>
-        static float CalculateWeightForMaterial(DaggerfallUnityItem item, WeaponMaterialTypes material)
+        float CalculateWeightForMaterial(DaggerfallUnityItem item, WeaponMaterialTypes material)
         {
             int quarterKgs = (int)(item.weightInKg * 4);
 
@@ -883,7 +909,7 @@ namespace BossfallMod.Items
         /// <param name="player">The player entity.</param>
         /// <param name="enemyEntity">The enemy who is having their equipment assigned.</param>
         /// <param name="variant">The item variant.</param>
-        public static void AssignEnemyStartingEquipment(PlayerEntity player, EnemyEntity enemyEntity, int variant)
+        public void AssignEnemyStartingEquipment(PlayerEntity player, EnemyEntity enemyEntity, int variant)
         {
             // I replaced itemLevel with enemyLevelModifier, which is enemy level * 50. This causes loot to scale with
             // enemy level rather than the player's.

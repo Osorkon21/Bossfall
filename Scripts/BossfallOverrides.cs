@@ -9,6 +9,7 @@
 //        verify original authorship before crediting. When in doubt compare with vanilla DFU's source code.
 //
 
+using BossfallMod.EnemyAI;
 using BossfallMod.Utility;
 using DaggerfallConnect;
 using DaggerfallWorkshop;
@@ -27,23 +28,14 @@ using UnityEngine;
 namespace BossfallMod.Formulas
 {
     /// <summary>
-    /// Contains all methods linked to FormulaHelper's RegisterOverride method, along with other overrides.
+    /// Bossfall override data.
     /// </summary>
-    public static class BossfallOverrides
+    public class BossfallOverrides : MonoBehaviour
     {
         #region Fields
 
-        // These bools are used in the CalculateAttackDamage method to prevent weakness/resistance/immunity HUD
-        // messages from appearing more than once per enemy.
-        static bool shownMsg;
-        static bool shownMsgTwo;
-        static bool shownMsgThree;
-        static bool shownMsgFour;
-        static bool shownMsgFive;
-        static bool shownMsgSix;
-
         // Expanded loot pile icon array. It replaces a vanilla array if the Alternate Loot Piles setting is on.
-        public static int[] alternateRandomTreasureIconIndices = new int[]
+        readonly int[] bossfallAlternateRandomTreasureIconIndices = new int[]
         { 0,1,3,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,36,37,38,39,40,43,44,45,46,47 };
 
         /// <summary>
@@ -56,10 +48,10 @@ namespace BossfallMod.Formulas
         /// added 50,000 to all SoulPts for consistency otherwise filled soul gems would be too cheap. I also greatly
         /// increased boss soul gem value. The only enemies that see Invisible are all bosses (except Orc Warlords),
         /// Daedra Seducers, and Level 20 Mages/Sorcerers/Nightblades. I set every MinMetalToHit to None.
-        /// Weaknesses/resistances/immunities are implemented later in this script. Finally, I increased all monster
-        /// weights to reduce knockback stunlocks.
+        /// Weaknesses/resistances/immunities are implemented later in this script. I increased all monster weights to
+        /// reduce knockback stunlocks, and changed the field to a readonly instance field.
         /// </summary>
-        public static MobileEnemy[] bossfallEnemyStats = new MobileEnemy[]
+        readonly MobileEnemy[] bossfallEnemyStats = new MobileEnemy[]
         {
             // Slightly less damage and armor than vanilla, similar HP. They move somewhat fast.
             // Rats are very common in dungeons, rare in the wilderness during the day and fairly common
@@ -2261,7 +2253,7 @@ namespace BossfallMod.Formulas
         /// have varying weapon resistances/immunities/weaknesses, and with this array I was able to greatly improve
         /// code efficiency over the enormous if/else if list that was in previous versions of Bossfall.
         /// </summary> 
-        static readonly byte[] enemySpecialHandling = { 0, 0, 1, 0, 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 13, 3, 0, 2,
+        readonly byte[] bossfallMonsterSpecialHandling = new byte[] { 0, 0, 1, 0, 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 13, 3, 0, 2,
         5, 6, 4, 0, 7, 5, 0, 0, 11, 0, 12, 0, 12, 0, 12, 12, 0, 9, 8, 2, 10 };
 
         /// <summary>
@@ -2270,7 +2262,7 @@ namespace BossfallMod.Formulas
         /// enemy above level 15. In that case high tier material generation is more likely. Details are in my comments in the
         /// RandomMaterial formula override.
         /// </summary>
-        static readonly short[] materialProbability = { 327, 654, 8, 12, 8, 5, 4, 3, 2, 1 };
+        readonly short[] bossfallMaterialProbabilities = new short[] { 327, 654, 8, 12, 8, 5, 4, 3, 2, 1 };
 
         /// <summary>
         /// This 147-element monstrosity covers enemy IDs from 0-146 and determines how much HP Vampire player characters
@@ -2282,46 +2274,47 @@ namespace BossfallMod.Formulas
         /// to declare this whole thing and then search by ID without modification than it would be to declare a 62-element array
         /// (to match the 62 enemies in DFU) and then subtract 85 from every enemy ID above 127 to get the correct index number.
         /// </summary>
-        public static readonly byte[] vampireHealAmount = { 3, 1, 0, 3, 75, 50, 9, 40, 50, 40, 15, 5, 50, 15,
-        50, 0, 150, 0, 0, 0, 12, 45, 0, 0, 200, 0, 0, 100, 175, 150, 255, 255, 0, 0, 15, 0, 0, 0,
+        readonly byte[] bossfallVampireHealAmounts = new byte[] { 3, 2, 0, 3, 75, 50, 9, 40, 50, 40, 15, 5, 50, 15,
+        50, 0, 150, 1, 0, 0, 12, 45, 0, 0, 200, 0, 0, 100, 175, 150, 255, 255, 0, 0, 15, 0, 0, 1,
         0, 0, 200, 20, 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 20, 25, 15, 15, 20, 20, 20, 25, 15, 20, 200, 35, 30, 35, 50, 45, 40, 50 };
 
         /// <summary>
-        /// This enormous 147-element array of strings covers enemy IDs from 0-146 and is used to determine
-        /// what HUD message is displayed after Vampire player characters kill a given enemy. Most of this array is unused filler
-        /// as enemies with IDs 43-127 don't exist, but it's more efficient to declare this whole thing and then search by ID
-        /// without modification than it would be to declare a 62-element array (to match the 62 enemies in DFU) and then subtract
-        /// 85 from every enemy ID above 127 to get the correct index number. Each enemy displays a unique HUD message.
+        /// This array contains messages that are displayed after a Vampire player character kills an enemy with fresh blood. %s
+        /// is replaced with the enemy's name. I added these for extra roleplaying flavor.
         /// </summary>
-        public static readonly string[] vampireHUDMessage = { "You discard the drained Rat.", "Barely any blood. Worthless Imp.", "",
-        "You discard the drained Giant Bat.", "You gorge on Grizzly Bear blood.", "You feast on Sabretooth Tiger blood.",
-        "Not enough blood in this Spider.", "You greedily lap up the Orc's blood.", "Fresh Centaur blood, and plenty of it!",
-        "You devour the Werewolf's cursed blood.", "You ache for more Nymph blood.", "There's not much blood in the Slaughterfish.",
-        "You guzzle the Orc Sergeant's blood.", "Harpy blood tastes as vile as it smells.", "You yearn for more Wereboar blood.",
-        "", "Giant blood. Almost enough to satisfy you.", "You gag on foul Zombie blood.", "", "",
-        "Not much blood in this Giant Scorpion.", "You savor the Orc Shaman's blood.", "", "",
-        "Orc Warlord blood revitalizes you!", "", "", "Daedroth blood. So sweet...", "This Vampire's blood is now yours.",
-        "Daedra Seducer blood mends your wounds.", "Vampire Ancient blood sates your hunger. For now.",
-        "You feel the heady rush of Daedra Lord blood!", "", "", "You crave more Dragonling blood.", "", "",
-        "You retch on old Flesh Atronach blood.", "", "", "Such powerful Dragonling blood!", "Dreugh blood tastes like Orc.",
-        "Lamia blood is marvelous. You want more.", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
-        "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
-        "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
-        "", "", "", "", "", "", "This Mage had more Magicka than blood.", "The Spellsword succumbs to your fangs.",
-        "You gulp down the Battlemage's blood.", "You absorb the Sorcerer's blood.", "Healer's blood cannot assuage your hunger.",
-        "The Nightblade's blood gushes into your mouth.", "You lust for more Bard blood.", "You rob the Burglar of blood.",
-        "This Rogue's blood is delicious.", "This scrawny Acrobat had little blood.", "You steal life from the Thief.",
-        "You imbibe the Assassin's powerful blood!", "You drain the Monk of blood.", "You sup on the Archer's vital fluids.",
-        "You eagerly drink the Ranger's blood.", "Hearty Barbarian blood!", "This Warrior's blood fortifies you.",
-        "The Knight's blood fills your belly.", "You consume the Guard's blood. You want more." };
+        readonly string[] bossfallVampireHUDMessages = new string[] { "You discard the drained %s.",
+            "Barely any blood. Worthless %s.", "You gorge on %s blood.", "You feast on %s blood.", "Not enough blood in this %s.",
+            "You greedily lap up the %s's blood.", "Fresh %s blood, and plenty of it!", "You ache for more %s blood.",
+            "There's not much blood in the %s.", "You guzzle the %s's blood.", "You yearn for more %s blood.",
+            "%s blood. Almost enough to satisfy you.", "Not much blood in this %s.", "You savor the %s's blood.",
+            "%s blood revitalizes you!", "%s blood. So sweet...", "This %s's blood is now yours.", "%s blood mends your wounds.",
+            "%s blood sates your hunger. For now.", "You feel the heady rush of %s blood!", "You crave more %s blood.",
+            "Such powerful %s blood!", "%s blood is marvelous. You want more.", "The %s succumbs to your fangs.",
+            "You gulp down the %s's blood.", "%s's blood cannot assuage your hunger.", "The %s's blood gushes into your mouth.",
+            "You lust for more %s blood.", "You rob the %s of blood.", "This %s's blood is delicious.",
+            "You imbibe the %s's powerful blood!", "You drain the %s of blood.", "You sup on the %s's vital fluids.",
+            "You eagerly drink the %s's blood.", "Hearty %s blood!", "This %s's blood fortifies you.",
+            "The %s's blood fills your belly.", "You consume the %s's blood. You want more.", "You exsanguinate the %s.",
+            "You delight in the %s's blood.", "You revel in %s blood.", "You desire more %s blood.", "You'd love more %s blood.",
+            "%s blood quenches your thirst. For now.", "You don't waste a drop of the %s's blood." };
+
+        /// <summary>
+        /// This array contains messages that are displayed when Vampire player characters kill a Zombie or Flesh Atronach. %s
+        /// is replaced with the enemy's name. I added these for extra roleplaying flavor.
+        /// </summary>
+        readonly string[] bossfallOldBloodHUDMessages = new string[] { "You gag on old %s blood.", "You retch on foul %s blood.",
+            "You regurgitate the %s's blood.", "Your stomach rebels at %s blood.", "You consume disgusting %s blood.",
+            "There's no good blood in this %s.", "You can't stand %s blood.", "Worthless %s blood.", "This %s blood tastes awful.",
+            "Even you can't drink the %s's blood.", "You crave anything other than %s blood.", "%s blood. What a waste of time.",
+            "%s blood tastes as vile as it smells.", "Old %s blood fails to satisfy you." };
 
         /// <summary>
         /// When a player with stage two Lycanthropy kills an innocent a string is randomly selected from this array
         /// and displayed as a HUD message. Added for extra roleplaying flavor.
         /// </summary>
-        public static readonly string[] innocentHUDMessage = { "Your urge to kill subsides.", "The innocent collapses.",
+        readonly string[] bossfallInnocentHUDMessages = new string[] { "Your urge to kill subsides.", "The innocent collapses.",
         "The innocent breathes their last.", "One final twitch and the innocent goes still.", "A pool of blood spreads from the innocent.",
         "You shed innocent blood.", "You are soaked with innocent blood.", "Your urge to hunt fades.", "You tear innocent flesh from bone.",
         "You spill innocent blood.", "The innocent shrieks, then goes silent.", "You lock eyes with the dying innocent.",
@@ -2334,15 +2327,152 @@ namespace BossfallMod.Formulas
         "With a pitiful moan, the innocent dies.", "The innocent's mangled body lies still.", "Your face is covered with innocent blood.",
         "Your urge to hunt dissipates.", "You snuff out an innocent life.", "An innocent corpse lies at your feet." };
 
+        /// <summary>
+        /// This monstrosity represents enemy move speeds by enemy ID and covers IDs from 0-146. This array is used
+        /// if the "Enemy Move Speed" setting is "Fast", and these speeds are Bossfall v1.3 enemy move speeds. I use this array to
+        /// make the enemy movespeed selection process much faster than the giant if/else if tree I had in TakeAction in versions
+        /// v1.2.1 and earlier. Most of this array is unused filler as enemies with IDs 43-127 don't exist, but it's more efficient
+        /// to declare this whole thing and then search by ID without modification than it would be to declare a 62-element array
+        /// (to match the 62 enemies in DFU) and then subtract 85 from every enemy ID above 127 to get the correct index number.
+        /// </summary>
+        readonly float[] fastMoveSpeeds = new float[] { 7f, 6f, 3f, 8.5f, 7.5f, 8f, 9f, 5f, 7.5f, 9f, 4.5f, 4.5f, 5.75f, 8f,
+        7.5f, 6f, 7f, 3f, 3.5f, 3.5f, 7.5f, 5.75f, 4.5f, 4f, 6.5f, 5f, 7.5f, 6.5f, 10f, 7.5f, 12f, 7.5f, 4f, 4.5f, 8f, 7.5f, 3f, 3f,
+        3f, 0, 10f, 3.5f, 4f, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4f, 7.5f, 6f, 4f, 4f, 8f, 7f, 8f, 8f, 8.5f, 8f, 10f, 7.5f, 4.5f, 4.5f, 7f, 5.75f, 5f, 8.5f };
+
+        /// <summary>
+        /// This monstrosity represents enemy move speeds by enemy ID and covers IDs from 0-146. This array is used if the
+        /// "Enemy Move Speed" setting is "Very Fast", and these speeds are Bossfall v1.2.1 enemy move speeds. I use this array to
+        /// make the enemy movespeed selection process much faster than the giant if/else if tree I had in TakeAction in versions
+        /// v1.2.1 and earlier. Most of this array is unused filler as enemies with IDs 43-127 don't exist, but it's more efficient
+        /// to declare this whole thing and then search by ID without modification than it would be to declare a 62-element array
+        /// (to match the 62 enemies in DFU) and then subtract 85 from every enemy ID above 127 to get the correct index number.
+        /// </summary>
+        readonly float[] veryFastMoveSpeeds = new float[] { 7f, 6f, 3f, 8.5f, 7.5f, 8f, 9f, 5f, 7.5f, 9f, 4.5f, 4.5f, 5.75f, 8f,
+        7.5f, 6f, 7f, 3f, 3.5f, 3.5f, 7.5f, 5.75f, 4.5f, 4f, 6.5f, 5f, 7.5f, 6.5f, 10f, 7.5f, 12f, 7.5f, 4f, 4.5f, 8f, 7.5f, 3f, 3f,
+        3f, 0, 10f, 3.5f, 4f, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4f, 7.5f, 6f, 4f, 4f, 8f, 7f, 8f, 8f, 8.5f, 8f, 10f, 7.5f, 4.5f, 4.5f, 7f, 5.75f, 5f, 8.5f };
+
         #endregion
 
-        #region Overrides
+        #region Properties
+
+        /// <summary>
+        /// Returns the only instance of BossfallOverrides.
+        /// </summary>
+        public static BossfallOverrides Instance { get { return Bossfall.Instance.GetComponent<BossfallOverrides>(); } }
+
+        /// <summary>
+        /// Returns an expanded array of treasure pile sprites.
+        /// </summary>
+        public int[] BossfallAlternateRandomTreasureIconIndices { get { return bossfallAlternateRandomTreasureIconIndices; } }
+
+        /// <summary>
+        /// Returns Bossfall's array of enemy stats.
+        /// </summary>
+        public MobileEnemy[] BossfallEnemyStats { get { return bossfallEnemyStats; } }
+
+        /// <summary>
+        /// Returns HP heal amounts keyed to enemy IDs.
+        /// </summary>
+        public byte[] BossfallVampireHealAmounts { get { return bossfallVampireHealAmounts; } }
+
+        /// <summary>
+        /// Returns an array filled with vampire-related messages.
+        /// </summary>
+        public string[] BossfallVampireHUDMessages { get { return bossfallVampireHUDMessages; } }
+
+        /// <summary>
+        /// Returns an array filled with messages if Vampire player character kills a Zombie or Flesh Atronach.
+        /// </summary>
+        public string[] BossfallOldBloodHUDMessages { get { return bossfallOldBloodHUDMessages; } }
+
+        /// <summary>
+        /// Returns an array filled with lycanthropy-related messages.
+        /// </summary>
+        public string[] BossfallInnocentHUDMessages { get { return bossfallInnocentHUDMessages; } }
+
+        /// <summary>
+        /// Returns an array of custom enemy move speeds.
+        /// </summary>
+        public float[] FastMoveSpeeds { get { return fastMoveSpeeds; } }
+
+        /// <summary>
+        /// Returns an array of custom enemy move speeds.
+        /// </summary>
+        public float[] VeryFastMoveSpeeds { get { return veryFastMoveSpeeds; } }
+
+        #endregion
+
+        #region Generic Overrides
+
+        /// <summary>
+        /// This method makes shields of high tier materials actually useful. Leather/Chain/Steel/Silver shield armor
+        /// unchanged from vanilla. An Iron shield grants 1 less armor than vanilla, an Elven shield grants 1 more
+        /// armor than vanilla, a Dwarven shield grants 2 more armor than vanilla, etc.
+        /// </summary>
+        /// <returns>Shield armor value, adjusted for shield material.</returns>
+        public int BossfallShieldArmorValue(DaggerfallUnityItem item)
+        {
+            int shieldMaterialModifier;
+
+            switch (item.nativeMaterialValue)
+            {
+                case (int)ArmorMaterialTypes.Iron:
+                    shieldMaterialModifier = -1;
+                    break;
+                case (int)ArmorMaterialTypes.Elven:
+                    shieldMaterialModifier = 1;
+                    break;
+                case (int)ArmorMaterialTypes.Dwarven:
+                    shieldMaterialModifier = 2;
+                    break;
+                case (int)ArmorMaterialTypes.Mithril:
+                case (int)ArmorMaterialTypes.Adamantium:
+                    shieldMaterialModifier = 3;
+                    break;
+                case (int)ArmorMaterialTypes.Ebony:
+                    shieldMaterialModifier = 4;
+                    break;
+                case (int)ArmorMaterialTypes.Orcish:
+                    shieldMaterialModifier = 5;
+                    break;
+                case (int)ArmorMaterialTypes.Daedric:
+                    shieldMaterialModifier = 6;
+                    break;
+
+                default:
+                    shieldMaterialModifier = 0;
+                    break;
+            }
+
+            switch (item.TemplateIndex)
+            {
+                case (int)Armor.Buckler:
+                    return 1 + shieldMaterialModifier;
+                case (int)Armor.Round_Shield:
+                    return 2 + shieldMaterialModifier;
+                case (int)Armor.Kite_Shield:
+                    return 3 + shieldMaterialModifier;
+                case (int)Armor.Tower_Shield:
+                    return 4 + shieldMaterialModifier;
+
+                default:
+                    return 0;
+            }
+        }
+
+        #endregion
+
+        #region FormulaHelper Overrides
 
         /// <summary>
         /// This method registers Bossfall's numerous formula overrides.
         /// </summary>
         /// <param name="mod">The mod providing the override - Bossfall in this case.</param>
-        public static void RegisterOverrides(Mod mod)
+        public void RegisterOverrides(Mod mod)
         {
             FormulaHelper.RegisterOverride<Func<int, int>>(mod, "DamageModifier", DamageModifier);
             FormulaHelper.RegisterOverride<Func<PlayerEntity, int, int>>(mod, "CalculateClimbingChance", CalculateClimbingChance);
@@ -2376,7 +2506,7 @@ namespace BossfallMod.Formulas
         /// </summary>
         /// <param name="onscreenWeapon">The weapon displayed on player's HUD.</param>
         /// <returns>True if attack type is a punch when using Hand-to-Hand.</returns>
-        static bool IsPunch(FPSWeapon onscreenWeapon)
+        bool IsPunch(FPSWeapon onscreenWeapon)
         {
             if (onscreenWeapon != null)
             {
@@ -2391,25 +2521,26 @@ namespace BossfallMod.Formulas
         }
 
         /// <summary>
-        /// Formula is vanilla's, but I replaced "5f" with "10f" to match scaling of other stats.
+        /// Formula is vanilla's, but I changed it to be an instance method and also replaced "5f" with "10f" to match
+        /// scaling of other stats.
         /// </summary>
         /// <param name="strength">Entity's STR attribute.</param>
         /// <returns>Weapon attack damage modifier from -5 to +5.</returns>
-        public static int DamageModifier(int strength)
+        public int DamageModifier(int strength)
         {
             return (int)Mathf.Floor((float)(strength - 50) / 10f);
         }
 
         /// <summary>
-        /// Formula is vanilla's, comments precede changes I made. Changes to this formula
-        /// are relatively pointless without changes to ClimbingMotor - there are several constant base success percentages
-        /// and a skill check override in that script that effectively negate changes I make here. Until I can get mod
-        /// access to that script, this formula change is the best I can do.
+        /// Formula is vanilla's, changed to an instance method. Comments precede changes or additions I made. Changes to
+        /// this formula are relatively pointless without changes to ClimbingMotor - there are several constant base
+        /// success percentages and a skill check override in that script that effectively negate changes I make here.
+        /// Unless I change what script is used for climbing, this method change is the best I can do.
         /// </summary>
         /// <param name="player">Player entity.</param>
         /// <param name="basePercentSuccess">I didn't use this in my new climbing skill checks.</param>
         /// <returns>Climbing chance.</returns>
-        public static int CalculateClimbingChance(PlayerEntity player, int basePercentSuccess)
+        public int CalculateClimbingChance(PlayerEntity player, int basePercentSuccess)
         {
             int skill = player.Skills.GetLiveSkillValue(DFCareer.Skills.Climbing);
             int luck = player.Stats.GetLiveStatValue(DFCareer.Stats.Luck);
@@ -2429,12 +2560,13 @@ namespace BossfallMod.Formulas
         }
 
         /// <summary>
-        /// Formula is vanilla's but I set all minimum damages to 1. I made this change very early on when I was trying
-        /// to make the game more realistic. My realism craze has faded but this change remains.
+        /// Formula is vanilla's, but I changed it to be an instance method and set all minimum damages to 1. I made the
+        /// damage change very early on when I was trying to make the game more realistic. My realism craze has faded but
+        /// this change remains.
         /// </summary>
         /// <param name="weapon">Weapon type.</param>
         /// <returns>1 for every weapon.</returns>
-        public static int CalculateWeaponMinDamage(Weapons weapon)
+        public int CalculateWeaponMinDamage(Weapons weapon)
         {
             switch (weapon)
             {
@@ -2463,7 +2595,7 @@ namespace BossfallMod.Formulas
         }
 
         /// <summary>
-        /// Vanilla's formula with extensive changes by yours truly. Comments precede code I added or changed.
+        /// Formula is vanilla's, changed to an instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <param name="attacker">Attacker.</param>
         /// <param name="target">Target.</param>
@@ -2471,7 +2603,7 @@ namespace BossfallMod.Formulas
         /// <param name="weaponAnimTime">How long the weapon animation lasted, in milliseconds.</param>
         /// <param name="weapon">The attacker's weapon, null if no weapon is being used.</param>
         /// <returns>Damage done to target, will be 0 if attack misses.</returns>
-        public static int CalculateAttackDamage(DaggerfallEntity attacker, DaggerfallEntity target, bool isEnemyFacingAwayFromPlayer, int weaponAnimTime, DaggerfallUnityItem weapon)
+        public int CalculateAttackDamage(DaggerfallEntity attacker, DaggerfallEntity target, bool isEnemyFacingAwayFromPlayer, int weaponAnimTime, DaggerfallUnityItem weapon)
         {
             if (attacker == null || target == null)
                 return 0;
@@ -2487,7 +2619,7 @@ namespace BossfallMod.Formulas
             DaggerfallUnityItem gloves = player.ItemEquipTable.GetItem(EquipSlots.Gloves);
             DaggerfallUnityItem boots = player.ItemEquipTable.GetItem(EquipSlots.Feet);
             DaggerfallUnityItem poisonWeapon = attacker.ItemEquipTable.GetItem(EquipSlots.RightHand);
-            var enemyTarget = target as EnemyEntity;
+            EnemyEntity enemyTarget = target as EnemyEntity;
             EnemyEntity AIAttacker = attacker as EnemyEntity;
 
             // I modified this check to also make human class enemies use Hand-to-Hand if that would be more
@@ -2742,28 +2874,35 @@ namespace BossfallMod.Formulas
             if (attacker == player && damage > 0 && enemyTarget.MobileEnemy.ID < 39
              && GameManager.Instance.WeaponManager.ScreenWeapon.WeaponType != WeaponTypes.Werecreature)
             {
-                if (enemySpecialHandling[enemyTarget.MobileEnemy.ID] != 0)
+                // If array element keyed to enemy ID is 0, don't do anything.
+                if (bossfallMonsterSpecialHandling[enemyTarget.MobileEnemy.ID] != 0)
                 {
-                    switch (enemySpecialHandling[enemyTarget.MobileEnemy.ID])
+                    // Gives me access to instance variables for HUD messages.
+                    BossfallEnemyMotor motor = enemyTarget.EntityBehaviour.GetComponent<BossfallEnemyMotor>();
+
+                    // If enemy requires special handling, this enormous switch goes through all possible enemy/weapon combinations.
+                    // Whenever anything custom happens a HUD message is displayed so player knows what's happening. HUD messages
+                    // are displayed once per enemy per weapon/material type used, for a total of six possible unique HUD messages.
+                    switch (bossfallMonsterSpecialHandling[enemyTarget.MobileEnemy.ID])
                     {
                         case 1:
                             switch (skillID)
                             {
                                 case (short)DFCareer.Skills.Axe:
                                     damage *= 2;
-                                    if (!shownMsg)
+                                    if (!motor.ShownMsg)
                                     {
                                         DaggerfallUI.AddHUDText("Very effective!");
-                                        shownMsg = true;
+                                        motor.ShownMsg = true;
                                     }
                                     break;
                                 case (short)DFCareer.Skills.HandToHand:
                                     damage /= 4;
                                     GameManager.Instance.PlayerObject.SendMessage("RemoveHealth", 1);
-                                    if (!shownMsgTwo)
+                                    if (!motor.ShownMsgTwo)
                                     {
                                         DaggerfallUI.AddHUDText("Ow! Not very effective...");
-                                        shownMsgTwo = true;
+                                        motor.ShownMsgTwo = true;
                                     }
                                     break;
                                 case (short)DFCareer.Skills.ShortBlade:
@@ -2776,10 +2915,10 @@ namespace BossfallMod.Formulas
                                     {
                                         weapon.LowerCondition(1, player);
                                     }
-                                    if (!shownMsgThree)
+                                    if (!motor.ShownMsgThree)
                                     {
                                         DaggerfallUI.AddHUDText("Not very effective... You dull your blade.");
-                                        shownMsgThree = true;
+                                        motor.ShownMsgThree = true;
                                     }
                                     break;
                                 case (short)DFCareer.Skills.LongBlade:
@@ -2791,20 +2930,20 @@ namespace BossfallMod.Formulas
                                     {
                                         weapon.LowerCondition(6, player);
                                     }
-                                    if (!shownMsgFour)
+                                    if (!motor.ShownMsgFour)
                                     {
                                         DaggerfallUI.AddHUDText("You dull your blade.");
-                                        shownMsgFour = true;
+                                        motor.ShownMsgFour = true;
                                     }
                                     break;
                                 case (short)DFCareer.Skills.BluntWeapon:
                                     break;
                                 case (short)DFCareer.Skills.Archery:
                                     damage = 0;
-                                    if (!shownMsgFive)
+                                    if (!motor.ShownMsgFive)
                                     {
                                         DaggerfallUI.AddHUDText("Ineffective.");
-                                        shownMsgFive = true;
+                                        motor.ShownMsgFive = true;
                                     }
                                     break;
                             }
@@ -2814,10 +2953,10 @@ namespace BossfallMod.Formulas
                             {
                                 case (short)DFCareer.Skills.Axe:
                                     damage *= 2;
-                                    if (!shownMsg)
+                                    if (!motor.ShownMsg)
                                     {
                                         DaggerfallUI.AddHUDText("Very effective!");
-                                        shownMsg = true;
+                                        motor.ShownMsg = true;
                                     }
                                     break;
                                 case (short)DFCareer.Skills.LongBlade:
@@ -2825,26 +2964,26 @@ namespace BossfallMod.Formulas
                                     break;
                                 case (short)DFCareer.Skills.HandToHand:
                                     damage /= 3;
-                                    if (!shownMsgTwo)
+                                    if (!motor.ShownMsgTwo)
                                     {
                                         DaggerfallUI.AddHUDText("Not very effective...");
-                                        shownMsgTwo = true;
+                                        motor.ShownMsgTwo = true;
                                     }
                                     break;
                                 case (short)DFCareer.Skills.ShortBlade:
                                     damage /= 2;
-                                    if (!shownMsgThree)
+                                    if (!motor.ShownMsgThree)
                                     {
                                         DaggerfallUI.AddHUDText("Not very effective...");
-                                        shownMsgThree = true;
+                                        motor.ShownMsgThree = true;
                                     }
                                     break;
                                 case (short)DFCareer.Skills.Archery:
                                     damage /= 4;
-                                    if (!shownMsgFour)
+                                    if (!motor.ShownMsgFour)
                                     {
                                         DaggerfallUI.AddHUDText("Not very effective...");
-                                        shownMsgFour = true;
+                                        motor.ShownMsgFour = true;
                                     }
                                     break;
                             }
@@ -2854,10 +2993,10 @@ namespace BossfallMod.Formulas
                             {
                                 case (short)DFCareer.Skills.BluntWeapon:
                                     damage *= 2;
-                                    if (!shownMsg)
+                                    if (!motor.ShownMsg)
                                     {
                                         DaggerfallUI.AddHUDText("Very effective!");
-                                        shownMsg = true;
+                                        motor.ShownMsg = true;
                                     }
                                     break;
                                 case (short)DFCareer.Skills.Axe:
@@ -2873,10 +3012,10 @@ namespace BossfallMod.Formulas
                                     {
                                         weapon.LowerCondition(6, player);
                                     }
-                                    if (!shownMsgTwo)
+                                    if (!motor.ShownMsgTwo)
                                     {
                                         DaggerfallUI.AddHUDText("Not very effective... You nick your blade.");
-                                        shownMsgTwo = true;
+                                        motor.ShownMsgTwo = true;
                                     }
                                     break;
                                 case (short)DFCareer.Skills.ShortBlade:
@@ -2889,18 +3028,18 @@ namespace BossfallMod.Formulas
                                     {
                                         weapon.LowerCondition(2, player);
                                     }
-                                    if (!shownMsgThree)
+                                    if (!motor.ShownMsgThree)
                                     {
                                         DaggerfallUI.AddHUDText("Not very effective... You chip your blade.");
-                                        shownMsgThree = true;
+                                        motor.ShownMsgThree = true;
                                     }
                                     break;
                                 case (short)DFCareer.Skills.Archery:
                                     damage = 0;
-                                    if (!shownMsgFour)
+                                    if (!motor.ShownMsgFour)
                                     {
                                         DaggerfallUI.AddHUDText("Ineffective.");
-                                        shownMsgFour = true;
+                                        motor.ShownMsgFour = true;
                                     }
                                     break;
                             }
@@ -2910,10 +3049,10 @@ namespace BossfallMod.Formulas
                             {
                                 case (short)DFCareer.Skills.Axe:
                                     damage *= 2;
-                                    if (!shownMsg)
+                                    if (!motor.ShownMsg)
                                     {
                                         DaggerfallUI.AddHUDText("Very effective!");
-                                        shownMsg = true;
+                                        motor.ShownMsg = true;
                                     }
                                     break;
                                 case (short)DFCareer.Skills.BluntWeapon:
@@ -2923,18 +3062,18 @@ namespace BossfallMod.Formulas
                                 case (short)DFCareer.Skills.HandToHand:
                                     damage /= 2;
                                     GameManager.Instance.PlayerObject.SendMessage("RemoveHealth", 1);
-                                    if (!shownMsgTwo)
+                                    if (!motor.ShownMsgTwo)
                                     {
                                         DaggerfallUI.AddHUDText("Ow! Not very effective...");
-                                        shownMsgTwo = true;
+                                        motor.ShownMsgTwo = true;
                                     }
                                     break;
                                 case (short)DFCareer.Skills.Archery:
                                     damage /= 3;
-                                    if (!shownMsgThree)
+                                    if (!motor.ShownMsgThree)
                                     {
                                         DaggerfallUI.AddHUDText("Not very effective...");
-                                        shownMsgThree = true;
+                                        motor.ShownMsgThree = true;
                                     }
                                     break;
                             }
@@ -2944,18 +3083,18 @@ namespace BossfallMod.Formulas
                             {
                                 if (weapon.nativeMaterialValue == (int)WeaponMaterialTypes.Silver)
                                 {
-                                    if (!shownMsg)
+                                    if (!motor.ShownMsg)
                                     {
                                         DaggerfallUI.AddHUDText("Your Silver weapon strikes true!");
-                                        shownMsg = true;
+                                        motor.ShownMsg = true;
                                     }
                                     break;
                                 }
                                 damage = 0;
-                                if (!shownMsgTwo)
+                                if (!motor.ShownMsgTwo)
                                 {
                                     DaggerfallUI.AddHUDText("Ineffective. Use Silver.");
-                                    shownMsgTwo = true;
+                                    motor.ShownMsgTwo = true;
                                 }
                                 break;
                             }
@@ -2963,35 +3102,35 @@ namespace BossfallMod.Formulas
                             {
                                 if (gloves != null && gloves.nativeMaterialValue == (int)ArmorMaterialTypes.Silver)
                                 {
-                                    if (!shownMsgThree)
+                                    if (!motor.ShownMsgThree)
                                     {
                                         DaggerfallUI.AddHUDText("Your Silver gauntlet strikes true!");
-                                        shownMsgThree = true;
+                                        motor.ShownMsgThree = true;
                                     }
                                     break;
                                 }
                                 damage = 0;
-                                if (!shownMsgFour)
+                                if (!motor.ShownMsgFour)
                                 {
                                     DaggerfallUI.AddHUDText("Ineffective. Use Silver.");
-                                    shownMsgFour = true;
+                                    motor.ShownMsgFour = true;
                                 }
                                 break;
                             }
                             else if (boots != null && boots.nativeMaterialValue == (int)ArmorMaterialTypes.Silver)
                             {
-                                if (!shownMsgFive)
+                                if (!motor.ShownMsgFive)
                                 {
                                     DaggerfallUI.AddHUDText("Your Silver boot strikes true!");
-                                    shownMsgFive = true;
+                                    motor.ShownMsgFive = true;
                                 }
                                 break;
                             }
                             damage = 0;
-                            if (!shownMsgSix)
+                            if (!motor.ShownMsgSix)
                             {
                                 DaggerfallUI.AddHUDText("Ineffective. Use Silver.");
-                                shownMsgSix = true;
+                                motor.ShownMsgSix = true;
                             }
                             break;
                         case 6:
@@ -3000,10 +3139,10 @@ namespace BossfallMod.Formulas
                                 case (short)DFCareer.Skills.Axe:
                                 case (short)DFCareer.Skills.LongBlade:
                                     damage *= 2;
-                                    if (!shownMsg)
+                                    if (!motor.ShownMsg)
                                     {
                                         DaggerfallUI.AddHUDText("Very effective!");
-                                        shownMsg = true;
+                                        motor.ShownMsg = true;
                                     }
                                     break;
                                 case (short)DFCareer.Skills.BluntWeapon:
@@ -3012,10 +3151,10 @@ namespace BossfallMod.Formulas
                                     break;
                                 case (short)DFCareer.Skills.Archery:
                                     damage /= 2;
-                                    if (!shownMsgTwo)
+                                    if (!motor.ShownMsgTwo)
                                     {
                                         DaggerfallUI.AddHUDText("Not very effective...");
-                                        shownMsgTwo = true;
+                                        motor.ShownMsgTwo = true;
                                     }
                                     break;
                             }
@@ -3032,19 +3171,19 @@ namespace BossfallMod.Formulas
                                     {
                                         weapon.LowerCondition(6, player);
                                     }
-                                    if (!shownMsg)
+                                    if (!motor.ShownMsg)
                                     {
                                         DaggerfallUI.AddHUDText("You dent your weapon.");
-                                        shownMsg = true;
+                                        motor.ShownMsg = true;
                                     }
                                     break;
                                 case (short)DFCareer.Skills.HandToHand:
                                     damage = 0;
                                     GameManager.Instance.PlayerObject.SendMessage("RemoveHealth", 2);
-                                    if (!shownMsgTwo)
+                                    if (!motor.ShownMsgTwo)
                                     {
                                         DaggerfallUI.AddHUDText("OW! Ineffective.");
-                                        shownMsgTwo = true;
+                                        motor.ShownMsgTwo = true;
                                     }
                                     break;
                                 case (short)DFCareer.Skills.Axe:
@@ -3056,10 +3195,10 @@ namespace BossfallMod.Formulas
                                     {
                                         weapon.LowerCondition(12, player);
                                     }
-                                    if (!shownMsgThree)
+                                    if (!motor.ShownMsgThree)
                                     {
                                         DaggerfallUI.AddHUDText("You chip your axe.");
-                                        shownMsgThree = true;
+                                        motor.ShownMsgThree = true;
                                     }
                                     break;
                                 case (short)DFCareer.Skills.LongBlade:
@@ -3072,10 +3211,10 @@ namespace BossfallMod.Formulas
                                     {
                                         weapon.LowerCondition(18, player);
                                     }
-                                    if (!shownMsgFour)
+                                    if (!motor.ShownMsgFour)
                                     {
                                         DaggerfallUI.AddHUDText("Not very effective... You crack your blade.");
-                                        shownMsgFour = true;
+                                        motor.ShownMsgFour = true;
                                     }
                                     break;
                                 case (short)DFCareer.Skills.ShortBlade:
@@ -3088,18 +3227,18 @@ namespace BossfallMod.Formulas
                                     {
                                         weapon.LowerCondition(3, player);
                                     }
-                                    if (!shownMsgFive)
+                                    if (!motor.ShownMsgFive)
                                     {
                                         DaggerfallUI.AddHUDText("Not very effective... You crack your blade.");
-                                        shownMsgFive = true;
+                                        motor.ShownMsgFive = true;
                                     }
                                     break;
                                 case (short)DFCareer.Skills.Archery:
                                     damage = 0;
-                                    if (!shownMsgSix)
+                                    if (!motor.ShownMsgSix)
                                     {
                                         DaggerfallUI.AddHUDText("Ineffective.");
-                                        shownMsgSix = true;
+                                        motor.ShownMsgSix = true;
                                     }
                                     break;
                             }
@@ -3116,19 +3255,19 @@ namespace BossfallMod.Formulas
                                     {
                                         weapon.LowerCondition(12, player);
                                     }
-                                    if (!shownMsg)
+                                    if (!motor.ShownMsg)
                                     {
                                         DaggerfallUI.AddHUDText("You chip your weapon.");
-                                        shownMsg = true;
+                                        motor.ShownMsg = true;
                                     }
                                     break;
                                 case (short)DFCareer.Skills.HandToHand:
                                     damage = 0;
                                     GameManager.Instance.PlayerObject.SendMessage("RemoveHealth", 3);
-                                    if (!shownMsgTwo)
+                                    if (!motor.ShownMsgTwo)
                                     {
                                         DaggerfallUI.AddHUDText("OW!! Ineffective.");
-                                        shownMsgTwo = true;
+                                        motor.ShownMsgTwo = true;
                                     }
                                     break;
                                 case (short)DFCareer.Skills.Axe:
@@ -3141,10 +3280,10 @@ namespace BossfallMod.Formulas
                                     {
                                         weapon.LowerCondition(18, player);
                                     }
-                                    if (!shownMsgThree)
+                                    if (!motor.ShownMsgThree)
                                     {
                                         DaggerfallUI.AddHUDText("Not very effective... You crack your axe.");
-                                        shownMsgThree = true;
+                                        motor.ShownMsgThree = true;
                                     }
                                     break;
                                 case (short)DFCareer.Skills.LongBlade:
@@ -3157,10 +3296,10 @@ namespace BossfallMod.Formulas
                                     {
                                         weapon.LowerCondition(24, player);
                                     }
-                                    if (!shownMsgFour)
+                                    if (!motor.ShownMsgFour)
                                     {
                                         DaggerfallUI.AddHUDText("Not very effective... You badly damage your blade!");
-                                        shownMsgFour = true;
+                                        motor.ShownMsgFour = true;
                                     }
                                     break;
                                 case (short)DFCareer.Skills.ShortBlade:
@@ -3173,18 +3312,18 @@ namespace BossfallMod.Formulas
                                     {
                                         weapon.LowerCondition(4, player);
                                     }
-                                    if (!shownMsgFive)
+                                    if (!motor.ShownMsgFive)
                                     {
                                         DaggerfallUI.AddHUDText("Not very effective... You badly damage your blade!");
-                                        shownMsgFive = true;
+                                        motor.ShownMsgFive = true;
                                     }
                                     break;
                                 case (short)DFCareer.Skills.Archery:
                                     damage = 0;
-                                    if (!shownMsgSix)
+                                    if (!motor.ShownMsgSix)
                                     {
                                         DaggerfallUI.AddHUDText("Ineffective.");
-                                        shownMsgSix = true;
+                                        motor.ShownMsgSix = true;
                                     }
                                     break;
                             }
@@ -3195,18 +3334,18 @@ namespace BossfallMod.Formulas
                                 if (IsPunch(GameManager.Instance.WeaponManager.ScreenWeapon))
                                 {
                                     GameManager.Instance.PlayerObject.SendMessage("RemoveHealth", 2);
-                                    if (!shownMsg)
+                                    if (!motor.ShownMsg)
                                     {
                                         DaggerfallUI.AddHUDText("You burn your hand.");
-                                        shownMsg = true;
+                                        motor.ShownMsg = true;
                                     }
                                     break;
                                 }
                                 GameManager.Instance.PlayerObject.SendMessage("RemoveHealth", 2);
-                                if (!shownMsgTwo)
+                                if (!motor.ShownMsgTwo)
                                 {
                                     DaggerfallUI.AddHUDText("You burn your foot.");
-                                    shownMsgTwo = true;
+                                    motor.ShownMsgTwo = true;
                                 }
                                 break;
                             }
@@ -3223,10 +3362,10 @@ namespace BossfallMod.Formulas
                                     {
                                         weapon.LowerCondition(6, player);
                                     }
-                                    if (!shownMsg)
+                                    if (!motor.ShownMsg)
                                     {
                                         DaggerfallUI.AddHUDText("You nick your axe.");
-                                        shownMsg = true;
+                                        motor.ShownMsg = true;
                                     }
                                     break;
                                 case (short)DFCareer.Skills.BluntWeapon:
@@ -3234,10 +3373,10 @@ namespace BossfallMod.Formulas
                                 case (short)DFCareer.Skills.HandToHand:
                                     damage = 0;
                                     GameManager.Instance.PlayerObject.SendMessage("RemoveHealth", 2);
-                                    if (!shownMsgTwo)
+                                    if (!motor.ShownMsgTwo)
                                     {
                                         DaggerfallUI.AddHUDText("OW! Ineffective.");
-                                        shownMsgTwo = true;
+                                        motor.ShownMsgTwo = true;
                                     }
                                     break;
                                 case (short)DFCareer.Skills.LongBlade:
@@ -3250,10 +3389,10 @@ namespace BossfallMod.Formulas
                                     {
                                         weapon.LowerCondition(12, player);
                                     }
-                                    if (!shownMsgThree)
+                                    if (!motor.ShownMsgThree)
                                     {
                                         DaggerfallUI.AddHUDText("Not very effective... You chip your blade.");
-                                        shownMsgThree = true;
+                                        motor.ShownMsgThree = true;
                                     }
                                     break;
                                 case (short)DFCareer.Skills.ShortBlade:
@@ -3266,18 +3405,18 @@ namespace BossfallMod.Formulas
                                     {
                                         weapon.LowerCondition(2, player);
                                     }
-                                    if (!shownMsgFour)
+                                    if (!motor.ShownMsgFour)
                                     {
                                         DaggerfallUI.AddHUDText("Not very effective... You chip your blade.");
-                                        shownMsgFour = true;
+                                        motor.ShownMsgFour = true;
                                     }
                                     break;
                                 case (short)DFCareer.Skills.Archery:
                                     damage = 0;
-                                    if (!shownMsgFive)
+                                    if (!motor.ShownMsgFive)
                                     {
                                         DaggerfallUI.AddHUDText("Ineffective.");
-                                        shownMsgFive = true;
+                                        motor.ShownMsgFive = true;
                                     }
                                     break;
                             }
@@ -3288,18 +3427,18 @@ namespace BossfallMod.Formulas
                                 if (IsPunch(GameManager.Instance.WeaponManager.ScreenWeapon))
                                 {
                                     GameManager.Instance.PlayerObject.SendMessage("RemoveHealth", 4);
-                                    if (!shownMsg)
+                                    if (!motor.ShownMsg)
                                     {
                                         DaggerfallUI.AddHUDText("You scorch your hand!");
-                                        shownMsg = true;
+                                        motor.ShownMsg = true;
                                     }
                                     break;
                                 }
                                 GameManager.Instance.PlayerObject.SendMessage("RemoveHealth", 4);
-                                if (!shownMsgTwo)
+                                if (!motor.ShownMsgTwo)
                                 {
                                     DaggerfallUI.AddHUDText("You scorch your foot!");
-                                    shownMsgTwo = true;
+                                    motor.ShownMsgTwo = true;
                                 }
                                 break;
                             }
@@ -3310,10 +3449,10 @@ namespace BossfallMod.Formulas
                                 if (weapon.nativeMaterialValue == (int)WeaponMaterialTypes.Silver)
                                 {
                                     damage *= 2;
-                                    if (!shownMsg)
+                                    if (!motor.ShownMsg)
                                     {
                                         DaggerfallUI.AddHUDText("Your Silver weapon strikes true!");
-                                        shownMsg = true;
+                                        motor.ShownMsg = true;
                                     }
                                     break;
                                 }
@@ -3324,10 +3463,10 @@ namespace BossfallMod.Formulas
                                 if (gloves != null && gloves.nativeMaterialValue == (int)ArmorMaterialTypes.Silver)
                                 {
                                     damage *= 2;
-                                    if (!shownMsgTwo)
+                                    if (!motor.ShownMsgTwo)
                                     {
                                         DaggerfallUI.AddHUDText("Your Silver gauntlet strikes true!");
-                                        shownMsgTwo = true;
+                                        motor.ShownMsgTwo = true;
                                     }
                                     break;
                                 }
@@ -3336,10 +3475,10 @@ namespace BossfallMod.Formulas
                             else if (boots != null && boots.nativeMaterialValue == (int)ArmorMaterialTypes.Silver)
                             {
                                 damage *= 2;
-                                if (!shownMsgThree)
+                                if (!motor.ShownMsgThree)
                                 {
                                     DaggerfallUI.AddHUDText("Your Silver boot strikes true!");
-                                    shownMsgThree = true;
+                                    motor.ShownMsgThree = true;
                                 }
                                 break;
                             }
@@ -3349,18 +3488,18 @@ namespace BossfallMod.Formulas
                             {
                                 if (weapon.nativeMaterialValue == (int)WeaponMaterialTypes.Silver)
                                 {
-                                    if (!shownMsg)
+                                    if (!motor.ShownMsg)
                                     {
                                         DaggerfallUI.AddHUDText("Your Silver weapon strikes true!");
-                                        shownMsg = true;
+                                        motor.ShownMsg = true;
                                     }
                                     break;
                                 }
                                 damage /= 2;
-                                if (!shownMsgTwo)
+                                if (!motor.ShownMsgTwo)
                                 {
                                     DaggerfallUI.AddHUDText("Not very effective... Use Silver.");
-                                    shownMsgTwo = true;
+                                    motor.ShownMsgTwo = true;
                                 }
                                 break;
                             }
@@ -3368,35 +3507,35 @@ namespace BossfallMod.Formulas
                             {
                                 if (gloves != null && gloves.nativeMaterialValue == (int)ArmorMaterialTypes.Silver)
                                 {
-                                    if (!shownMsgThree)
+                                    if (!motor.ShownMsgThree)
                                     {
                                         DaggerfallUI.AddHUDText("Your Silver gauntlet strikes true!");
-                                        shownMsgThree = true;
+                                        motor.ShownMsgThree = true;
                                     }
                                     break;
                                 }
                                 damage /= 2;
-                                if (!shownMsgFour)
+                                if (!motor.ShownMsgFour)
                                 {
                                     DaggerfallUI.AddHUDText("Not very effective... Use Silver.");
-                                    shownMsgFour = true;
+                                    motor.ShownMsgFour = true;
                                 }
                                 break;
                             }
                             else if (boots != null && boots.nativeMaterialValue == (int)ArmorMaterialTypes.Silver)
                             {
-                                if (!shownMsgFive)
+                                if (!motor.ShownMsgFive)
                                 {
                                     DaggerfallUI.AddHUDText("Your Silver boot strikes true!");
-                                    shownMsgFive = true;
+                                    motor.ShownMsgFive = true;
                                 }
                                 break;
                             }
                             damage /= 2;
-                            if (!shownMsgSix)
+                            if (!motor.ShownMsgSix)
                             {
                                 DaggerfallUI.AddHUDText("Not very effective... Use Silver.");
-                                shownMsgSix = true;
+                                motor.ShownMsgSix = true;
                             }
                             break;
                     }
@@ -3421,33 +3560,22 @@ namespace BossfallMod.Formulas
                 }
             }
 
-            // This resets HUD message bools if player kills an enemy.
-            if (attacker == player && damage >= target.CurrentHealth)
-            {
-                shownMsg = false;
-                shownMsgTwo = false;
-                shownMsgThree = false;
-                shownMsgFour = false;
-                shownMsgFive = false;
-                shownMsgSix = false;
-            }
-
             return damage;
         }
 
         /// <summary>
-        /// This method is entirely vanilla's. It's private in FormulaHelper which doesn't make sense to me considering the
-        /// formula that calls it (CalculateAttackDamage) is overridable. The easiest solution I saw was to copy the formula here.
+        /// Formula is vanilla's, changed to an instance method. It's private in FormulaHelper which doesn't make sense to me
+        /// considering the formula that calls it (CalculateAttackDamage) is overridable. So, I copied the formula here.
         /// </summary>
         /// <param name="item">The ring being checked.</param>
         /// <returns>True if item is the Ring Of Namira.</returns>
-        static bool IsRingOfNamira(DaggerfallUnityItem item)
+        bool IsRingOfNamira(DaggerfallUnityItem item)
         {
             return item != null && item.ContainsEnchantment(DaggerfallConnect.FallExe.EnchantmentTypes.SpecialArtifactEffect, (int)ArtifactsSubTypes.Ring_of_Namira);
         }
 
         /// <summary>
-        /// Vanilla's formula, comments precede changes or additions I made.
+        /// Formula is vanilla's, changed to an instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <param name="attacker">Attacking entity.</param>
         /// <param name="target">Target entity.</param>
@@ -3455,7 +3583,7 @@ namespace BossfallMod.Formulas
         /// <param name="weaponAnimTime">Weapon animation time.</param>
         /// <param name="weapon">The weapon used.</param>
         /// <returns>Adjusted weapon attack damage.</returns>
-        public static int CalculateWeaponAttackDamage(DaggerfallEntity attacker, DaggerfallEntity target, int damageModifier, int weaponAnimTime, DaggerfallUnityItem weapon)
+        public int CalculateWeaponAttackDamage(DaggerfallEntity attacker, DaggerfallEntity target, int damageModifier, int weaponAnimTime, DaggerfallUnityItem weapon)
         {
             // I copied this variable from the "CalculateAttackDamage" function as I already knew
             // it worked. With this I could add bonus damage based on what type of enemy is attacking player.
@@ -3483,15 +3611,15 @@ namespace BossfallMod.Formulas
         }
 
         /// <summary>
-        /// Vanilla's formula, comments precede changes or additions I made. The original formula had
-        /// an extra "bool player" parameter but the TryGetOverride method didn't include a bool, so I deleted the "bool player"
-        /// parameter to make sure this formula correctly overrides vanilla's.
+        /// Formula is vanilla's, changed to an instance method. Comments precede changes or additions I made. The original
+        /// formula had an extra "bool player" parameter but the TryGetOverride method didn't include a bool, so I deleted
+        /// the "bool player" parameter to make sure this formula correctly overrides vanilla's.
         /// </summary>
         /// <param name="attacker">Attacking entity.</param>
         /// <param name="target">Target entity.</param>
         /// <param name="damageModifier">Damage modifiers.</param>
         /// <returns>Adjusted Hand-to-Hand damage.</returns>
-        public static int CalculateHandToHandAttackDamage(DaggerfallEntity attacker, DaggerfallEntity target, int damageModifier)
+        public int CalculateHandToHandAttackDamage(DaggerfallEntity attacker, DaggerfallEntity target, int damageModifier)
         {
             // I copied this variable from the "CalculateAttackDamage" function as I already knew
             // it worked. With this I could add bonus damage based on what type of enemy is attacking player.
@@ -3520,10 +3648,10 @@ namespace BossfallMod.Formulas
         }
 
         /// <summary>
-        /// Vanilla's formula, but comments precede changes or additions I made.
+        /// Formula is vanilla's, changed to an instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <returns>Which body part was struck.</returns>
-        public static int CalculateStruckBodyPart()
+        public int CalculateStruckBodyPart()
         {
             // Vanilla DFU weights landed attacks toward chest armor, which causes body armor to wear out at a
             // roughly uniform rate as chest armor has much greater durability than other armor pieces. I want Pauldrons,
@@ -3534,12 +3662,12 @@ namespace BossfallMod.Formulas
         }
 
         /// <summary>
-        /// Vanilla's formula, but comments precede changes or additions I made.
+        /// Formula is vanilla's, changed to an instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <param name="damage">Attack damage.</param>
         /// <param name="backstabbingLevel">Backstabbing skill level.</param>
         /// <returns>Attack damage *3 if Backstabbing check succeeds.</returns>
-        public static int CalculateBackstabDamage(int damage, int backstabbingLevel)
+        public int CalculateBackstabDamage(int damage, int backstabbingLevel)
         {
             // I moved the backstabbingLevel check from > 1 to > 0 as I set miscellaneous
             // skills to start at 1-4. I want a Backstab (however unlikely) to be possible at a 
@@ -3554,7 +3682,7 @@ namespace BossfallMod.Formulas
         }
 
         /// <summary>
-        /// Formula is vanilla's, comments precede changes or additions I made.
+        /// Formula is vanilla's, changed to an instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <param name="attacker">Attacking entity.</param>
         /// <param name="target">Target entity.</param>
@@ -3562,7 +3690,7 @@ namespace BossfallMod.Formulas
         /// <param name="weapon">Weapon used.</param>
         /// <param name="struckBodyPart">Body part struck.</param>
         /// <returns>True. Vanilla's method is void but override must be a bool and return true to function properly.</returns>
-        public static bool DamageEquipment(DaggerfallEntity attacker, DaggerfallEntity target, int damage, DaggerfallUnityItem weapon, int struckBodyPart)
+        public bool DamageEquipment(DaggerfallEntity attacker, DaggerfallEntity target, int damage, DaggerfallUnityItem weapon, int struckBodyPart)
         {
             // I moved the weapon != null check - armor is now damaged by weaponless attacks.
             if (damage > 0)
@@ -3604,13 +3732,13 @@ namespace BossfallMod.Formulas
         }
 
         /// <summary>
-        /// Formula is vanilla's, but comments precede changes or additions I made.
+        /// Formula is vanilla's, changed to an instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <param name="item">The item being damaged.</param>
         /// <param name="owner">Used for removing broken magic items.</param>
         /// <param name="damage">Attack damage. I don't use this.</param>
         /// <returns>True. Vanilla's method is void but override must be a bool and return true to function properly.</returns>
-        public static bool ApplyConditionDamageThroughPhysicalHit(DaggerfallUnityItem item, DaggerfallEntity owner, int damage)
+        public bool ApplyConditionDamageThroughPhysicalHit(DaggerfallUnityItem item, DaggerfallEntity owner, int damage)
         {
             // I added these variables.
             short skillID = item.GetWeaponSkillIDAsShort();
@@ -3642,12 +3770,12 @@ namespace BossfallMod.Formulas
         }
 
         /// <summary>
-        /// Method is vanilla's, comments precede changes or additions I made.
+        /// Formula is vanilla's, changed to an instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <param name="attacker">Attacker.</param>
         /// <param name="target">Target.</param>
         /// <param name="damage">Weapon damage from the attack.</param>
-        public static void OnMonsterHit(EnemyEntity attacker, DaggerfallEntity target, int damage)
+        public void OnMonsterHit(EnemyEntity attacker, DaggerfallEntity target, int damage)
         {
             Diseases[] diseaseListA = { Diseases.Plague };
             Diseases[] diseaseListB = { Diseases.Plague, Diseases.StomachRot, Diseases.BrainFever };
@@ -3836,13 +3964,13 @@ namespace BossfallMod.Formulas
         }
 
         /// <summary>
-        /// Formula is vanilla's, comments precede additions or changes I made.
+        /// Formula is vanilla's, changed to an instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <param name="attacker">Source of poison.</param>
         /// <param name="target">Entity to be poisoned.</param>
         /// <param name="poisonType">What poison will be inflicted.</param>
         /// <param name="bypassImmunity">Whether poison should bypass Poison Immunity.</param>
-        public static void InflictPoison(DaggerfallEntity attacker, DaggerfallEntity target, Poisons poisonType, bool bypassImmunity)
+        public void InflictPoison(DaggerfallEntity attacker, DaggerfallEntity target, Poisons poisonType, bool bypassImmunity)
         {
             EntityEffectManager effectManager = null;
             if (target.EntityBehaviour != null)
@@ -3886,61 +4014,61 @@ namespace BossfallMod.Formulas
         }
 
         /// <summary>
-        /// Formula is vanilla's, comments precede changes or additions I made.
+        /// Formula is vanilla's, changed to an instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <returns>1, so it doesn't generate a vanilla random spawn.</returns>
-        public static int RollRandomSpawn_LocationNight()
+        public int RollRandomSpawn_LocationNight()
         {
             // I don't want to use vanilla's random spawn methods. By returning 1, vanilla will never create
             // a FoeSpawner for random encounters. Instead, if roll is 0 I create a FoeSpawner that mimics vanilla spawn
             // behavior but uses Bossfall's expanded encounter tables.
             if (UnityEngine.Random.Range(0, 40 + 1) == 0)
             {
-                GameObjectHelper.CreateFoeSpawner(true, BossfallEncounterTables.ChooseRandomEnemy(false), 1, 10);
+                GameObjectHelper.CreateFoeSpawner(true, BossfallEncounterTables.Instance.ChooseRandomEnemy(false), 1, 10);
             }
 
             return 1;
         }
 
         /// <summary>
-        /// Formula is vanilla's, comments precede changes or additions I made.
+        /// Formula is vanilla's, changed to an instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <returns>1, so it doesn't generate a vanilla random spawn.</returns>
-        public static int RollRandomSpawn_WildernessDay()
+        public int RollRandomSpawn_WildernessDay()
         {
             // I don't want to use vanilla's random spawn methods. By returning 1, vanilla will never create
             // a FoeSpawner for random encounters. Instead, if roll is 0 I create a FoeSpawner that mimics vanilla spawn
             // behavior but uses Bossfall's expanded encounter tables.
             if (UnityEngine.Random.Range(0, 40 + 1) == 0)
             {
-                GameObjectHelper.CreateFoeSpawner(true, BossfallEncounterTables.ChooseRandomEnemy(false), 1, 10);
+                GameObjectHelper.CreateFoeSpawner(true, BossfallEncounterTables.Instance.ChooseRandomEnemy(false), 1, 10);
             }
 
             return 1;
         }
 
         /// <summary>
-        /// Formula is vanilla's, comments precede changes or additions I made.
+        /// Formula is vanilla's, changed to an instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <returns>1, so it doesn't generate a vanilla random spawn.</returns>
-        public static int RollRandomSpawn_WildernessNight()
+        public int RollRandomSpawn_WildernessNight()
         {
             // I don't want to use vanilla's random spawn methods. By returning 1, vanilla will never create
             // a FoeSpawner for random encounters. Instead, if roll is 0 I create a FoeSpawner that mimics vanilla spawn
             // behavior but uses Bossfall's expanded encounter tables.
             if (UnityEngine.Random.Range(0, 40 + 1) == 0)
             {
-                GameObjectHelper.CreateFoeSpawner(true, BossfallEncounterTables.ChooseRandomEnemy(false), 1, 10);
+                GameObjectHelper.CreateFoeSpawner(true, BossfallEncounterTables.Instance.ChooseRandomEnemy(false), 1, 10);
             }
 
             return 1;
         }
 
         /// <summary>
-        /// Formula is vanilla's, comments precede changes or additions I made.
+        /// Formula is vanilla's, changed to an instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <returns>1, so it doesn't generate a vanilla random spawn.</returns>
-        public static int RollRandomSpawn_Dungeon()
+        public int RollRandomSpawn_Dungeon()
         {
             if (GameManager.Instance.PlayerEntity.EnemyAlertActive)
             {
@@ -3949,7 +4077,7 @@ namespace BossfallMod.Formulas
                 // behavior but uses Bossfall's expanded encounter tables.
                 if (UnityEngine.Random.Range(0, 40 + 1) == 0)
                 {
-                    GameObjectHelper.CreateFoeSpawner(false, BossfallEncounterTables.ChooseRandomEnemy(false), 1, 8);
+                    GameObjectHelper.CreateFoeSpawner(false, BossfallEncounterTables.Instance.ChooseRandomEnemy(false), 1, 8);
                 }
             }
 
@@ -3957,23 +4085,23 @@ namespace BossfallMod.Formulas
         }
 
         /// <summary>
-        /// Formula is vanilla's, comments precede changes or additions I made.
+        /// Formula is vanilla's, changed to an instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <param name="amount">Amount of the loan.</param>
         /// <param name="regionIndex">The current region index.</param>
         /// <returns>The amount of the loan plus interest.</returns>
-        public static int CalculateBankLoanRepayment(int amount, int regionIndex)
+        public int CalculateBankLoanRepayment(int amount, int regionIndex)
         {
             // I bumped loan interest from 10% to 20%. Seemed more reasonable.
             return (int)(amount + amount * .2);
         }
 
         /// <summary>
-        /// Method is vanilla's, comments precede additions or changes I made.
+        /// Formula is vanilla's, changed to an instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <param name="enemyLevelModifier">Enemy level * 50</param>
         /// <returns>WeaponMaterialTypes value of material selected.</returns>
-        public static WeaponMaterialTypes RandomMaterial(int enemyLevelModifier)
+        public WeaponMaterialTypes RandomMaterial(int enemyLevelModifier)
         {
             // If you are already familiar with how item materials are generated in vanilla DFU, you likely
             // won't learn anything from my long paragraph immediately below. I wrote this long comment because I had
@@ -3988,7 +4116,7 @@ namespace BossfallMod.Formulas
             // generates Silver through Daedric - as material tier increases, generation chance decreases, and a result
             // of 1024 is required to generate a Daedric item. The random number from this function is not changed by
             // player level or any other player-dependent factors, which results in Bossfall's unleveled static drop
-            // chances for all materials. Once the enemy is level 16 or higher, progressively higher integers
+            // chances for all materials. Once the enemy is level 16 or higher, progressively higher values
             // (50 per level above 15) are added to the random number from this method, which often results in a
             // value higher than 1024. If the value is 1024 or higher, a Daedric item will be generated.
 
@@ -4014,20 +4142,20 @@ namespace BossfallMod.Formulas
 
             // I changed this "while" to use an array I declare in this script rather than call one from
             // vanilla DFU's ItemBuilder script. I did this so I could greatly increase rarity of high tier materials. 
-            while (materialProbability[material] < combinedModifiers)
+            while (bossfallMaterialProbabilities[material] < combinedModifiers)
             {
-                combinedModifiers -= materialProbability[material++];
+                combinedModifiers -= bossfallMaterialProbabilities[material++];
             }
 
             return (WeaponMaterialTypes)(material);
         }
 
         /// <summary>
-        /// Formula is vanilla's, comments precede any additions or changes I made.
+        /// Formula is vanilla's, changed to an instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <param name="playerLevel">Enemy level * 50</param>
         /// <returns>ArmorMaterialTypes value of material selected.</returns>
-        public static ArmorMaterialTypes RandomArmorMaterial(int playerLevel)
+        public ArmorMaterialTypes RandomArmorMaterial(int playerLevel)
         {
             int roll = Dice100.Roll();
             if (roll > 70)

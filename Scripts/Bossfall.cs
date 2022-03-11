@@ -11,6 +11,8 @@
 using BossfallMod.EnemyAI;
 using BossfallMod.Events;
 using BossfallMod.Formulas;
+using BossfallMod.Items;
+using BossfallMod.Utility;
 using DaggerfallWorkshop;
 using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.Entity;
@@ -27,7 +29,7 @@ using UnityEngine;
 namespace BossfallMod
 {
     /// <summary>
-    /// Acts as Bossfall's command center.
+    /// Bossfall's command center.
     /// </summary>
     public class Bossfall : MonoBehaviour, IHasModSaveData
     {
@@ -54,12 +56,17 @@ namespace BossfallMod
         }
 
         // Bossfall settings, set during mod startup.
-        public static int PowerfulEnemiesAre { get; private set; }
-        public static int EnemyMoveSpeed { get; private set; }
-        public static int SkillAdvancementDifficulty { get; private set; }
-        public static bool BossProximityWarning { get; private set; }
-        public static bool DisplayEnemyLevel { get; private set; }
-        public static bool AlternateLootPiles { get; private set; }
+        public int PowerfulEnemiesAre { get; private set; }
+        public int EnemyMoveSpeed { get; private set; }
+        public int SkillAdvancementDifficulty { get; private set; }
+        public bool BossProximityWarning { get; private set; }
+        public bool DisplayEnemyLevel { get; private set; }
+        public bool AlternateLootPiles { get; private set; }
+
+        /// <summary>
+        /// Returns the only instance of Bossfall.
+        /// </summary>
+        public static Bossfall Instance { get; private set; }
 
         #endregion
 
@@ -74,71 +81,112 @@ namespace BossfallMod
             mod = initParams.Mod;
             var go = new GameObject(mod.Title);
             go.AddComponent<Bossfall>();
-            mod.SaveDataInterface = go.GetComponent<Bossfall>();
+            Instance = go.GetComponent<Bossfall>();
+            mod.SaveDataInterface = Instance;
 
-            // This gives enemies Bossfall stats.
-            int index = 0;
-            while (index < BossfallOverrides.bossfallEnemyStats.Length)
-            {
-                EnemyBasics.Enemies[index] = BossfallOverrides.bossfallEnemyStats[index];
-                index++;
-            }
-
-            // This replaces vanilla FormulaHelper methods with Bossfall methods.
-            BossfallOverrides.RegisterOverrides(mod);
-
-            // This disables parts of EnemyMotor, EnemySenses, and EnemyAttack. It also enables Bossfall AI.
-            GameManager.Instance.DisableAI = true;
-        }
-
-        void Awake()
-        {
             // Gets mod settings.
             var settings = mod.GetSettings();
 
             // Sets properties based on setting values.
-            PowerfulEnemiesAre = settings.GetValue<int>("Difficulty", "PowerfulEnemiesAre");
-            EnemyMoveSpeed = settings.GetValue<int>("Difficulty", "EnemyMoveSpeed");
-            SkillAdvancementDifficulty = settings.GetValue<int>("Difficulty", "SkillAdvancementDifficulty");
-            BossProximityWarning = settings.GetValue<bool>("Difficulty", "BossProximityWarning");
-            DisplayEnemyLevel = settings.GetValue<bool>("Miscellaneous", "DisplayEnemyLevel");
-            AlternateLootPiles = settings.GetValue<bool>("Miscellaneous", "AlternateLootPiles");
+            Instance.PowerfulEnemiesAre = settings.GetValue<int>("Difficulty", "PowerfulEnemiesAre");
+            Instance.EnemyMoveSpeed = settings.GetValue<int>("Difficulty", "EnemyMoveSpeed");
+            Instance.SkillAdvancementDifficulty = settings.GetValue<int>("Difficulty", "SkillAdvancementDifficulty");
+            Instance.BossProximityWarning = settings.GetValue<bool>("Difficulty", "BossProximityWarning");
+            Instance.DisplayEnemyLevel = settings.GetValue<bool>("Miscellaneous", "DisplayEnemyLevel");
+            Instance.AlternateLootPiles = settings.GetValue<bool>("Miscellaneous", "AlternateLootPiles");
 
+            // Add remaining Bossfall components after Bossfall component setup completes.
+            go.AddComponent<BossfallEventHandlers>();
+            go.AddComponent<BossfallItemBuilder>();
+            go.AddComponent<BossfallOverrides>();
+            go.AddComponent<BossfallEncounterTables>();
+
+            // This gives enemies Bossfall stats.
+            int index = 0;
+            while (index < BossfallOverrides.Instance.BossfallEnemyStats.Length)
+            {
+                EnemyBasics.Enemies[index] = BossfallOverrides.Instance.BossfallEnemyStats[index];
+                index++;
+            }
+
+            // This replaces vanilla FormulaHelper methods with Bossfall methods.
+            BossfallOverrides.Instance.RegisterOverrides(mod);
+
+            // This disables parts of EnemyMotor, EnemySenses, and EnemyAttack. It also enables Bossfall AI.
+            GameManager.Instance.DisableAI = true;
+
+            // This expands the loot pile sprite list if the Alternate Loot Piles setting is on.
+            if (Instance.AlternateLootPiles)
+            {
+                DaggerfallLootDataTables.randomTreasureIconIndices = BossfallOverrides.Instance.BossfallAlternateRandomTreasureIconIndices;
+            }
+
+            // Bossfall subscribes to many vanilla events.
+            PlayerEnterExit.OnRespawnerComplete += BossfallEventHandlers.Instance.BossfallOnRespawnerComplete;
+            PlayerEnterExit.OnTransitionDungeonInterior += BossfallEventHandlers.Instance.BossfallOnTransitionDungeonInterior;
+            EnemyEntity.OnLootSpawned += BossfallEventHandlers.Instance.BossfallOnEnemyLootSpawned;
+            PlayerActivate.OnLootSpawned += BossfallEventHandlers.Instance.BossfallOnContainerLootSpawned;
+            LootTables.OnLootSpawned += BossfallEventHandlers.Instance.BossfallOnTabledLootSpawned;
+            SaveLoadManager.OnLoad += BossfallEventHandlers.Instance.BossfallOnLoad;
+            DaggerfallUI.Instance.UserInterfaceManager.OnWindowChange += BossfallEventHandlers.Instance.BossfallOnWindowChange;
+        }
+
+        void Awake()
+        {
             // I assume this tells DFU Bossfall has loaded everything it needs to.
             mod.IsReady = true;
         }
 
         #endregion
 
-        #region Unity
-
-        void Start()
-        {
             // DELETE WHEN IMPLEMENTED
-            
+
             // Add ItemGroups.Armor to static Dictionary storeBuysItemType in DaggerfallTradeWindow
             // Erase old List entry first, should end up looking like:
             // { DFLocation.BuildingTypes.GeneralStore, new List<ItemGroups>()
             // { ItemGroups.Armor, ItemGroups.Books, ItemGroups.MensClothing, ItemGroups.WomensClothing, ItemGroups.Transportation, ItemGroups.Jewellery, ItemGroups.Weapons, ItemGroups.UselessItems2 } }
-            // w/Reflection - this will make General Stores buy armor, but don't make 'em sell Armor. Follow notes for guidance
+            // w/Reflection - this will make General Stores buy armor, but don't make 'em sell Armor. Follow v1.4 to-do "shops"
+            // section 4 guidance
 
-            // This expands the loot pile sprite list if the Alternate Loot Piles setting is on.
-            if (AlternateLootPiles)
-            {
-                DaggerfallLootDataTables.randomTreasureIconIndices = BossfallOverrides.alternateRandomTreasureIconIndices;
-            }
+            // DWI
 
-            // Bossfall subscribes to many vanilla events.
-            PlayerEnterExit.OnRespawnerComplete += BossfallEventHandlers.BossfallOnRespawnerComplete;
-            PlayerEnterExit.OnTransitionDungeonInterior += BossfallEventHandlers.BossfallOnTransitionDungeonInterior;
-            EnemyEntity.OnLootSpawned += BossfallEventHandlers.BossfallOnEnemyLootSpawned;
-            PlayerActivate.OnLootSpawned += BossfallEventHandlers.BossfallOnContainerLootSpawned;
-            LootTables.OnLootSpawned += BossfallEventHandlers.BossfallOnTabledLootSpawned;
-            SaveLoadManager.OnLoad += BossfallEventHandlers.BossfallOnLoad;
-            DaggerfallUI.Instance.UserInterfaceManager.OnWindowChange += BossfallEventHandlers.BossfallOnWindowChange;
-        }
+            // Can u handle all this in BFOnWindowChange?
+            // I think this would be a good place to start
 
-        #endregion
+            // U could call CreateCharCustomClass.AdvantageAdjust (that fires that scripts' UpdateDifficulty method) then
+            // immediately after that access that script's difficultyPoints w/Reflection & change it to whatever u want, once u set
+            // difficultyPoints then set dagger position 2 whatever it should be (use lines 463-477 for code for where to place
+            // dagger dependent on difficultyPoints, remember to reset createdClass.AdvancementMultiplier if necessary every time
+            // as I think you'll have to), you mite have to manually check so dagger position doesn't go past hard caps in vanilla
+            // code, don't call AnimateDagger as I think that'll look silly
+
+            // in CreateCharCustomClass method createdClass.HitPointsPerLevel is what u wanna change, vanilla inits to const int 8
+            // in above script hpLabel contains actual text of HitPointsPerLevel, u will wanna change that too, see if difficulty
+            // reads from that TextLabel or from createdClass.HitPointsPerLevel so u find out what u all need to set to 20
+
+            // u prolly have to register 2 HitPointsUpButton and HitPointsDownButton events 2 override vanilla's UpdateDifficulty()
+            // call from resetting ur custom difficultyPoints setting (u will have to run ur difficultyPoints resets every time
+            // either button click event fires)
+
+            // NOTE: There are two different instances of CreateCharSpecialAdvantageWindow created in CreateCharCustomClass -
+            // one of createCharSpecialAdvantageWindow and one of createCharSpecialDisadvantageWindow - if u can read whenever an
+            // instance of the type is created and always run ur SpecialAdvantage number resets, this is a moot point as ur resets
+            // will catch both instances of the type
+
+            // U can change player's DFCareer.HitPointsPerLevel on game start (for custom classes this is ur method of last resort),
+            // this will not notify player of this change if player is creating custom class, see if there's "OnGameStart" event
+            // u can register to to find out precise timing to do this, if u do this 4 custom classes notify player when u do somehow
+            // U should only use this for canned class gen as player never sees their HP/Level in that case anyway
+            // Remember to NOT change HitPointsPerLevel to 20 if player is creating canned Barbarian class, that class has 25 HP/lvl
+            // Change to 20 HP/lvl as default for all other canned classes tho
+
+            // these methods in CreateCharSpecialAdvantageWindow may be what u need to refresh HUD after u change initially numbers 
+            // UpdateLabels();
+            // UpdateDifficultyAdjustment();
+            // or just call Draw() again 2 refresh? In same script
+            // Do u even need to manually refresh? Update is called every frame anyway w/out ur input... test this ofc
+
+            // DaggerfallPopupWindow.PreviousWindow may be handy? dunno
 
         #region IHasModSaveData
 
@@ -286,7 +334,7 @@ namespace BossfallMod
 
                 // This dictionary was populated with references to all instantiated enemies earlier in the load process,
                 // and I clear it to avoid potential duplicate entry errors.
-                BossfallEventHandlers.EntityDictionary.Clear();
+                BossfallEventHandlers.Instance.EntityDictionary.Clear();
                 return;
             }
             // If player has never used Bossfall before, this will always be null.
@@ -300,18 +348,13 @@ namespace BossfallMod
 
                 // This dictionary was populated with references to all instantiated enemies earlier in the load process,
                 // and I clear it to avoid potential duplicate entry errors.
-                BossfallEventHandlers.EntityDictionary.Clear();
+                BossfallEventHandlers.Instance.EntityDictionary.Clear();
                 return;
             }
             // If this is reached and is true, something has gone wrong. This dictionary should never be null.
-            else if (BossfallEventHandlers.EntityDictionary == null)
+            else if (BossfallEventHandlers.Instance.EntityDictionary == null)
             {
-                // DWI
-
-                // Remove below Debug.Log lines after testing complete
-               
-                Debug.Log("BossfallEventHandlers entityDictionary was somehow null. Reinstantiating it and returning from Bossfall.RestoreSaveData method.");
-                BossfallEventHandlers.EntityDictionary = new Dictionary<ulong, DaggerfallEntityBehaviour>();
+                Debug.Log("BossfallEventHandlers.EntityDictionary was somehow null. Doing nothing and returning.");
                 return;
             }
 
@@ -322,7 +365,7 @@ namespace BossfallMod
                 ulong keyToRemove = 0;
 
                 // This dictionary was built earlier in the load process and contains references to every instantiated enemy.
-                foreach (var kvp1 in BossfallEventHandlers.EntityDictionary)
+                foreach (var kvp1 in BossfallEventHandlers.Instance.EntityDictionary)
                 {
                     // If match not found, keep looking.
                     if (kvp.Key != kvp1.Key)
@@ -391,13 +434,13 @@ namespace BossfallMod
                     Debug.Log("Removing processed entry from BossfallEventHandlers.EntityDictionary.");
 
                     // Remove entry from dictionary after processing so I have progressively less to iterate through.
-                    BossfallEventHandlers.EntityDictionary.Remove(keyToRemove);
+                    BossfallEventHandlers.Instance.EntityDictionary.Remove(keyToRemove);
                 }
             }
 
             // Clear dictionary as final step. It likely doesn't contain anything as I removed entries while processing,
             // but it never hurts to be careful.
-            BossfallEventHandlers.EntityDictionary.Clear();
+            BossfallEventHandlers.Instance.EntityDictionary.Clear();
         }
 
         #endregion

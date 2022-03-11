@@ -25,7 +25,7 @@ using UnityEngine;
 namespace BossfallMod.Utility
 {
     /// <summary>
-    /// Counterpart to vanilla's PlayerActivate.
+    /// Custom player activations.
     /// </summary>
     public class BossfallPlayerActivate : MonoBehaviour
     {
@@ -51,7 +51,11 @@ namespace BossfallMod.Utility
 
         #region Unity
 
-        void Start()
+        /// <summary>
+        /// I changed this method from "Start" to "Awake". This component is added well after vanilla components so there
+        /// won't be any conflicts.
+        /// </summary>
+        void Awake()
         {
             mainCamera = GameManager.Instance.MainCamera;
             playerLayerMask = ~(1 << LayerMask.NameToLayer("Player"));
@@ -60,7 +64,6 @@ namespace BossfallMod.Utility
             activate = GameManager.Instance.PlayerActivate;
 
             // I added this. Using Reflection I access the private "textRows" field in PopupText.
-            list = new LinkedList<TextLabel>();
             PopupText dfHUDText = DaggerfallUI.Instance.DaggerfallHUD.PopupText;
             Type type = dfHUDText.GetType();
             FieldInfo fieldInfo = type.GetField("textRows", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -68,7 +71,6 @@ namespace BossfallMod.Utility
             list = (LinkedList<TextLabel>)fieldValue;
 
             // I added this. Using Reflection I access the private "midScreenTextLabel" field in DaggerfallHUD.
-            text = new TextLabel();
             DaggerfallHUD dfHUD = DaggerfallUI.Instance.DaggerfallHUD;
             Type type1 = dfHUD.GetType();
             FieldInfo fieldInfo1 = type1.GetField("midScreenTextLabel", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -169,7 +171,7 @@ namespace BossfallMod.Utility
                     if (QuestResourceBehaviourCheck(hit, out questResourceBehaviour) && !(questResourceBehaviour.TargetResource is Person))
                     {
                         // This displays a custom HUD message if the Display Enemy Level setting is on.
-                        if (activate.CurrentMode == PlayerActivateModes.Info && Bossfall.DisplayEnemyLevel)
+                        if (activate.CurrentMode == PlayerActivateModes.Info && Bossfall.Instance.DisplayEnemyLevel)
                         {
                             if (!touchCastPending)
                             {
@@ -216,7 +218,7 @@ namespace BossfallMod.Utility
                     }
 
                     // I added the DisplayEnemyLevel condition.
-                    if (!touchCastPending && Bossfall.DisplayEnemyLevel)
+                    if (!touchCastPending && Bossfall.Instance.DisplayEnemyLevel)
                     {
                         DaggerfallEntityBehaviour mobileEnemyBehaviour;
                         if (MobileEnemyCheck(hit, out mobileEnemyBehaviour))
