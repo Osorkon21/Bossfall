@@ -59,13 +59,14 @@ namespace BossfallMod.EnemyAI
         float classicDespawnXZDist = 0f;
         float classicDespawnYDist = 0f;
 
-        // This section of vanilla fields end up writing to their counterparts in vanilla's EnemySenses script using Reflection.
-        float distanceToPlayer;
-        bool targetInSight;
-        bool targetInEarshot;
-        float targetPosPredictTimer;
-        float distanceToTarget;
-        Vector3 directionToTarget;
+        // Using Reflection, this section of fields ends up reading from/assigning to private fields with identical identifiers
+        // in vanilla's EnemySenses script.
+        FieldInfo distanceToPlayer;
+        FieldInfo targetInSight;
+        FieldInfo targetInEarshot;
+        FieldInfo targetPosPredictTimer;
+        FieldInfo distanceToTarget;
+        FieldInfo directionToTarget;
 
         #endregion
 
@@ -88,6 +89,16 @@ namespace BossfallMod.EnemyAI
         {
             // I added the senses line.
             senses = GetComponent<EnemySenses>();
+
+            // Using Reflection I access all private vanilla fields necessary to make Bossfall AI work with other mods that read
+            // vanilla AI data. Very little of this is necessary to make Bossfall AI work, but I don't want to break other mods.
+            Type type = senses.GetType();
+            distanceToPlayer = type.GetField("distanceToPlayer", BindingFlags.NonPublic | BindingFlags.Instance);
+            targetInSight = type.GetField("targetInSight", BindingFlags.NonPublic | BindingFlags.Instance);
+            targetInEarshot = type.GetField("targetInEarshot", BindingFlags.NonPublic | BindingFlags.Instance);
+            targetPosPredictTimer = type.GetField("targetPosPredictTimer", BindingFlags.NonPublic | BindingFlags.Instance);
+            distanceToTarget = type.GetField("distanceToTarget", BindingFlags.NonPublic | BindingFlags.Instance);
+            directionToTarget = type.GetField("directionToTarget", BindingFlags.NonPublic | BindingFlags.Instance);
 
             mobile = GetComponent<DaggerfallEnemy>().MobileUnit;
             entityBehaviour = GetComponent<DaggerfallEntityBehaviour>();
@@ -114,28 +125,6 @@ namespace BossfallMod.EnemyAI
             {
                 CanDetectInvisible = true;
             }
-
-            // Using Reflection I access all private vanilla fields necessary to make Bossfall AI work with other mods that read
-            // vanilla AI data. Very little of this is necessary to make Bossfall AI work, but I don't want to break other mods.
-            Type type = senses.GetType();
-            FieldInfo fieldInfo = type.GetField("distanceToPlayer", BindingFlags.NonPublic | BindingFlags.Instance);
-            FieldInfo fieldInfo1 = type.GetField("targetInSight", BindingFlags.NonPublic | BindingFlags.Instance);
-            FieldInfo fieldInfo2 = type.GetField("targetInEarshot", BindingFlags.NonPublic | BindingFlags.Instance);
-            FieldInfo fieldInfo3 = type.GetField("targetPosPredictTimer", BindingFlags.NonPublic | BindingFlags.Instance);
-            FieldInfo fieldInfo4 = type.GetField("distanceToTarget", BindingFlags.NonPublic | BindingFlags.Instance);
-            FieldInfo fieldInfo5 = type.GetField("directionToTarget", BindingFlags.NonPublic | BindingFlags.Instance);
-            object fieldValue = fieldInfo.GetValue(senses);
-            object fieldValue1 = fieldInfo1.GetValue(senses);
-            object fieldValue2 = fieldInfo2.GetValue(senses);
-            object fieldValue3 = fieldInfo3.GetValue(senses);
-            object fieldValue4 = fieldInfo4.GetValue(senses);
-            object fieldValue5 = fieldInfo5.GetValue(senses);
-            distanceToPlayer = (float)fieldValue;
-            targetInSight = (bool)fieldValue1;
-            targetInEarshot = (bool)fieldValue2;
-            targetPosPredictTimer = (float)fieldValue3;
-            distanceToTarget = (float)fieldValue4;
-            directionToTarget = (Vector3)fieldValue5;
         }
 
         void FixedUpdate()
@@ -144,14 +133,14 @@ namespace BossfallMod.EnemyAI
             if (!GameManager.Instance.DisableAI)
                 return;
 
-            // I access vanilla DFU's EnemySenses targetPosPredictTimer field here using Reflection.
-            targetPosPredictTimer += Time.deltaTime;
+            // I read from/assign to vanilla DFU's EnemySenses targetPosPredictTimer field here using Reflection.
+            targetPosPredictTimer.SetValue(senses, (float)targetPosPredictTimer.GetValue(senses) + Time.deltaTime);
 
-            // I access vanilla DFU's EnemySenses targetPosPredictTimer field here using Reflection.
-            if (targetPosPredictTimer >= predictionInterval)
+            // I read from vanilla DFU's EnemySenses targetPosPredictTimer field here using Reflection.
+            if ((float)targetPosPredictTimer.GetValue(senses) >= predictionInterval)
             {
-                // I access vanilla DFU's EnemySenses targetPosPredictTimer field here using Reflection.
-                targetPosPredictTimer = 0f;
+                // I assign to vanilla DFU's EnemySenses targetPosPredictTimer field here using Reflection.
+                targetPosPredictTimer.SetValue(senses, 0f);
 
                 targetPosPredict = true;
             }
@@ -253,10 +242,16 @@ namespace BossfallMod.EnemyAI
                     // I call vanilla fields, properties, or methods here, using Reflection if necessary.
                     senses.LastKnownTargetPos = EnemySenses.ResetPlayerPos;
                     senses.PredictedTargetPos = EnemySenses.ResetPlayerPos;
-                    directionToTarget = EnemySenses.ResetPlayerPos;
+
+                    // I assign to vanilla DFU's EnemySenses directionToTarget field here using Reflection.
+                    directionToTarget.SetValue(senses, EnemySenses.ResetPlayerPos);
+
                     lastDistanceToTarget = 0;
                     senses.TargetRateOfApproach = 0;
-                    distanceToTarget = 0;
+
+                    // I assign to vanilla DFU's EnemySenses distanceToTarget field here using Reflection.
+                    distanceToTarget.SetValue(senses, 0f);
+
                     targetSenses = null;
 
                     // I call vanilla fields, properties, or methods here, using Reflection if necessary.
@@ -304,14 +299,18 @@ namespace BossfallMod.EnemyAI
             {
                 // I call vanilla fields, properties, or methods here, using Reflection if necessary.
                 Vector3 toPlayer = player.transform.position - senses.transform.position;
-                distanceToPlayer = toPlayer.magnitude;
+
+                // I assign to vanilla DFU's EnemySenses distanceToPlayer field here using Reflection.
+                distanceToPlayer.SetValue(senses, toPlayer.magnitude);
 
                 // I call vanilla's field, property, or method here, using Reflection if necessary.
                 if (!senses.WouldBeSpawnedInClassic)
                 {
-                    // I call vanilla fields, properties, or methods here, using Reflection if necessary.
-                    distanceToTarget = senses.DistanceToPlayer;
-                    directionToTarget = toPlayer.normalized;
+                    // I assign to vanilla DFU's EnemySenses distanceToTarget field here using Reflection.
+                    distanceToTarget.SetValue(senses, senses.DistanceToPlayer);
+
+                    // I assign to vanilla DFU's EnemySenses directionToTarget field here using Reflection.
+                    directionToTarget.SetValue(senses, toPlayer.normalized);
 
                     // I reroute the method call to a method in this script.
                     playerInSight = CanSeeTarget(player);
@@ -346,8 +345,8 @@ namespace BossfallMod.EnemyAI
                 // I call vanilla's field, property, or method here, using Reflection if necessary.
                 if (senses.Target == null)
                 {
-                    // I call vanilla's field, property, or method here, using Reflection if necessary.
-                    targetInSight = false;
+                    // I assign to vanilla DFU's EnemySenses targetInSight field here using Reflection.
+                    targetInSight.SetValue(senses, false);
 
                     // I call vanilla's field, property, or method here, using Reflection if necessary.
                     senses.DetectedTarget = false;
@@ -357,31 +356,40 @@ namespace BossfallMod.EnemyAI
                 // I call vanilla fields, properties, or methods here, using Reflection if necessary.
                 if (!senses.WouldBeSpawnedInClassic && senses.Target == player)
                 {
-                    // I call vanilla fields, properties, or methods here, using Reflection if necessary.
-                    distanceToTarget = senses.DistanceToPlayer;
-                    directionToTarget = toPlayer.normalized;
-                    targetInSight = playerInSight;
+                    // I assign to vanilla DFU's EnemySenses distanceToTarget field here using Reflection.
+                    distanceToTarget.SetValue(senses, senses.DistanceToPlayer);
+
+                    // I assign to vanilla DFU's EnemySenses directionToTarget field here using Reflection.
+                    directionToTarget.SetValue(senses, toPlayer.normalized);
+
+                    // I assign to vanilla DFU's EnemySenses targetInSight field here using Reflection.
+                    targetInSight.SetValue(senses, playerInSight);
                 }
                 else
                 {
                     // I call vanilla fields, properties, or methods here, using Reflection if necessary.
                     Vector3 toTarget = senses.Target.transform.position - senses.transform.position;
-                    distanceToTarget = toTarget.magnitude;
-                    directionToTarget = toTarget.normalized;
 
-                    // I call vanilla fields and properties here, using Reflection if necessary, but I reroute the
-                    // method call to a method in this script.
-                    targetInSight = CanSeeTarget(senses.Target);
+                    // I assign to vanilla DFU's EnemySenses distanceToTarget field here using Reflection.
+                    distanceToTarget.SetValue(senses, toTarget.magnitude);
+
+                    // I assign to vanilla DFU's EnemySenses directionToTarget field here using Reflection.
+                    directionToTarget.SetValue(senses, toTarget.normalized);
+
+                    // I assign to vanilla DFU's EnemySenses targetInSight field here using Reflection, but
+                    // I reroute the method call to a method in this script.
+                    targetInSight.SetValue(senses, CanSeeTarget(senses.Target));
                 }
 
                 // I call vanilla fields, properties, or methods here, using Reflection if necessary.
                 if (senses.DetectedTarget && !senses.TargetInSight)
 
-                    // I call vanilla's field here using Reflection, but I reroute the method call to a method in this script.
-                    targetInEarshot = CanHearTarget();
+                    // I assign to vanilla DFU's EnemySenses targetInEarshot field here using Reflection, but
+                    // I reroute the method call to a method in this script.
+                    targetInEarshot.SetValue(senses, CanHearTarget());
                 else
-                    // I call vanilla's field, property, or method here, using Reflection if necessary.
-                    targetInEarshot = false;
+                    // I assign to vanilla DFU's EnemySenses targetInEarshot field here using Reflection.
+                    targetInEarshot.SetValue(senses, false);
 
                 if (GameManager.ClassicUpdate)
                 {
@@ -573,8 +581,12 @@ namespace BossfallMod.EnemyAI
 
                     // I call vanilla fields, properties, or methods here, using Reflection if necessary.
                     Vector3 toTarget = targetBehaviour.transform.position - senses.transform.position;
-                    directionToTarget = toTarget.normalized;
-                    distanceToTarget = toTarget.magnitude;
+
+                    // I assign to vanilla DFU's EnemySenses directionToTarget field here using Reflection.
+                    directionToTarget.SetValue(senses, toTarget.normalized);
+
+                    // I assign to vanilla DFU's EnemySenses distanceToTarget field here using Reflection.
+                    distanceToTarget.SetValue(senses, toTarget.magnitude);
 
                     // I reroute the method call to a method in this script.
                     bool see = CanSeeTarget(targetBehaviour);
@@ -618,10 +630,15 @@ namespace BossfallMod.EnemyAI
                 }
             }
 
-            // I call vanilla fields, properties, or methods here, using Reflection if necessary.
-            directionToTarget = directionToTargetHolder;
-            distanceToTarget = distanceToTargetHolder;
-            targetInSight = sawSelectedTarget;
+            // I assign to vanilla DFU's EnemySenses directionToTarget field here using Reflection.
+            directionToTarget.SetValue(senses, directionToTargetHolder);
+
+            // I assign to vanilla DFU's EnemySenses distanceToTarget field here using Reflection.
+            distanceToTarget.SetValue(senses, distanceToTargetHolder);
+
+            // I assign to vanilla DFU's EnemySenses targetInSight field here using Reflection.
+            targetInSight.SetValue(senses, sawSelectedTarget);
+
             senses.Target = highestPriorityTarget;
 
             if (DaggerfallUnity.Settings.EnhancedCombatAI && secondHighestPriorityTarget)

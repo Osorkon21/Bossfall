@@ -514,10 +514,11 @@ namespace BossfallMod.Events
                 else if (entity.CareerIndex == (int)MonsterCareers.FireDaedra)
                     SetEnemySpells(BossfallFireDaedraSpells, entity);
 
-                // This deletes the spellbook contents of Ghosts and Vampire Ancients so they no longer cast any spells.
+                // This deletes the spellbook contents of Ghosts and Vampire Ancients so they no longer cast any spells. The
+                // DeleteSpell method changes index numbers after every spell deletion, so I iterate backwards to catch everything.
                 else if (entity.CareerIndex == (int)MonsterCareers.Ghost || entity.CareerIndex == (int)MonsterCareers.VampireAncient)
                 {
-                    for (int i = 0; i < entity.SpellbookCount(); i++)
+                    for (int i = entity.SpellbookCount() - 1; i >= 0; i--)
                     {
                         entity.DeleteSpell(i);
                     }
@@ -568,8 +569,9 @@ namespace BossfallMod.Events
         /// <param name="enemyEntity">The enemy to assign the spell list to.</param>
         void SetEnemySpells(byte[] spellList, EnemyEntity enemyEntity)
         {
-            // This deletes enemy's vanilla spellbook.
-            for (int i = 0; i < enemyEntity.SpellbookCount(); i++)
+            // This deletes enemy's vanilla spellbook. The DeleteSpell method changes index numbers after every spell
+            // deletion, so I iterate backwards to catch everything.
+            for (int i = enemyEntity.SpellbookCount() - 1; i >= 0; i--)
             {
                 enemyEntity.DeleteSpell(i);
             }
@@ -578,27 +580,27 @@ namespace BossfallMod.Events
             if (enemyEntity.Level > 0 && enemyEntity.Level < 8)
             {
                 // Enough for 2 spells.
-                enemyEntity.MaxMagicka = 79;
+                enemyEntity.MaxMagicka = 80;
             }
             else if (enemyEntity.Level >= 8 && enemyEntity.Level < 13)
             {
                 // Enough for 3 spells.
-                enemyEntity.MaxMagicka = 119;
+                enemyEntity.MaxMagicka = 120;
             }
             else if (enemyEntity.Level >= 13 && enemyEntity.Level < 16)
             {
                 // Enough for 4 spells.
-                enemyEntity.MaxMagicka = 159;
+                enemyEntity.MaxMagicka = 160;
             }
             else if (enemyEntity.Level >= 16 && enemyEntity.Level < 18)
             {
                 // Enough for 5 spells.
-                enemyEntity.MaxMagicka = 199;
+                enemyEntity.MaxMagicka = 200;
             }
             else if (enemyEntity.Level >= 18 && enemyEntity.Level < 20)
             {
                 // Enough for 6 spells.
-                enemyEntity.MaxMagicka = 239;
+                enemyEntity.MaxMagicka = 240;
             }
             else if (enemyEntity.Level == 20)
             {
@@ -608,7 +610,7 @@ namespace BossfallMod.Events
             else if (enemyEntity.Level >= 21 && enemyEntity.Level < 26)
             {
                 // Enough for 30 spells.
-                enemyEntity.MaxMagicka = 1199;
+                enemyEntity.MaxMagicka = 1200;
             }
             else if (enemyEntity.Level >= 26)
             {

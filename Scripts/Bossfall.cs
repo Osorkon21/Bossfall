@@ -38,6 +38,9 @@ namespace BossfallMod
         // A mod (Bossfall in this case).
         static Mod mod;
 
+        // Used to get a private enemy list.
+        MethodInfo getMethod;
+
         #endregion
 
         #region Properties
@@ -139,6 +142,17 @@ namespace BossfallMod
 
         #endregion
 
+        void Start()
+        {
+            // I access a SerializableStateManager property's private get accessor here. It will return a list of every
+            // instantiated enemy. It's easier than calling GetObjectsOfType<DaggerfallEntityBehaviour> and then searching
+            // the permanent scene cache for enemies. I can't call GetEnemyData in SerializableStateManager as that method
+            // doesn't return enemy levels or DaggerfallEntityBehaviour I can then search for enemy levels, so it wouldn't help me.
+            Type type = SaveLoadManager.StateManager.GetType();
+            PropertyInfo property = type.GetProperty("SerializableEnemies", BindingFlags.Instance | BindingFlags.NonPublic);
+            getMethod = property.GetGetMethod(true);
+        }
+
             // DELETE WHEN IMPLEMENTED
 
             // Add ItemGroups.Armor to static Dictionary storeBuysItemType in DaggerfallTradeWindow
@@ -218,16 +232,9 @@ namespace BossfallMod
             // Fresh dictionary instance for enemy data.
             bossfallSaveData.bossfallEnemySaveData = new Dictionary<ulong, BossfallEnemySaveData>();
 
-            // I invoke the private SerializableEnemies "get" property accessor in SerializableStateManager using Reflection.
-            // It's easier than calling GetObjectsOfType<DaggerfallEntityBehaviour> and then searching the permanent scene
-            // cache for enemies. I can't call GetEnemyData in SerializableStateManager as that method doesn't return enemy
-            // levels or DaggerfallEntityBehaviour I can then search for enemy levels, so it wouldn't help me.
-            SerializableStateManager serializableStateManager = SaveLoadManager.StateManager;
-            Type type = serializableStateManager.GetType();
-            PropertyInfo property = type.GetProperty("SerializableEnemies", BindingFlags.Instance | BindingFlags.NonPublic);
-            MethodInfo[] accessors = property.GetAccessors(true);
+            // I invoke a SerializableStateManager private property's get accessor here. It returns every instantiated enemy.
             Dictionary<ulong, ISerializableGameObject> enemyDictionary =
-                accessors[0].Invoke(serializableStateManager, null) as Dictionary<ulong, ISerializableGameObject>;
+                getMethod.Invoke(SaveLoadManager.StateManager, null) as Dictionary<ulong, ISerializableGameObject>;
 
             // There may be no enemies to save, so I check before iterating.
             if (enemyDictionary != null)

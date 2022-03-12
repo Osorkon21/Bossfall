@@ -76,7 +76,8 @@ Include finished/updated/proofread/checked v1.3.1 Changelog alongside StreamingA
 
 .DFMOD NOTES, CLEAR THESE BEFORE v1.3.1 RELEASE:
 
-Fix broken enemy AI (something with ur implementation of Reflection broke quite a bit - enemies don't update ur position and don't attack, and they don't follow "alwaysCharges" rules... hmm)
+Arrows STILL aren't instantiated even when u call vanilla's ShootBow()... sigh... fix this
+Clone latest source code o' DFU (2 new sigh7 folder), xfer BF to it, maybe u messed up the vanilla Arrow prefab somehow and a fresh version will fix this? Worth a shot
 Respond 2 latest post on NexusMods - I don't want to add random beasts as bosses as I need some way 2 make them unique so player knows, and unless there's some popup msg on mouse hover... anyway respond fully 2 post
 Double check all ur item gen methods that handle loot pile, enemy loot table random items, and shop shelf/house container loot gen - make sure mod items are automatically generated when appropriate so u don't need 2 add them manually (I think this is already the case but it never hurts 2 check)
 To implement above line u can get DaggerfallEntityBehaviour from EnemyEntity incoming in parameter of CalculateAttackDamage, then GetComponent<BossfallEnemyMotor>() from DaggerfallEntityBehaviour 2 get access to bools

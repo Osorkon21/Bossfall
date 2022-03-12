@@ -75,7 +75,6 @@ namespace BossfallMod.EnemyAI
         bool canAct;
         bool falls;
         bool flyerFalls;
-        float lastGroundedY;
         float originalHeight;
 
         // These bools are used for Bossfall enemy AI and custom boss proximity warning HUD messages.
@@ -85,9 +84,10 @@ namespace BossfallMod.EnemyAI
         bool showBossWarning;
         bool showPowerfulBossWarning;
 
-        // I added these next two lines.
+        // I added these next three lines.
         EnemyMotor motor;
         MethodInfo setAccessor;
+        FieldInfo lastGroundedY;
 
         EnemySenses senses;
         Vector3 destination;
@@ -106,12 +106,34 @@ namespace BossfallMod.EnemyAI
 
         #region Properties
 
-        // These bools are used to display custom enemy weakness/resistance/immunity HUD messages. They are displayed once per enemy.
+        /// <summary>
+        /// This is used to display a custom enemy weakness/resistance/immunity HUD message. It's displayed once per enemy.
+        /// </summary>
         public bool ShownMsg { get; set; }
+
+        /// <summary>
+        /// This is used to display a custom enemy weakness/resistance/immunity HUD message. It's displayed once per enemy.
+        /// </summary>
         public bool ShownMsgTwo { get; set; }
+
+        /// <summary>
+        /// This is used to display a custom enemy weakness/resistance/immunity HUD message. It's displayed once per enemy.
+        /// </summary>
         public bool ShownMsgThree { get; set; }
+
+        /// <summary>
+        /// This is used to display a custom enemy weakness/resistance/immunity HUD message. It's displayed once per enemy.
+        /// </summary>
         public bool ShownMsgFour { get; set; }
+
+        /// <summary>
+        /// This is used to display a custom enemy weakness/resistance/immunity HUD message. It's displayed once per enemy.
+        /// </summary>
         public bool ShownMsgFive { get; set; }
+
+        /// <summary>
+        /// This is used to display a custom enemy weakness/resistance/immunity HUD message. It's displayed once per enemy.
+        /// </summary>
         public bool ShownMsgSix { get; set; }
 
         #endregion
@@ -126,10 +148,8 @@ namespace BossfallMod.EnemyAI
             // Using Reflection I access the private lastGroundedY field and the private set accessor of the Bashing property
             // in vanilla's EnemyMotor script.
             Type type = motor.GetType();
-            FieldInfo fieldInfo = type.GetField("lastGroundedY", BindingFlags.NonPublic | BindingFlags.Instance);
+            lastGroundedY = type.GetField("lastGroundedY", BindingFlags.NonPublic | BindingFlags.Instance);
             PropertyInfo property = type.GetProperty("Bashing");
-            object fieldValue = fieldInfo.GetValue(motor);
-            lastGroundedY = (float)fieldValue;
             setAccessor = property.GetSetMethod(true);
 
             senses = GetComponent<EnemySenses>();
@@ -151,7 +171,10 @@ namespace BossfallMod.EnemyAI
             hasBowAttack = mobile.Enemy.HasRangedAttack1 && mobile.Enemy.ID > 129 && mobile.Enemy.ID != 132;
             ignoreMaskForShooting = ~(1 << LayerMask.NameToLayer("SpellMissiles") | 1 << LayerMask.NameToLayer("Ignore Raycast"));
             ignoreMaskForObstacles = ~(1 << LayerMask.NameToLayer("SpellMissiles") | 1 << LayerMask.NameToLayer("Ignore Raycast"));
-            lastGroundedY = transform.position.y;
+
+            // Using Reflection I assign to vanilla EnemyMotor's lastGroundedY field.
+            lastGroundedY.SetValue(motor, transform.position.y);
+
             originalHeight = controller.height;
 
             // If enemy is an Archer or Ranger prefersBow is true. Only needs to be checked once.
@@ -1377,7 +1400,8 @@ namespace BossfallMod.EnemyAI
             {
                 if (falls)
                 {
-                    float fallDistance = lastGroundedY - transform.position.y;
+                    // Using Reflection I read from vanilla EnemyMotor's lastGroundedY field.
+                    float fallDistance = (float)lastGroundedY.GetValue(motor) - transform.position.y;
                     if (fallDistance > fallingDamageThreshold)
                     {
                         int damage = (int)(HPPerMetre * (fallDistance - fallingDamageThreshold));
@@ -1395,7 +1419,8 @@ namespace BossfallMod.EnemyAI
                     }
                 }
 
-                lastGroundedY = transform.position.y;
+                // Using Reflection I assign to vanilla EnemyMotor's lastGroundedY field.
+                lastGroundedY.SetValue(motor, transform.position.y);
             }
         }
 

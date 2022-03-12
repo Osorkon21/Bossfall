@@ -39,8 +39,9 @@ namespace BossfallMod.EnemyAI
         public const float minRangedDistance = 180 * MeshReader.GlobalScale;
         public const float maxRangedDistance = 4096 * MeshReader.GlobalScale;
 
-        // I added the attack field.
+        // I added the following two fields.
         EnemyAttack attack;
+        MethodInfo shootBowMethod;
 
         EnemyMotor motor;
         EnemySenses senses;
@@ -57,6 +58,11 @@ namespace BossfallMod.EnemyAI
         {
             // I added the attack line.
             attack = GetComponent<EnemyAttack>();
+
+            // Using Reflection I access the private ShootBow method in EnemyAttack, I had trouble
+            // instantiating an arrow prefab using this script.
+            Type type = attack.GetType();
+            shootBowMethod = type.GetMethod("ShootBow", BindingFlags.Instance | BindingFlags.NonPublic);
 
             motor = GetComponent<EnemyMotor>();
             senses = GetComponent<EnemySenses>();
@@ -119,11 +125,8 @@ namespace BossfallMod.EnemyAI
             }
             else if (mobile.ShootArrow)
             {
-                // I call vanilla's ShootBow method from the EnemyAttack script here using Reflection, I had trouble
-                // instantiating an arrow prefab using this script.
-                Type type = attack.GetType();
-                MethodInfo methodInfo = type.GetMethod("ShootBow", BindingFlags.Instance | BindingFlags.NonPublic);
-                methodInfo.Invoke(attack, null);
+                // I call vanilla's ShootBow method from the EnemyAttack script here using Reflection.
+                shootBowMethod.Invoke(attack, null);
 
                 mobile.ShootArrow = false;
                 DaggerfallAudioSource dfAudioSource = GetComponent<DaggerfallAudioSource>();
