@@ -2885,6 +2885,7 @@ namespace BossfallMod.Formulas
                     // are displayed once per enemy per weapon/material type used, for a total of six possible unique HUD messages.
                     switch (bossfallMonsterSpecialHandling[enemyTarget.MobileEnemy.ID])
                     {
+                        // Spriggan
                         case 1:
                             switch (skillID)
                             {
@@ -2948,6 +2949,8 @@ namespace BossfallMod.Formulas
                                     break;
                             }
                             break;
+
+                        // Zombie, Flesh Atronach
                         case 2:
                             switch (skillID)
                             {
@@ -2988,6 +2991,8 @@ namespace BossfallMod.Formulas
                                     break;
                             }
                             break;
+
+                        // Skeletal Warrior
                         case 3:
                             switch (skillID)
                             {
@@ -3044,6 +3049,8 @@ namespace BossfallMod.Formulas
                                     break;
                             }
                             break;
+
+                        // Giant Scorpion
                         case 4:
                             switch (skillID)
                             {
@@ -3078,6 +3085,8 @@ namespace BossfallMod.Formulas
                                     break;
                             }
                             break;
+
+                        // Ghost, Wraith
                         case 5:
                             if (skillID != (short)DFCareer.Skills.HandToHand)
                             {
@@ -3133,6 +3142,8 @@ namespace BossfallMod.Formulas
                                 motor.ShownMsgSix = true;
                             }
                             break;
+
+                        // Mummy
                         case 6:
                             switch (skillID)
                             {
@@ -3159,6 +3170,8 @@ namespace BossfallMod.Formulas
                                     break;
                             }
                             break;
+
+                        // Gargoyle
                         case 7:
                             switch (skillID)
                             {
@@ -3243,6 +3256,8 @@ namespace BossfallMod.Formulas
                                     break;
                             }
                             break;
+
+                        // Iron Atronach
                         case 8:
                             switch (skillID)
                             {
@@ -3328,6 +3343,8 @@ namespace BossfallMod.Formulas
                                     break;
                             }
                             break;
+
+                        // Fire Atronach
                         case 9:
                             if (skillID == (short)DFCareer.Skills.HandToHand)
                             {
@@ -3350,6 +3367,8 @@ namespace BossfallMod.Formulas
                                 break;
                             }
                             break;
+
+                        // Ice Atronach
                         case 10:
                             switch (skillID)
                             {
@@ -3421,6 +3440,8 @@ namespace BossfallMod.Formulas
                                     break;
                             }
                             break;
+
+                        // Fire Daedra
                         case 11:
                             if (skillID == (short)DFCareer.Skills.HandToHand)
                             {
@@ -3443,6 +3464,8 @@ namespace BossfallMod.Formulas
                                 break;
                             }
                             break;
+
+                        // Vampire, Vampire Ancient, Lich, Ancient Lich
                         case 12:
                             if (skillID != (short)DFCareer.Skills.HandToHand)
                             {
@@ -3483,6 +3506,8 @@ namespace BossfallMod.Formulas
                                 break;
                             }
                             break;
+
+                        // Werewolf, Wereboar
                         case 13:
                             if (skillID != (short)DFCareer.Skills.HandToHand)
                             {

@@ -2,7 +2,7 @@
 // Copyright:       Copyright (C) 2022 Osorkon, vanilla DFU code Copyright (C) 2009-2022 Daggerfall Workshop
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/Osorkon21/Bossfall, vanilla DFU code https://github.com/Interkarma/daggerfall-unity
-// Original Author: Osorkon, vanilla DFU code Gavin Clayton (interkarma@dfworkshop.net), Hazelnut
+// Original Author: Osorkon, vanilla DFU code Gavin Clayton (interkarma@dfworkshop.net), Hazelnut, Numidium
 // Contributors:    vanilla DFU code Allofich, Hazelnut, Lypyl (lypyl@dfworkshop.net), Numidium, TheLacus
 // 
 // Notes: This script uses code from several vanilla scripts. Comments indicate authorship, please verify
@@ -27,7 +27,9 @@ using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Utility;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 
 namespace BossfallMod.Events
@@ -42,11 +44,167 @@ namespace BossfallMod.Events
         // Spell lists for BossfallOnEnemyLootSpawned event handler. Based on arrays from vanilla's EnemyEntity script.
         readonly byte[] BossfallFrostDaedraSpells = new byte[] { 0x10, 0x14, 0x03 };
         readonly byte[] BossfallFireDaedraSpells = new byte[] { 0x0E, 0x19, 0x20 };
-        readonly byte[] BossfallGenericSpells = new byte[] { 0x08, 0x0E, 0x1D, 0x1F, 0x32, 0x33, 0x19, 0x1C, 0x43, 0x34, 0x17, 0x10,
-            0x14, 0x09, 0x1B, 0x1E, 0x20, 0x23, 0x24, 0x27, 0x35, 0x36, 0x37, 0x40 };
+        readonly byte[] BossfallGenericSpells = new byte[] { 0x08, 0x0E, 0x1D, 0x1F, 0x32, 0x33, 0x19, 0x1C, 0x43, 0x34, 0x17,
+            0x10, 0x14, 0x09, 0x1B, 0x1E, 0x20, 0x23, 0x24, 0x27, 0x35, 0x36, 0x37, 0x40 };
 
         // Used to restore my custom shields.
         ItemData_v1 itemData = new ItemData_v1();
+
+        // Used if player is creating a custom character.
+        const int bossfallDefaultHpPerLevel = 20;
+        CreateCharCustomClass customClassWindow;
+        CreateCharSpecialAdvantageWindow advantageWindow;
+        DFCareer createdClass;
+        TextLabel hpLabel;
+        Button hitPointsUpButton;
+        Button hitPointsDownButton;
+        Panel daggerPanel;
+        FieldInfo difficultyPoints;
+        FieldInfo advantageAdjust;
+        FieldInfo disadvantageAdjust;
+        DaggerfallListPickerWindow primaryPicker;
+        DaggerfallListPickerWindow secondaryPicker;
+        TextLabel[] advantageLabels;
+        bool customClassSetupComplete;
+        bool advDisSetupComplete;
+
+        // True if BossfallPlayerActivate component has been attached to the PlayerObject.
+        bool bossfallPlayerActivateAdded;
+
+        // This Dictionary is based on vanilla DFU's difficultyDict from the CreateCharSpecialAdvantageWindow script and
+        // overwrites its vanilla counterpart during custom character creation. A super-powered custom character is highly
+        // recommended to succeed in Bossfall. I rebalanced costs with that in mind. Most advantages are cheaper and most
+        // disadvantages drop the difficulty dagger much more.
+        readonly Dictionary <string, int> bossfallDifficultyDict = new Dictionary<string, int>
+        {
+            { HardStrings.acuteHearing, 1 },
+
+            // Reduced from vanilla's 4.
+            { HardStrings.adrenalineRush, 1 },
+            { HardStrings.athleticism, 2 },
+
+            // Reduced from vanilla's 6.
+            { HardStrings.bonusToHit + HardStrings.animals, 3 },
+
+            { HardStrings.bonusToHit + HardStrings.daedra, 3 },
+
+            // Reduced from vanilla's 6.
+            { HardStrings.bonusToHit + HardStrings.humanoid, 3 },
+            { HardStrings.bonusToHit + HardStrings.undead, 3 },
+
+            { HardStrings.expertiseIn, 2 },
+
+            // Increased from vanilla's 10. I think too many immunities make the game too easy.
+            { HardStrings.immunity, 28 },
+
+            { HardStrings.increasedMagery + HardStrings.intInSpellPoints, 2 },
+
+            // Slightly increased from vanilla's 4.
+            { HardStrings.increasedMagery + HardStrings.intInSpellPoints15, 5 },
+
+            { HardStrings.increasedMagery + HardStrings.intInSpellPoints175, 6 },
+
+            // Slightly reduced from vanilla's 8.
+            { HardStrings.increasedMagery + HardStrings.intInSpellPoints2, 7},
+
+            { HardStrings.increasedMagery + HardStrings.intInSpellPoints3, 10 },
+            { HardStrings.rapidHealing + HardStrings.general, 4 },
+            { HardStrings.rapidHealing + HardStrings.inDarkness, 3 },
+            { HardStrings.rapidHealing + HardStrings.inLight, 2 },
+
+            // Reduced from vanilla's 14. Doesn't do much at higher HP.
+            { HardStrings.regenerateHealth + HardStrings.general, 6 },
+
+            // Reduced from vanilla's 10. Doesn't do much at higher HP.
+            { HardStrings.regenerateHealth + HardStrings.inDarkness, 5 },
+
+            // Reduced from vanilla's 6. Doesn't do much at higher HP.
+            { HardStrings.regenerateHealth + HardStrings.inLight, 3 },
+
+            // Reduced from vanilla's 2.
+            { HardStrings.regenerateHealth + HardStrings.whileImmersed, 1 },
+
+            // Increased from vanilla's 5. I think too many resistances make the game too easy.
+            { HardStrings.resistance, 14 },
+
+            // Until I get around to reworking Spell Absorption, these 3 advantages are non-useable.
+            { HardStrings.spellAbsorption + HardStrings.general, 400 },
+            { HardStrings.spellAbsorption + HardStrings.inDarkness, 400 },
+            { HardStrings.spellAbsorption + HardStrings.inLight, 400 },
+
+            { HardStrings.criticalWeakness, -14 },
+
+            // Increased from vanilla's -6.
+            { HardStrings.damage + HardStrings.fromHolyPlaces, -7 },
+
+            // Increased from vanilla's -10. It's a crippling disadvantage.
+            { HardStrings.damage + HardStrings.fromSunlight, -28 },
+
+            // Increased from vanilla's -7. A difficult disadvantage with certain popular mods.
+            { HardStrings.darknessPoweredMagery + HardStrings.lowerMagicAbilityDaylight, -10 },
+
+            // Increased from vanilla's -10. It's a crippling disadvantage with certain popular mods.
+            { HardStrings.darknessPoweredMagery + HardStrings.unableToUseMagicInDaylight, -21 },
+
+            // Increased from vanilla's -2. I assume player is using RPR:I which has good chain armor.
+            { HardStrings.forbiddenArmorType + HardStrings.chain, -14 },
+
+            // Increased from vanilla's -1. I assume player is using RPR:I which has good leather armor.
+            { HardStrings.forbiddenArmorType + HardStrings.leather, -7 },
+
+            // Increased from vanilla's -5. It's a crippling disadvantage.
+            { HardStrings.forbiddenArmorType + HardStrings.plate, -28 },
+
+            // Increased from vanilla's -5. Forbidden materials in Bossfall can be very difficult.
+            { HardStrings.forbiddenMaterial + HardStrings.adamantium, -8 },
+
+            // Increased from vanilla's -2. It's a crippling disadvantage.
+            { HardStrings.forbiddenMaterial + HardStrings.daedric, -28 },
+
+            // Reduced from vanilla's -7. Dwarven isn't as common in Bossfall compared to vanilla.
+            { HardStrings.forbiddenMaterial + HardStrings.dwarven, -4 },
+
+            // Increased from vanilla's -5. The Ebony Dagger is a must-have.
+            { HardStrings.forbiddenMaterial + HardStrings.ebony, -10 },
+
+            // Reduced from vanilla's -9. Elven isn't as common in Bossfall compared to vanilla.
+            { HardStrings.forbiddenMaterial + HardStrings.elven, -2 },
+
+            // Increased from vanilla's -1. Forbidden Iron would make the early game extremely difficult.
+            { HardStrings.forbiddenMaterial + HardStrings.iron, -14 },
+
+            { HardStrings.forbiddenMaterial + HardStrings.mithril, -6 },
+
+            // Increased from vanilla's -3. Player needs high-tier materials to effectively fight bosses.
+            { HardStrings.forbiddenMaterial + HardStrings.orcish, -12 },
+
+            // Increased from vanilla's -6. A crippling disadvantage - some enemies are immune to everything but Silver.
+            { HardStrings.forbiddenMaterial + HardStrings.silver, -28 },
+
+            // Increased from vanilla's -10. Forbidden Steel would be nearly impossible in Bossfall.
+            { HardStrings.forbiddenMaterial + HardStrings.steel, -42 },
+
+            // Increased from vanilla's -1. Shields are difficult to live without.
+            { HardStrings.forbiddenShieldTypes, -3 },
+
+            // Increased from vanilla's -2. Very difficult in Bossfall as some enemies have custom weapon immunities.
+            { HardStrings.forbiddenWeaponry, -7 },
+
+            // Increased from vanilla's -14. A crippling disadvantage.
+            { HardStrings.inabilityToRegen, -28 },
+
+            // Increased from vanilla's -10. A very difficult disadvantage.
+            { HardStrings.lightPoweredMagery + HardStrings.lowerMagicAbilityDarkness, -14 },
+
+            // Increased from vanilla's -14. A crippling disadvantage.
+            { HardStrings.lightPoweredMagery + HardStrings.unableToUseMagicInDarkness, -28 },
+
+            // Increased from vanilla's -5. Quite difficult due to Bossfall's increased enemy spell variety.
+            { HardStrings.lowTolerance, -7 },
+
+            // Increased from vanilla's -4. Quite difficult with Bossfall's increased enemy damage and armor.
+            { HardStrings.phobia, -7}
+        };
 
         #endregion
 
@@ -65,14 +223,97 @@ namespace BossfallMod.Events
 
         #endregion
 
+        #region Coroutines
+
+        /// <summary>
+        /// Runs during custom character creation and overwrites some vanilla calculations with my own.
+        /// </summary>
+        /// <returns>Null.</returns>
+        IEnumerator SetupCustomClassWindow()
+        {
+            // Pause execution of this method for one frame. Fields I want to change haven't been assigned to and
+            // vanilla's event handlers haven't been registered yet.
+            yield return null;
+
+            // Using Reflection I access necessary vanilla fields in the CreateCharCustomClass script.
+            Type type = customClassWindow.GetType();
+            FieldInfo fieldInfo = type.GetField("createdClass", BindingFlags.NonPublic | BindingFlags.Instance);
+            FieldInfo fieldInfo1 = type.GetField("hpLabel", BindingFlags.NonPublic | BindingFlags.Instance);
+            FieldInfo fieldInfo2 = type.GetField("hitPointsUpButton", BindingFlags.NonPublic | BindingFlags.Instance);
+            FieldInfo fieldInfo3 = type.GetField("hitPointsDownButton", BindingFlags.NonPublic | BindingFlags.Instance);
+            FieldInfo fieldInfo4 = type.GetField("daggerPanel", BindingFlags.NonPublic | BindingFlags.Instance);
+            difficultyPoints = type.GetField("difficultyPoints", BindingFlags.NonPublic | BindingFlags.Instance);
+            advantageAdjust = type.GetField("advantageAdjust", BindingFlags.NonPublic | BindingFlags.Instance);
+            disadvantageAdjust = type.GetField("disadvantageAdjust", BindingFlags.NonPublic | BindingFlags.Instance);
+            createdClass = (DFCareer)fieldInfo.GetValue(customClassWindow);
+            hpLabel = (TextLabel)fieldInfo1.GetValue(customClassWindow);
+            hitPointsUpButton = (Button)fieldInfo2.GetValue(customClassWindow);
+            hitPointsDownButton = (Button)fieldInfo3.GetValue(customClassWindow);
+            daggerPanel = (Panel)fieldInfo4.GetValue(customClassWindow);
+
+            // Initializes default custom class HP per level to 20 without increasing default difficulty.
+            createdClass.HitPointsPerLevel = bossfallDefaultHpPerLevel;
+            hpLabel.Text = bossfallDefaultHpPerLevel.ToString();
+
+            // These event handlers replace vanilla's difficultyPoints calculations with my own.
+            hitPointsUpButton.OnMouseClick += BossfallCustomClass_HitPointsUpButton_OnMouseClick;
+            hitPointsDownButton.OnMouseUp += BossfallCustomClass_HitPointsDownButton_OnMouseClick;
+
+            // Deregisters event handlers and resets setup fields once window is closed.
+            customClassWindow.OnClose += BossfallCustomClassWindow_OnClose;
+
+            // Only run this coroutine once per window instance.
+            customClassSetupComplete = true;
+        }
+
+        /// <summary>
+        /// Runs during custom character creation and overwrites some vanilla data and calculations with my own.
+        /// </summary>
+        /// <returns>Null.</returns>
+        IEnumerator SetupAdvDisWindow()
+        {
+            // Pause execution of this method for one frame. The field I want to change hasn't been assigned to and
+            // vanilla's event handlers haven't been registered yet.
+            yield return null;
+
+            // Using Reflection I overwrite the "difficultyDict" field in the CreateCharSpecialAdvantageWindow script
+            // with a custom Dictionary and access other necessary fields.
+            Type type = advantageWindow.GetType();
+            FieldInfo fieldInfo = type.GetField("difficultyDict", BindingFlags.NonPublic | BindingFlags.Instance);
+            FieldInfo fieldInfo1 = type.GetField("primaryPicker", BindingFlags.NonPublic | BindingFlags.Instance);
+            FieldInfo fieldInfo2 = type.GetField("secondaryPicker", BindingFlags.NonPublic | BindingFlags.Instance);
+            FieldInfo fieldInfo3 = type.GetField("advantageLabels", BindingFlags.NonPublic | BindingFlags.Instance);
+            primaryPicker = (DaggerfallListPickerWindow)fieldInfo1.GetValue(advantageWindow);
+            secondaryPicker = (DaggerfallListPickerWindow)fieldInfo2.GetValue(advantageWindow);
+            advantageLabels = (TextLabel[])fieldInfo3.GetValue(advantageWindow);
+            fieldInfo.SetValue(advantageWindow, bossfallDifficultyDict);
+
+            // These event handlers replace vanilla's difficulty dagger calculations with my own.
+            primaryPicker.OnItemPicked += BossfallPrimaryPicker_OnItemPicked;
+            secondaryPicker.OnItemPicked += BossfallSecondaryPicker_OnItemPicked;
+
+            // This assigns an event handler to each advantageLabels array element that replaces vanilla's difficulty
+            // dagger calculations with my own. The array always contains 14 TextLabel elements.
+            for (int i = 0; i < 14; i++)
+                advantageLabels[i].OnMouseClick += BossfallAdvantageLabel_OnMouseClick;
+
+            // Deregisters event handlers and resets setup fields once window is closed.
+            advantageWindow.OnClose += BossfallSpecialAdvantageWindow_OnClose;
+
+            // Only run this coroutine once per window instance.
+            advDisSetupComplete = true;
+        }
+
+        #endregion
+
         #region Private Methods
 
         /// <summary>
         /// This method is vanilla's, pulled from PlayerActivate. It checks if struck object is an enemy.
         /// </summary>
-        /// <param name="hitInfo">RaycastHit info.</param>
-        /// <param name="mobileEnemy">The object being checked.</param>
-        /// <returns>True if struck object is an enemy.</returns>
+        /// <param name="hitInfo">RaycastHit information about struck object.</param>
+        /// <param name="mobileEnemy">The method checks if struck object contains this.</param>
+        /// <returns>True if struck object contains DaggerfallEntityBehaviour.</returns>
         bool MobileEnemyCheck(RaycastHit hitInfo, out DaggerfallEntityBehaviour mobileEnemy)
         {
             mobileEnemy = hitInfo.transform.GetComponent<DaggerfallEntityBehaviour>();
@@ -80,43 +321,132 @@ namespace BossfallMod.Events
             return mobileEnemy != null;
         }
 
-        #endregion
+        /// <summary>
+        /// This method is based on vanilla DFU's UpdateDifficulty method from the CreateCharCustomClass script. It replaces
+        /// vanilla's custom class difficulty calculations with my own. Comments indicate changes or additions I made.
+        /// </summary>
+        void BossfallUpdateDifficulty()
+        {
+            const int defaultDaggerX = 220;
+            const int defaultDaggerY = 115;
+            const int minDaggerY = 46;
+            const int maxDaggerY = 186;
 
-        #region Coroutines
+            // I use "bossfallDefaultHpPerLevel" in the line below rather than vanilla's "defaultHpPerLevel".
+            if (createdClass.HitPointsPerLevel >= bossfallDefaultHpPerLevel)
+            {
+                // Using Reflection I set the value of vanilla DFU's "difficultyPoints" field in the CreateCharCustomClass
+                // script. I use a default HP/lvl value of 20 rather than vanilla's 8.
+                difficultyPoints.SetValue(customClassWindow, createdClass.HitPointsPerLevel - bossfallDefaultHpPerLevel);
+            }
+            else
+            {
+                // Using Reflection I set the value of vanilla DFU's "difficultyPoints" field in the CreateCharCustomClass
+                // script. I use a default HP/lvl value of 20 rather than vanilla's 8, and each HP below default reduces
+                // "difficultyPoints" by 4 rather than vanilla's 2.
+                difficultyPoints.SetValue(customClassWindow, -(4 * (bossfallDefaultHpPerLevel - createdClass.HitPointsPerLevel)));
+            }
 
-        // DWI
+            // This unwieldy mess replaces vanilla's "difficultyPoints += advantageAdjust + disadvantageAdjust;" line and does
+            // the exact same thing using Reflection.
+            difficultyPoints.SetValue(customClassWindow, (int)difficultyPoints.GetValue(customClassWindow)
+                + (int)advantageAdjust.GetValue(customClassWindow) + (int)disadvantageAdjust.GetValue(customClassWindow));
 
-        // Finish implementing this commented out method once testing complete
+            // I replaced vanilla's "difficultyPoints" with "(int)difficultyPoints.GetValue(customClassWindow)" in the line
+            // below. I also removed the unnecessary "(float)" cast.
+            createdClass.AdvancementMultiplier = 0.3f + (2.7f * ((int)difficultyPoints.GetValue(customClassWindow) + 12) / 52f);
 
-        // IEnumerator OverwriteAdvDisValues()
-        // {
+            // I removed " = 0" from the line below.
+            int daggerY;
 
-        // }
+            // I replaced vanilla's "difficultyPoints" with "(int)difficultyPoints.GetValue(customClassWindow)" in the line below.
+            if ((int)difficultyPoints.GetValue(customClassWindow) >= 0)
+            {
+                // I replaced vanilla's "difficultyPoints" with "(int)difficultyPoints.GetValue(customClassWindow)" in the
+                // statement below.
+                daggerY = Math.Max(minDaggerY, (int)(defaultDaggerY
+                    - (37 * ((int)difficultyPoints.GetValue(customClassWindow) / 40f))));
+            }
+            else
+            {
+                // I replaced vanilla's "difficultyPoints" with "(int)difficultyPoints.GetValue(customClassWindow)" in the
+                // statement below.
+                daggerY = Math.Min(maxDaggerY, (int)(defaultDaggerY
+                    + (41 * (-(int)difficultyPoints.GetValue(customClassWindow) / 12f))));
+            }
+
+            daggerPanel.Position = new Vector2(defaultDaggerX, daggerY);
+        }
 
         #endregion
 
         #region Event Handlers
 
         /// <summary>
-        /// This method performs setup on the PlayerObject. If successful doing so, it never runs again.
+        /// This runs if a new game is starting and sets up player's character.
+        /// </summary>
+        /// <param name="sender">An instance of StartGameBehaviour.</param>
+        /// <param name="args">Null.</param>
+        public void BossfallOnStartGame(object sender, EventArgs args)
+        {
+            // Variable used in this method.
+            StartGameBehaviour startGameBehaviour = sender as StartGameBehaviour;
+
+            // If starting character is a custom class, do nothing.
+            if (!startGameBehaviour.CharacterDocument.isCustom)
+            {
+                // Barbarians gain 25 HP per level and I don't want to reduce this.
+                if (startGameBehaviour.CharacterDocument.career.Name != "Barbarian")
+                {
+                    // This sets all non-Barbarian canned class HP gained per level to 20. Anything lower than that risks
+                    // making Bossfall impossible, and that wouldn't be very fun.
+                    startGameBehaviour.CharacterDocument.career.HitPointsPerLevel = bossfallDefaultHpPerLevel;
+
+                    // This sets all non-Barbarian canned class starting HP to 45. Anything lower than that risks making
+                    // the early game impossible, and that wouldn't be very fun.
+                    GameManager.Instance.PlayerEntity.MaxHealth = 45;
+                    GameManager.Instance.PlayerEntity.SetHealth(45);
+
+                    // Not sure these two steps are necessary, but I do them anyway.
+                    startGameBehaviour.CharacterDocument.maxHealth = 45;
+                    startGameBehaviour.CharacterDocument.currentHealth = 45;
+                }
+            }
+
+            if (GameManager.Instance.PlayerObject != null)
+            {
+                if (!bossfallPlayerActivateAdded)
+                {
+                    // Adds necessary Bossfall components.
+                    GameManager.Instance.PlayerObject.AddComponent<BossfallPlayerActivate>();
+
+                    bossfallPlayerActivateAdded = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// This method performs setup on the PlayerObject if player is loading a game. Only runs once.
         /// </summary>
         public void BossfallOnRespawnerComplete()
         {
             if (GameManager.Instance.PlayerObject != null)
             {
-                // Adds necessary Bossfall components.
-                GameManager.Instance.PlayerObject.AddComponent<BossfallPlayerActivate>();
+                if (!bossfallPlayerActivateAdded)
+                {
+                    // Adds necessary Bossfall components.
+                    GameManager.Instance.PlayerObject.AddComponent<BossfallPlayerActivate>();
 
-                // Once setup is complete, don't run this method again.
+                    bossfallPlayerActivateAdded = true;
+                }
+
+                // Don't run this method again.
                 PlayerEnterExit.OnRespawnerComplete -= BossfallOnRespawnerComplete;
             }
         }
 
         /// <summary>
-        /// If game is not being restored this method finds every random monster spawn point in the dungeon being entered,
-        /// creates a Spherecast originating underneath the floor at that point, and fires that Sphere straight up. If the
-        /// Spherecast hits an enemy collider I destroy that enemy and respawn a different enemy at the same position using
-        /// Bossfall's unleveled encounter tables. I do this to avoid destroying main quest fixed dungeon enemies.
+        /// This method runs when player is entering a dungeon. It replaces random vanilla enemies with Bossfall enemies.
         /// </summary>
         /// <param name="args">DaggerfallDungeon instance of the dungeon being entered and an empty StaticDoor instance.</param>
         public void BossfallOnTransitionDungeonInterior(PlayerEnterExit.TransitionEventArgs args)
@@ -222,15 +552,7 @@ namespace BossfallMod.Events
         }
 
         /// <summary>
-        /// This method uses some code from vanilla's EnemyEntity script. Contrary to what the method name says, this changes a
-        /// lot more than just enemy loot and is a key part of Bossfall's increased difficulty. The event passes in an instance
-        /// of EnemyEntity so I use this method to unlevel human enemies, turn Assassins into bosses only if player is above
-        /// level 6, give Assassins a guaranteed poisoned weapon if player is above level 1, add drugs as potential weapon
-        /// poisons, change enemy starting equipment, give Guards a chance to carry items better than Iron or Steel, slightly
-        /// vary monster levels, increase skill caps and skill scaling, change spell kits, change class enemy armor scaling,
-        /// and scale loot with enemy level rather than player level. I also perform necessary Bossfall AI setup on enemies. If
-        /// enemy has a custom ID, I only perform necessary Bossfall AI setup and do nothing else. I also use this method to
-        /// populate a dictionary of enemy references if game is being loaded so I can restore Bossfall save data elsewhere.
+        /// This method uses some code from vanilla's EnemyEntity script. It sets up enemies using Bossfall rules.
         /// </summary>
         /// <param name="sender">An instance of EnemyEntity.</param>
         /// <param name="args">MobileEnemy, DFCareer, and ItemCollection data.</param>
@@ -247,15 +569,10 @@ namespace BossfallMod.Events
             DFCareer customCareer = DaggerfallEntity.GetCustomCareerTemplate(mobileEnemy.ID);
             if (customCareer != null)
             {
-                // If this is a custom enemy I don't change its level or stats - I only add necessary Bossfall components. Unity
-                // executes components in the order they are attached to a given gameObject, so by destroying EnemyAttack and
-                // then re-adding it BossfallEnemyAttack's Update method is executed before EnemyAttack's Update method, which
-                // is necessary for Bossfall to function correctly.
-                Destroy(entityBehaviour.gameObject.GetComponent<EnemyAttack>());
+                // If this is a custom enemy I don't change its level or stats - I only add necessary Bossfall components.
                 entityBehaviour.gameObject.AddComponent<BossfallEnemySenses>();
                 entityBehaviour.gameObject.AddComponent<BossfallEnemyMotor>();
                 entityBehaviour.gameObject.AddComponent<BossfallEnemyAttack>();
-                entityBehaviour.gameObject.AddComponent<EnemyAttack>();
                 return;
             }
 
@@ -533,22 +850,18 @@ namespace BossfallMod.Events
             // I include it because I clear and re-generate this enemy's ItemCollection so I have to run this again.
             DaggerfallLoot.RandomlyAddMap(mobileEnemy.MapChance, items);
 
-            // I pulled these potion lines out of the SetEnemyCareer method in EnemyEntity and made no changes to it.
-            // I include it because I clear and re-generate this enemy's ItemCollection so I have to run this again.
+            // I pulled these potion lines out of the SetEnemyCareer method in EnemyEntity. I raised potion generation
+            // chance to 4 rather than 3. I had to include these lines as I clear and re-spawn this enemy's ItemCollection.
             if (!string.IsNullOrEmpty(mobileEnemy.LootTableKey))
             {
-                DaggerfallLoot.RandomlyAddPotion(3, items);
+                DaggerfallLoot.RandomlyAddPotion(4, items);
                 DaggerfallLoot.RandomlyAddPotionRecipe(2, items);
             }
 
-            // As a finishing touch, I add essential Bossfall AI components to the enemy. Unity executes components in the order
-            // they are attached to a given gameObject, so by destroying EnemyAttack and then re-adding it BossfallEnemyAttack's
-            // Update method is executed before EnemyAttack's Update method, which is necessary for Bossfall to function correctly.
-            Destroy(entityBehaviour.gameObject.GetComponent<EnemyAttack>());
+            // As a finishing touch, I add essential Bossfall AI components to the enemy.
             entityBehaviour.gameObject.AddComponent<BossfallEnemySenses>();
             entityBehaviour.gameObject.AddComponent<BossfallEnemyMotor>();
             entityBehaviour.gameObject.AddComponent<BossfallEnemyAttack>();
-            entityBehaviour.gameObject.AddComponent<EnemyAttack>();
 
             // If game is being loaded, add this enemy to a reference dictionary so I can easily modify this enemy elsewhere.
             // Keys are unique enemy load IDs, which have already been restored at this point in the load process.
@@ -562,8 +875,7 @@ namespace BossfallMod.Events
 
         /// <summary>
         /// This method is based on a method of the same name from vanilla's EnemyEntity, modified for Bossfall. I clear
-        /// the enemy's existing spellbook and replace it with my custom list. Bossfall enemy Magicka scales differently
-        /// than vanilla's, and bosses above level 25 have effectively infinite Magicka.
+        /// the enemy's existing spellbook and replace it with my custom list. I also change enemy's Magicka capacity.
         /// </summary>
         /// <param name="spellList">The spell list to assign to the enemy.</param>
         /// <param name="enemyEntity">The enemy to assign the spell list to.</param>
@@ -659,6 +971,10 @@ namespace BossfallMod.Events
             LootContainerTypes containerType = args.ContainerType;
             ItemCollection items = args.Loot;
             PlayerGPS.DiscoveredBuilding buildingData = playerEnterExit.BuildingDiscoveryData;
+
+            // I added this. Certain old saves will have a zero here.
+            if (buildingData.buildingKey == 0)
+                return;
 
             // This decides how loot should be spawned based on whether it's a shop shelf or house container.
             if (containerType == LootContainerTypes.ShopShelves)
@@ -1067,14 +1383,9 @@ namespace BossfallMod.Events
         }
 
         /// <summary>
-        /// I need to search three ItemCollections for vanilla shields to replace them with my custom ones - the player's
-        /// inventory, their wagon, and their item repair list. A messy solution, but the other way would require me to
-        /// register custom shield items and manually prohibit the game from ever creating them like other modded items -
-        /// also, if the player ever disabled Bossfall, all of their shields would disappear as they would all be Bossfall
-        /// custom shields. As I want shields to act exactly like vanilla's except have different armor values based on
-        /// shield material, I found this alternate solution unacceptable. Thus, I wrote this method.
+        /// Replaces vanilla shields with custom Bossfall versions on game loads.
         /// </summary>
-        /// <param name="saveData">Vanilla save data.</param>
+        /// <param name="saveData">Vanilla save data, unused in this method.</param>
         public void BossfallOnLoad(SaveData_v1 saveData)
         {
             // Variable used in this method.
@@ -1236,10 +1547,7 @@ namespace BossfallMod.Events
         }
 
         /// <summary>
-        /// This method checks if the inventory, trade, custom class creation, and custom class creation Advantage/Disadvantage
-        /// windows are being opened. If inventory or trade windows are found, it searches for vanilla shields among loot or shop
-        /// items and replaces them with my custom shields, and also replaces all vanilla magic items and soul gems with Bossfall's
-        /// magic items and soul gems. If class creation windows are found DWI// FINISH THIS ONCE DONE WRITING THIS METHOD
+        /// This replaces some vanilla items with custom Bossfall versions. Also implements Bossfall character creation.
         /// </summary>
         /// <param name="sender">An instance of UserInterfaceManager.</param>
         /// <param name="args">Null.</param>
@@ -1249,11 +1557,12 @@ namespace BossfallMod.Events
             UserInterfaceManager uiManager = sender as UserInterfaceManager;
             DaggerfallTradeWindow tradeWindow = uiManager.TopWindow as DaggerfallTradeWindow;
             DaggerfallInventoryWindow inventoryWindow = uiManager.TopWindow as DaggerfallInventoryWindow;
-            CreateCharCustomClass customClassWindow = uiManager.TopWindow as CreateCharCustomClass;
+            CreateCharCustomClass classWindow = uiManager.TopWindow as CreateCharCustomClass;
             CreateCharSpecialAdvantageWindow advDisWindow = uiManager.TopWindow as CreateCharSpecialAdvantageWindow;
             PlayerEntity player = GameManager.Instance.PlayerEntity;
 
-            // Trade window section.
+            // Trade window section. Replaces vanilla shields with Bossfall versions and replaces vanilla's magic item
+            // vendor items with custom Bossfall magic items.
             if (tradeWindow != null)
             {
                 // If no Merchant Items are found, do nothing.
@@ -1465,30 +1774,149 @@ namespace BossfallMod.Events
                     }
                 }
             }
-            // Character creation section.
-            else if (customClassWindow != null)
+            // Character creation custom class window section. Replaces vanilla difficulty values and calculations
+            // with my own.
+            else if (classWindow != null)
             {
-                // DWI
+                // Window setup runs once per window instance.
+                if (!customClassSetupComplete)
+                {
+                    // I use this window reference elsewhere in this script.
+                    customClassWindow = classWindow;
 
-                // Delete Debug.log lines when testing complete
-
-                Debug.Log("Custom class creation window detected.");
+                    // This coroutine will wait until the next frame to begin execution.
+                    StartCoroutine(SetupCustomClassWindow());
+                }
             }
-            // Character creation Special Advantage/Disadvantage section.
+            // Character creation Special Advantage/Disadvantage section. Replaces vanilla difficulty values and
+            // calculations with my own.
             else if (advDisWindow != null)
             {
-                // DWI
+                // Window setup runs once per window instance.
+                if (!advDisSetupComplete)
+                {
+                    // I use this window reference elsewhere in this script.
+                    advantageWindow = advDisWindow;
 
-                // Delete Debug.Log lines when testing complete
+                    // This coroutine will wait until the next frame to begin execution.
+                    StartCoroutine(SetupAdvDisWindow());
+                }
+            }
+        }
 
-                Debug.Log("Advantage/disadvantage window detected.");
+        /// <summary>
+        /// This runs when player adds HP gained per level within the custom character creation window. It replaces
+        /// vanilla's difficulty calculations with my own.
+        /// </summary>
+        /// <param name="sender">Unused in this method.</param>
+        /// <param name="pos">Unused in this method.</param>
+        void BossfallCustomClass_HitPointsUpButton_OnMouseClick(BaseScreenComponent sender, Vector2 pos)
+        {
+            BossfallUpdateDifficulty();
+        }
 
-                // DWI
+        /// <summary>
+        /// This runs when player subtracts HP gained per level within the custom character creation window. It replaces
+        /// vanilla's difficulty calculations with my own.
+        /// </summary>
+        /// <param name="sender">Unused in this method.</param>
+        /// <param name="pos">Unused in this method.</param>
+        void BossfallCustomClass_HitPointsDownButton_OnMouseClick(BaseScreenComponent sender, Vector2 pos)
+        {
+            BossfallUpdateDifficulty();
+        }
 
-                // Finish implementing this commented out coroutine after testing
+        /// <summary>
+        /// This runs once player closes the custom class window during custom character creation. It resets previously
+        /// used setup fields to defaults and deregisters from all custom class window events.
+        /// </summary>
+        void BossfallCustomClassWindow_OnClose()
+        {
+            // Deregisters custom class window event handlers.
+            hitPointsUpButton.OnMouseClick -= BossfallCustomClass_HitPointsUpButton_OnMouseClick;
+            hitPointsDownButton.OnMouseUp -= BossfallCustomClass_HitPointsDownButton_OnMouseClick;
+            customClassWindow.OnClose -= BossfallCustomClassWindow_OnClose;
 
-                // StartCoroutine(OverwriteAdvDisValues());
+            // Reset custom class window fields to defaults.
+            customClassWindow = null;
+            difficultyPoints = null;
+            advantageAdjust = null;
+            disadvantageAdjust = null;
+            createdClass = null;
+            hpLabel = null;
+            hitPointsUpButton = null;
+            hitPointsDownButton = null;
+            daggerPanel = null;
 
+            // Finally, reset setup complete bool.
+            customClassSetupComplete = false;
+        }
+
+        /// <summary>
+        /// This runs when player selects certain advantages/disadvantages within the CreateCharSpecialAdvantage window.
+        /// It replaces vanilla's difficulty calculations with my own.
+        /// </summary>
+        /// <param name="index">Unused in this method.</param>
+        /// <param name="advantageName">Unused in this method.</param>
+        void BossfallPrimaryPicker_OnItemPicked(int index, string advantageName)
+        {
+            BossfallUpdateDifficulty();
+        }
+
+        /// <summary>
+        /// This runs when player selects certain advantages/disadvantages within the CreateCharSpecialAdvantage window.
+        /// It replaces vanilla's difficulty calculations with my own.
+        /// </summary>
+        /// <param name="index">Unused in this method.</param>
+        /// <param name="itemString">Unused in this method.</param>
+        void BossfallSecondaryPicker_OnItemPicked(int index, string itemString)
+        {
+            BossfallUpdateDifficulty();
+        }
+
+        /// <summary>
+        /// This runs when player removes special advantages/disadvantages from a list in the CreateCharSpecialAdvantage
+        /// window. It replaces vanilla's difficulty calculations with my own.
+        /// </summary>
+        /// <param name="sender">Unused in this method.</param>
+        /// <param name="pos">Unused in this method.</param>
+        void BossfallAdvantageLabel_OnMouseClick(BaseScreenComponent sender, Vector2 pos)
+        {
+            BossfallUpdateDifficulty();
+        }
+
+        /// <summary>
+        /// This runs once player closes the Special Advantage/Disadvantage window during custom character creation.
+        /// It resets previously used setup fields to defaults and deregisters from all Special Advantage/Disadvantage
+        /// window events.
+        /// </summary>
+        void BossfallSpecialAdvantageWindow_OnClose()
+        {
+            // I use this variable to check what window is being displayed.
+            UserInterfaceManager uiManager = DaggerfallUI.Instance.UserInterfaceManager;
+
+            // Only reset fields and deregister event handlers if the Special Advantage/Disadvantage window is actually
+            // being closed. That window's OnClose event can fire while window is still in the uiManager display stack.
+            if (uiManager.TopWindow is CreateCharCustomClass)
+            {
+                // Deregisters some event handlers used in the special advantage/disadvantage window. This array
+                // always has 14 elements.
+                for (int i = 0; i < 14; i++)
+                    advantageLabels[i].OnMouseClick -= BossfallAdvantageLabel_OnMouseClick;
+
+                // Deregisters the rest of the event handlers used in the special advantage/disadvantage window.
+                primaryPicker.OnItemPicked -= BossfallPrimaryPicker_OnItemPicked;
+                secondaryPicker.OnItemPicked -= BossfallSecondaryPicker_OnItemPicked;
+                advantageWindow.OnClose -= BossfallSpecialAdvantageWindow_OnClose;
+
+                // Resets special advantage/disadvantage window fields to defaults.
+                advantageLabels = null;
+                primaryPicker = null;
+                secondaryPicker = null;
+                advantageWindow = null;
+
+                // Finally, reset setup complete bool.
+                advDisSetupComplete = false;
             }
         }
 

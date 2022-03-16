@@ -67,15 +67,13 @@ namespace BossfallMod.Utility
             PopupText dfHUDText = DaggerfallUI.Instance.DaggerfallHUD.PopupText;
             Type type = dfHUDText.GetType();
             FieldInfo fieldInfo = type.GetField("textRows", BindingFlags.NonPublic | BindingFlags.Instance);
-            object fieldValue = fieldInfo.GetValue(dfHUDText);
-            list = (LinkedList<TextLabel>)fieldValue;
+            list = (LinkedList<TextLabel>)fieldInfo.GetValue(dfHUDText);
 
             // I added this. Using Reflection I access the private "midScreenTextLabel" field in DaggerfallHUD.
             DaggerfallHUD dfHUD = DaggerfallUI.Instance.DaggerfallHUD;
             Type type1 = dfHUD.GetType();
             FieldInfo fieldInfo1 = type1.GetField("midScreenTextLabel", BindingFlags.NonPublic | BindingFlags.Instance);
-            object fieldValue1 = fieldInfo1.GetValue(dfHUD);
-            text = (TextLabel)fieldValue1;
+            text = (TextLabel)fieldInfo1.GetValue(dfHUD);
         }
 
         void Update()
@@ -89,6 +87,9 @@ namespace BossfallMod.Utility
             {
                 text.Text = string.Empty;
                 ActivateMobileEnemy(storedEntity);
+
+                // Resets used fields to defaults.
+                storedEntity = null;
                 clearMidScreenText = false;
             }
 
@@ -102,6 +103,9 @@ namespace BossfallMod.Utility
             {
                 list.RemoveLast();
                 ActivateMobileEnemy(storedEntityTwo);
+
+                // Resets used fields to defaults.
+                storedEntityTwo = null;
                 clearPopupText = false;
             }
 
@@ -244,6 +248,12 @@ namespace BossfallMod.Utility
 
         #region Activation Methods
 
+        /// <summary>
+        /// This method is entirely vanilla's, from PlayerActivate. It was private and I needed it here.
+        /// </summary>
+        /// <param name="building">The building being activated.</param>
+        /// <param name="buildingType">The type of building being activated.</param>
+        /// <param name="buildingUnlocked">True if building is open.</param>
         void ActivateBuilding(
         StaticBuilding building,
         DFLocation.BuildingTypes buildingType,
@@ -270,9 +280,9 @@ namespace BossfallMod.Utility
         }
 
         /// <summary>
-        /// This is vanilla's method, modified for Bossfall. It displays a custom HUD message if the Display
-        /// Enemy Level setting is on. I removed vanilla's RaycastHit parameter as I didn't use it.
-        /// Comments indicate changes or additions I made.
+        /// This is vanilla's method from PlayerActivate, modified for Bossfall. It displays a custom HUD message if the
+        /// Display Enemy Level setting is on. I removed vanilla's RaycastHit parameter as I didn't use it. Comments
+        /// indicate changes or additions I made.
         /// </summary>
         /// <param name="mobileEnemyBehaviour">The mobile enemy hit by the ray.</param>
         void ActivateMobileEnemy(DaggerfallEntityBehaviour mobileEnemyBehaviour)
@@ -307,6 +317,12 @@ namespace BossfallMod.Utility
             }
         }
 
+        /// <summary>
+        /// This method is entirely vanilla's, from PlayerActivate. It was private and I needed it here.
+        /// </summary>
+        /// <param name="hitInfo">RaycastHit information about struck object.</param>
+        /// <param name="questResourceBehaviour">The method checks if struck object contains this.</param>
+        /// <returns>True if struck object contains QuestResourceBehaviour.</returns>
         bool QuestResourceBehaviourCheck(RaycastHit hitInfo, out QuestResourceBehaviour questResourceBehaviour)
         {
             questResourceBehaviour = hitInfo.transform.GetComponent<QuestResourceBehaviour>();
@@ -314,6 +330,12 @@ namespace BossfallMod.Utility
             return questResourceBehaviour != null;
         }
 
+        /// <summary>
+        /// This method is entirely vanilla's, from PlayerActivate. It was private and I needed it here.
+        /// </summary>
+        /// <param name="hitInfo">RaycastHit information about struck object.</param>
+        /// <param name="mobileEnemy">The method checks if struck object contains this.</param>
+        /// <returns>True if struck object contains DaggerfallEntityBehaviour.</returns>
         bool MobileEnemyCheck(RaycastHit hitInfo, out DaggerfallEntityBehaviour mobileEnemy)
         {
             mobileEnemy = hitInfo.transform.GetComponent<DaggerfallEntityBehaviour>();

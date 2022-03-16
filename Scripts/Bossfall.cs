@@ -18,6 +18,7 @@ using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.Entity;
 using DaggerfallWorkshop.Game.Items;
 using DaggerfallWorkshop.Game.Serialization;
+using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
 using DaggerfallWorkshop.Utility;
 using FullSerializer;
@@ -80,7 +81,7 @@ namespace BossfallMod
         public static void Init(InitParams initParams)
         {
             // This initializes the mod, attaches a Bossfall component to a new GameObject, and points SaveDataInterface calls
-            // to the current instance of Bossfall.
+            // to the only instance of Bossfall.
             mod = initParams.Mod;
             var go = new GameObject(mod.Title);
             go.AddComponent<Bossfall>();
@@ -125,6 +126,7 @@ namespace BossfallMod
             }
 
             // Bossfall subscribes to many vanilla events.
+            StartGameBehaviour.OnStartGame += BossfallEventHandlers.Instance.BossfallOnStartGame;
             PlayerEnterExit.OnRespawnerComplete += BossfallEventHandlers.Instance.BossfallOnRespawnerComplete;
             PlayerEnterExit.OnTransitionDungeonInterior += BossfallEventHandlers.Instance.BossfallOnTransitionDungeonInterior;
             EnemyEntity.OnLootSpawned += BossfallEventHandlers.Instance.BossfallOnEnemyLootSpawned;
@@ -136,7 +138,7 @@ namespace BossfallMod
 
         void Awake()
         {
-            // I assume this tells DFU Bossfall has loaded everything it needs to.
+            // A required mod setup step.
             mod.IsReady = true;
         }
 
@@ -145,9 +147,7 @@ namespace BossfallMod
         void Start()
         {
             // I access a SerializableStateManager property's private get accessor here. It will return a list of every
-            // instantiated enemy. It's easier than calling GetObjectsOfType<DaggerfallEntityBehaviour> and then searching
-            // the permanent scene cache for enemies. I can't call GetEnemyData in SerializableStateManager as that method
-            // doesn't return enemy levels or DaggerfallEntityBehaviour I can then search for enemy levels, so it wouldn't help me.
+            // instantiated enemy.
             Type type = SaveLoadManager.StateManager.GetType();
             PropertyInfo property = type.GetProperty("SerializableEnemies", BindingFlags.Instance | BindingFlags.NonPublic);
             getMethod = property.GetGetMethod(true);
@@ -161,46 +161,6 @@ namespace BossfallMod
             // { ItemGroups.Armor, ItemGroups.Books, ItemGroups.MensClothing, ItemGroups.WomensClothing, ItemGroups.Transportation, ItemGroups.Jewellery, ItemGroups.Weapons, ItemGroups.UselessItems2 } }
             // w/Reflection - this will make General Stores buy armor, but don't make 'em sell Armor. Follow v1.4 to-do "shops"
             // section 4 guidance
-
-            // DWI
-
-            // Can u handle all this in BFOnWindowChange?
-            // I think this would be a good place to start
-
-            // U could call CreateCharCustomClass.AdvantageAdjust (that fires that scripts' UpdateDifficulty method) then
-            // immediately after that access that script's difficultyPoints w/Reflection & change it to whatever u want, once u set
-            // difficultyPoints then set dagger position 2 whatever it should be (use lines 463-477 for code for where to place
-            // dagger dependent on difficultyPoints, remember to reset createdClass.AdvancementMultiplier if necessary every time
-            // as I think you'll have to), you mite have to manually check so dagger position doesn't go past hard caps in vanilla
-            // code, don't call AnimateDagger as I think that'll look silly
-
-            // in CreateCharCustomClass method createdClass.HitPointsPerLevel is what u wanna change, vanilla inits to const int 8
-            // in above script hpLabel contains actual text of HitPointsPerLevel, u will wanna change that too, see if difficulty
-            // reads from that TextLabel or from createdClass.HitPointsPerLevel so u find out what u all need to set to 20
-
-            // u prolly have to register 2 HitPointsUpButton and HitPointsDownButton events 2 override vanilla's UpdateDifficulty()
-            // call from resetting ur custom difficultyPoints setting (u will have to run ur difficultyPoints resets every time
-            // either button click event fires)
-
-            // NOTE: There are two different instances of CreateCharSpecialAdvantageWindow created in CreateCharCustomClass -
-            // one of createCharSpecialAdvantageWindow and one of createCharSpecialDisadvantageWindow - if u can read whenever an
-            // instance of the type is created and always run ur SpecialAdvantage number resets, this is a moot point as ur resets
-            // will catch both instances of the type
-
-            // U can change player's DFCareer.HitPointsPerLevel on game start (for custom classes this is ur method of last resort),
-            // this will not notify player of this change if player is creating custom class, see if there's "OnGameStart" event
-            // u can register to to find out precise timing to do this, if u do this 4 custom classes notify player when u do somehow
-            // U should only use this for canned class gen as player never sees their HP/Level in that case anyway
-            // Remember to NOT change HitPointsPerLevel to 20 if player is creating canned Barbarian class, that class has 25 HP/lvl
-            // Change to 20 HP/lvl as default for all other canned classes tho
-
-            // these methods in CreateCharSpecialAdvantageWindow may be what u need to refresh HUD after u change initially numbers 
-            // UpdateLabels();
-            // UpdateDifficultyAdjustment();
-            // or just call Draw() again 2 refresh? In same script
-            // Do u even need to manually refresh? Update is called every frame anyway w/out ur input... test this ofc
-
-            // DaggerfallPopupWindow.PreviousWindow may be handy? dunno
 
         #region IHasModSaveData
 

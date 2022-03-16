@@ -1,11 +1,9 @@
 fileFormatVersion: 2
-guid: 71198e2dc8d5fc948bcaa23532afcb2e
+guid: d945db368b7f03f44a9f35aad3715b0c
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences:
-  - ArrowMissilePrefab: {fileID: 114624404217668130, guid: 0fdc5fb41ee669e49b44322b7db26e9e,
-      type: 3}
+  defaultReferences: []
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

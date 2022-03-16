@@ -10,13 +10,25 @@ Note: This file is a combination of changes made in previous versions and planne
 
 Bossfall v1.3.1 Changelog
 
+CHARACTER CREATION:
+
+All custom classes start with default HP/lvl of 20, default skill advancement difficulty unchanged
+Going below default HP/lvl of 20 drops difficulty dagger twice as much as vanilla per point
+Rebalanced special advantage/disadvantage costs, this rebalance is slightly different than v1.3's values
+Compared to vanilla most advantages are cheaper, most disadvantages drop difficulty dagger much more
+All canned classes except for Barbarians start with 45 HP and gain 20 HP/lvl, Barbarian starting HP and HP/lvl unchanged
+
 ITEMS:
 
 Arrow weights restored to vanilla values (in previous Bossfall versions arrows weighed something, I found this annoying)
 
 LOOT:
 
-Reduced armor piece generation chances for enemies that start with equipment
+Reduced armor piece generation chances for enemies that spawn with equipped armor
+
+POTIONS:
+
+Slightly increased potion generation chance for all enemies that can spawn with them
 
 QUESTING:
 
@@ -24,69 +36,52 @@ Activating quest enemies in Info mode displays their level and name at any dista
 
 BOSSFALL v1.3.1 TESTING:
 
-Test ur Enemy Level HUD msgs make sure they still work & u approve
-Test 2 see if ur instance conversion breaks anything (in other words try to test everything, sigh)
-Test if ur shields are still generated and replace vanilla's in all cases? U did change how inventory window detection works but u already checked a bit... does this matter? Do u really need 2 do this again? I don't think so...
 Test if ur inventory & trade window (and any other window detections u add) detection in BossfallOnWindowChange detects D.R.E.A.M. (and any other mods that u think might need 2 be checked) versions of these windows (I think it should? Unless it's registering a custom UI window instance... then ur in trouble)
-Test built .dfmod w/fresh, newest version of DFU make sure ur mod works w/it and doesn't crash
+Test built .dfmod w/DFU 0.13.5 make sure ur mod works w/it and doesn't crash
 Test ur new shields w/D.R.E.A.M. see if they correctly use modded textures (they should work fine)
 Test quest foes in Info mode (make sure "You are too far away" message doesn't pop up & ur custom Level HUD message displays)
-Test every enemy for correct missile/spell predictions after u fix enemy AI w/Reflection
-Test enemy knockbacks w/monsters and classes (male and female classes) make sure u approve?
 Test all enemies for correct move speeds on Vanilla, Fast, and Very Fast settings?
 Test "World of Daggerfall" mod w/new .dfmod, save outdoors, load outdoors, save inside, load inside w/Bossfall and World of Daggerfall running @ same time make sure nothing breaks
 Test immunity HUD msgs make sure they reset when player kills enemy and don't otherwise
-Test all enemies at enemy levels 1, 5, 10, 20 for correct wpn/H2H dmg?
-Test poison infliction make sure u approve of all current Poison infliction methods & Assassins pierce Poison Immunity once player is above level 6 & nothing else does?
-Test all enemy monster armor make sure u approve?
-Test all enemy class armor at enemy levels 1, 10, 20, make sure u approve?
-Make sure Ghosts and Vampire Ancients no longer cast any spells
 Test house containers make sure they contain ur custom enchanted holy items (that means all ur house container loot generation works)
 Make sure enemy spellcasters cast proper number o' spells & u approve
-Test a few arrow firers make sure arrow prefab null reference error doesn't happen
 Test vampire/lycan on enemy death stuff make sure u approve
 Test dungeon entrance flavor msgs w/a few dungeons make sure u approve
 Test skill advancement difficulty on all 3 settings make sure u approve?
-Test character creation, check "goals" section in CHARACTER CREATION section for guidelines on what 2 check, make sure u approve
 Test magic item creation make sure ur items r the ones getting created
 Test potion creation make sure Dispel Magic potion (use console 2 create potions) & potion recipe (from Alchemist shops) get created
 Test item creation w/enemies that use starting equipment w/out mods make sure it works & u approve
 Test item creation w/enemies that use starting equipment w/mods (RPR:I mainly) make sure it works & u approve
-Test boss warning HUD msgs on a few bosses & powerful bosses make sure u approve
-Test loot piles make sure they use expanded sprite list & don't w/setting turned OFF & u approve
 Test powerful enemy rarity on both Powerful Enemies Are setting values make sure u approve?
 Test startup quest make sure it pops on new game start
 
 BOSSFALL v1.3.1 TO-DO:
 
-.DFMOD ESSENTIALS TO ADD/FINISH BEFORE v1.3.1 RELEASE:
+.DFMOD ESSENTIALS:
 
-Character creation
+Change falling dmg (follow .DFMOD NOTES section for specific guidance)
+Additional wpn swing fatigue cost in BFPlayerActivate Update method (22 extra Fat/swing IIRC, I want it to be the same as vanilla BF, which is 33? Verify all these numbers 2 make sure ofc)
 Use ur BossfallMagicItemTemplates 2 create all magic items
-40 Spell Cost FormulaOverride (remember 2 register it w/RegisterOverride)
+40 Spell Cost FormulaOverride for enemies (remember 2 register it w/RegisterOverride)
 Add Potion of Dispel Magic
 Skill difficulty formula override, use previous skill difficulty tables, vary by Bossfall difficulty setting
 Bossfall startup quest
-Clear 1 paper note
-Clear entire "NOTES" section, move stuff 2 do in v1.4 there, finish stuff to do b4 v1.3.1 releases
-Add all stuff below "NOTES" section up to v1.4 TO-DO
 Add BossfallEnemyDeath event handler 4 vampire/lycan on death stuff in BossfallEnemyMotor 2 make it instanced by enemy? Or do it @ end o' FormulaOverride CalculateAttackDamage? See how u did it in v1.3 for guidance
 Include StreamingAssets/Quests folder alongside .dfmod file in DL package that contains ur altered vanilla quests, add "put this whole folder in StreamingAssets/Quests if u don't wanna fite Assassins early" note
-Include finished/updated/proofread/checked v1.3.1 Changelog alongside StreamingAssets/Quests folder and .dfmod file in DL package
+Include updated v1.3.1 Changelog in DL package
 
-.DFMOD NOTES, CLEAR THESE BEFORE v1.3.1 RELEASE:
+.DFMOD NOTES:
 
-Arrows STILL aren't instantiated even when u call vanilla's ShootBow()... sigh... fix this
-Clone latest source code o' DFU (2 new sigh7 folder), xfer BF to it, maybe u messed up the vanilla Arrow prefab somehow and a fresh version will fix this? Worth a shot
-Respond 2 latest post on NexusMods - I don't want to add random beasts as bosses as I need some way 2 make them unique so player knows, and unless there's some popup msg on mouse hover... anyway respond fully 2 post
+Advise ppl using any mods that change character creation (Better Default Classes, Races Redone, etc.) to put them lower in mod list than BF if they want those mods to take priority over BF character creation changes
+Above a certain height (~4 dungeon wall blocks) instakill falling entities, make sure jumping/falling from city walls isn't instakill
+Below that falling dmg starts @ 3.8f, dmg is 10f permetrefallen (look @ PlayerHealth for template, use Reflection to implement)
 Double check all ur item gen methods that handle loot pile, enemy loot table random items, and shop shelf/house container loot gen - make sure mod items are automatically generated when appropriate so u don't need 2 add them manually (I think this is already the case but it never hurts 2 check)
 To implement above line u can get DaggerfallEntityBehaviour from EnemyEntity incoming in parameter of CalculateAttackDamage, then GetComponent<BossfallEnemyMotor>() from DaggerfallEntityBehaviour 2 get access to bools
 In BFEnemyMotor in spellcast bools include check 4 enemy's current HP if it's full and enemy wants 2 cast Heal return false
 Change Legal Info on NexusMods & 3rd forum post, include blurb about "not all code was written by me, I've marked all code I didn't write, check code for author before using/crediting"
 Read thru all scripts, make sure u remove all unnecessary Debug.Log lines and DWI/DELETE WHEN IMPLEMENTED references (after implementing them ofc) b4 releasing anything
-As final step b4 release, make sure to delete & re-add all Bossfall Scripts, Quests, and Templates to Mod Builder in Unity? To make sure u have the right GUID? Does this matter?
-In ur enemy loot generation methods, for the 2 random custom items @ the end, use ItemHelper.GetCustomItemsForGroup(ItemGroups.Weapons) or (ItemGroups.Armor) to find custom wpns/armor & if that method returns something add one or two custom items
-Advise users of .dfmod to always put Bossfall last, Meaner Monsters, Unleveled Loot, & RPR:I will likely conflict w/Bossfall
+In ur enemy loot generation methods, for the (up to) 2 random custom items @ the end, use ItemHelper.GetCustomItemsForGroup(ItemGroups.Weapons) or (ItemGroups.Armor) to find custom wpns/armor & if that method returns something add one or two custom items
+Advise users of .dfmod to always put Bossfall last, Meaner Monsters, Unleveled Loot, & RPR:I will conflict w/Bossfall
 5189333 is ur Dispel Magic potion key (that uses ur custom Dispel Magic potion recipe)
 Create a custom SpellRecords.json file? If this will allow u to easily implement previous Bossfall spell changes, DFU will load it and overwrite vanilla's SpellRecords.txt with ur custom data, remember to include it in Bossfall mod Assets
 If u add BossfallEnemyDeath script remember to add this component to custom enemies in BossfallOnLootSpawned method in Bossfall.cs
@@ -94,26 +89,15 @@ GameManager.Instance.Dungeon.Summary.DungeonType (or whatever) can be called to 
 Add fastMoveSpeeds array to BossfallOverrides populate it w/Bossfall EnemyBasics MoveSpeed field contents
 Add skill method override to BossfallOverrides, remember 2 register it w/FormulaOverride, use Bossfall skill difficulty that changes w/Bossfall setting values
 Download latest version of all used mods to make sure latest versions work w/Bossfall .dfmod b4 releasing anything
-Update all FAQ questions for relevance after .dfmod release on NexusMods and 3rd forum post
-Check to see if ur mod will work w/DFU 0.13.4, if not update mod requirements w/whatever next version is b4 releasing anything
+Update all FAQ questions (if necessary) for relevance after .dfmod release on NexusMods and 3rd forum post
 Add "why doesn't Disable AI work" FAQ question to NexusMods & 3rd forum post
 Add mod interaction settings so Bossfall is always positioned last? If necessary ofc
 Write Bossfall .dfmod
-After implementing previous version's changes to Bossfall .dfmod add IMPLEMENTED at beginning of changelog line, if u can't do it w/current mod support or w/Reflection add IMPOSSIBLE
-If u put IMPLEMENTED on changelog line u must add changes to v1.3.1 Changelog, edit previous Changelog comments for brevity/clarity, then remove previous Changelog line so u know it's been added & u don't need to add it anymore
-End goal is clear changelog before v1.3.1 as it's all been added (may not happen with v1.3.1 u'll prolly release version that doesn't include all previous changes, but end goal is to add everything no matter how small)
+After implementing previous version's changes to Bossfall .dfmod add proper section to v1.3.1 Changelog, use old changelog comments if possible, if necessary edit lines for brevity/clarity, delete old line(s), if u can't do it w/current mod support or w/Reflection add IMPOSSIBLE
+End goal is clear changelog below v1.3.1 section as it's all been added, but this is a long-term goal not a v1.3.1 goal
 Update lines of code & comments added or modified in 2 NexusMods credits spots & 3rd forum post, just put lines o' code & comments in .dfmod
 Remove lines of comments from 2 NexusMods credits spots and 3rd forum post
 Update time spent in 2 NexusMods credits spots & 3rd forum post, just put "worked on since mid-October 2021", whatever that value in months is
-
-.DFMOD CHARACTER CREATION:
-
-Goals for v1.3.1:
-
-Make custom class HP/lvl start @ 20 w/no extra difficulty adjustment, start @ 0
-Make all canned class HP/lvl start @ 20 w/no extra difficulty adjustment or other changes
-Overwrite vanilla special advantage costs with ur own
-Dropping HP below 20 gives -4 to difficulty rather than -2 per point of HP dropped
 
 .DFMOD INVISIBILITY:
 
@@ -207,10 +191,8 @@ BOSSFALL v1.4 TO-DO:
 
 ACROBATICS:
 
-Climbing is way too easy, change base chance of success w/Reflection if possible (also turn off skill check override w/Advanced Climbing)
-Above a certain height instakill falling entities, whatever height from Privateer's Hold top o' big stairs to floor is is ur cutoff, make sure falling from city walls isn't instakill
-Below that falling dmg starts @ 3.8f, dmg is 10f permetrefallen (look @ PlayerHealth for template, use Reflection to implement)
-In BossfallPlayerActivate Update method? check if IsRappelling is true, if it is save the initial Climbing skill checks value and once IsRappelling is false set Climbing checks to starting value (this makes Rappel mode not give Climbing checks)
+Add BossfallClimbingMotor script, add a climbing chance check that runs whenever vanilla's check runs, always run this after vanilla's climbing check, then if player fails ur check set isSlipping (in ClimbingMotor) to true, test if this is all u need to do ofc
+In BossfallPlayerActivate Update method? check if IsRappelling is true, if it is save the initial Climbing skill checks value and once IsRappelling is false set Climbing checks to starting value (this makes Rappel mode not give Climbing checks)?
 
 DISEASE/POISON:
 
@@ -257,22 +239,29 @@ Volcanic Caves: 1.5 lM
 Scorpion Nest: 0.4 lM, mostly clothing and junk
 Cemetery: 0.1 lM, mostly clothing and junk, this number doesn't change based on DungeonSize, is constant
 
-ENEMY EQUIPMENT:
+ENEMY LOOT:
 
-For enemies that use equipment (under current Bossfall rules) this section determines WHAT KIND of equipment will be generated
-This section does not affect loot table generated items, only enemy starting equipment for enemies that use said equipment
+This section determines WHAT KIND of items will be generated for all enemies that drop items, each enemy's item symbol array affects what items drop & their gen chances
+Make one item creation method & vary what it outputs depending on incoming enemy item symbol array
+Break up this method into 2 parts - one part gens wielded equipment (remember 2 equip everything to enemy in this section, use BFItemBuilder GenerateEnemyEquipment -or whatever - as template 2 follow), one part gens random loot
+Rework current item gen methods, remove all traces of old 2-step item gen process and methods from BFEventHandlers from every event handler that generates items (3 event handlers do this, dbl check 2 make sure u catch every item gen method ofc)
+Add another layer 2 ur custom enemy item gen method - this (final?) layer determines what armor/wpn templates are available 2 be generated for that enemy for wielded equipment & how rare the BIS wpns/armor are
+Use ur current vars locationModifier & enemyLevelModifier (or just enemyLevelModifier 2 be more clear if possible/practical) to determine what item templates can be spawned as wielded equipment & how rare the BIS items are - if mod item replacements for selected item exist add ~40% chance to gen mod item instead of vanilla
+For any enemy the BIS wpns/armor should always be able 2 be generated as wielded equipment if enemy uses that type of equipment (for example Thieves never wield 2H wpns so never give 'em 2H as wielded equipment)
+If enemy doesn't wield a particular equipment type enemy can carry it as random loot, ur above modifiers determine how likely this is
+For class enemies - they never wield armor materials they can't use, but they can carry them as random loot
+For class enemies - they preferably wield best armor material 4 their class (Chain for Barbs, Plate for Warriors, etc.) but they can have worse material tiers equipped ofc
+Scale ingredient gen chances using the same enemyLevelModifier u end up using for ur new random enemy level-scaled gold gen formula (once u come up w/new gold gen formula ofc)
+Make enemy items spawn damaged? They can be very beat-up, or in perfect shape - weight chances to be around 50% to 65% durability? This number is prelim & can change
+Go thru all current BF loot spawn methods make sure to convert everything 2 work w/ur new one-size-fits-all item gen method, delete all traces of old code that won't work anymore or aren't used
 
-Enemies carry what it looks like they're wielding & their class can use? I think this would be 2 restrictive tho so prolly don't use it
-Enemies who don't wield 2H in their sprites only carry 2H as random loot? This may be too restrictive, mite not wanna use this
-Non-magical or non-spellcasting enemies very rarely carry any ingredients, and almost never good ones
-Spellcasters carry ingredients/books more often & ingredients are on average better quality
-Thief types carry stolen gems/jewelry & more gold (stolen), more maps?
-Bards paintings & maps?
-Spellcasters often carry potions, other enemies (fighters and any others u think of) very rarely do
-Acrobats: lots of high quality clothing 4 exercising or running or w/e
-All cloak-wearing enemies drop cloaks alla time? If u feel like going thru enemy sprites, and I don't feel like it right now
+Non-magical or non-spellcasting enemies: -IC, +IQ, -PO, -POQ, xPOR, xPORQ
+Spellcasters: +IC, +IQ, +BK, +PO, POQ, +POR, PORQ
+Thief: +GJC, +GJQ, +G, MC? +MC?
+Burglar: GJC, +GJQ, +G, PC? -PC?
+Bards +PC, -MC? MC?
+Acrobats: +CC, +CQ
 All class enemies drop clothing, quality depends on enemy
-Healers drop HP, Stamina pots alla time? If u feel like getting that specific w/potion gen
 Make item rarity in ItemTemplates some kind o' key that determines what enemies carry them & how rare they are? Do this at least for wpns/armor?
 
 When finished building item chance/quality list at end of this section, to add this as code, convert + to 3, normal to 2, - to 1, x to 0, add finished array 2 code in BossfallItemBuilder up top as field as follows:
@@ -281,16 +270,15 @@ static Dictionary<byte, byte[]> enemyItemGenData = new Dictionary<byte, byte[]>(
 
 where byte = MobileEnemy.ID and byte[] is the enemy item chance/quality list converted to an array
 
-In Bossfall.Init add the actual values to the dictionary? Or can u initialize the dictionary w/values in it already? Figure out how 2 instantiate it and add ur item chance/quality list obv
-
-If u wanna do above method, put number next to symbol first rather than overwriting symbol right away, that way u can dbl check & verify that number matches symbol & is what it should be before deleting symbol
-
-If above idea fails, u have another option, this one facilitates error-checking - still create a new dictionary, but Value is string[] instead of byte[], read the actual strings from the array and throw exceptions if strings do not match what they should (I mite like this way better as I don't have to wonder if I input the right 2 or 3 or 1 as I'll never know the difference unless I check every single enemy for loot repeatedly & I don't really want to do that)
+In Bossfall.Init initialize the dictionary w/values in it already, store dictionary in BFItemBuilder
+Re-order below list once entries are complete 2 match ascending order of enemy IDs(dbl check 4 accuracy ofc)
+Don't copy/paste entire item array collection 2 BFItemBuilder once complete - copy/paste each enemy's item array one @ a time (name included) so u can dbl check the enemy item array ends up in the right order
+When u convert item symbol arrays w/Find/Replace 2 ints, convert special symbols (e.g. +G, -G, xG) first, then as last step convert regular symbols to int (e.g. G), dbl check 4 accuracy as u go ofc
 
 Implement item generation changes from section below this one as follows:
 
 Higher gold amount doubles gold generated in BossfallItemBuilder
-Lower gold amount halves gold generated in BossfallItemBuilder
+Lower gold amount quarters? halves? gold generated in BossfallItemBuilder
 
 For higher bow/weapon/armor/magic item quality indicators:
 
@@ -313,9 +301,9 @@ Make this clothing generation while loop NOT generate any kind of cloak (they're
 Higher armor/ingredient/book/religious item/clothing chance raises starting while loop chance in BossfallItemBuilder by 50 for that item group
 Lower armor/ingredient/book/religious item/clothing chance reduces starting while loop chance in BossfallItemBuilder by 50 for that item group
 
-Higher ingredient quality generates from highest quality ingredient list (if that differentiation has already been made in vanilla code, if not make a custom list)
-Normal ingredient quality generates from mid-tier quality ingredient list (if that differentiation has already been made in vanilla code, if not make a custom list)
-Lower ingredient quality generates from lowest quality ingredient list (if that differentiation has already been made in vanilla code, if not make a custom list)
+Higher ingredient quality generates using all ingredients (if that differentiation has already been made in vanilla code, if not make a custom list)
+Normal ingredient quality generates using mid-tier ingredient list & lower (if that differentiation has already been made in vanilla code, if not make a custom list)
+Lower ingredient quality generates using low-tier ingredient list only (if that differentiation has already been made in vanilla code, if not make a custom list)
 
 Higher magic item chance raises starting while loop chance in BossfallItemBuilder by 3 for magic item group (or whatever number is necessary to not always be 0 or less if Lower indicator is raised)
 Lower magic item chance reduces starting while loop chance in BossfallItemBuilder by 3 for magic item group (or whatever number is necessary to not always be 0 or less if Lower indicator is raised)
@@ -365,7 +353,7 @@ Higher jewelry chance is 15
 Normal jewelry chance is 10
 Lower jewelry chance is 5
 
-Higher jewelry quality can generate jewelry of any rarity
+Higher jewelry quality selects from all jewelry
 Normal jewelry quality can generate jewelry with rarities up to 17 (item rarities are set in ItemTemplates.txt)
 Lower jewelry quality can generate jewelry with rarities up to 13 (item rarities are set in ItemTemplates.txt)
 
@@ -536,9 +524,9 @@ Non-boss set item chance: xSI
 
 Monsters:
 
-Imp:
-Spriggan:
-Orc:
+Imp: -G, xWQ, xBQ, xAQ, x2H, x1H, x1HS, x21H, xBC, xAC, -IC, +IQ, xMI, xMIQ, xBK, xPO, xPOQ, -POR, -PORQ, -MC, xRIC, xRIQ, -GJC, +GJQ, xPC, xCC, xCQ, xCLC, xCLQ, xSI
+Spriggan: xG, xWQ, xBQ, xAQ, x2H, x1H, x1HS, x21H, xBC, xAC, +IC, -IQ, xMI, xMIQ, xBK, xPO, xPOQ, xPOR, xPOQ, xMC, xRIC, xRIQ, xGJC, xGJQ, xPC, xCC, xCQ, xCLC, xCLQ, xSI
+Orc: -G, -WQ, xBQ, -AQ, +2H, +1H, x1HS, 21H, xBC, -AC, xIC, xIQ, xMI, xMIQ, xBK, xPO, xPOQ, xPOR, xPORQ, xMC, +RIC, -RIQ, -GJC, -GJQ, xPC, -CC, -CQ, -CLC, -CLQ, xSI
 Centaur:
 Nymph:
 Orc Sergeant:
@@ -777,7 +765,7 @@ Coven: 0.25 lM, lots o' religious items, books, magic items, higher chance o' Da
 
 MISCELLANEOUS:
 
-Credit "thevm" for this fix - armor durability is being dmged even if player fully blocks all incoming dmg w/Shield, make it so if Shield blocks all dmg armor doesn't get dmged
+Credit "thevm" for this fix - armor durability is being dmged even if player fully blocks all incoming dmg w/Shield, make it so if Shield blocks all dmg armor doesn't get dmged (to accomplish this, check 4 shield presence in BossfallOverrides.CalculateAttackDamage, dmg armor if appropriate, use code in DaggerfallEntity.DecreaseHealth as template)
 Rework Spell Absorption Special Advantage and from the Item Maker - make it not 100%. Similar to how the spell Spell Absorption works? Or dependent on your WIL? Once rework's done, re-enable Spell Absorption from character creation & from Item Maker
 Add avatar to DFWorkshop & NexusMods (the Ancient Lich pose from Bossfall cover picture?)
 De-link extended enemy activation distance from DisplayEnemyLevel ON setting? Currently only displays msgs for enemies at longer range than vanilla if that setting is ON, change it if it really matters to you...
