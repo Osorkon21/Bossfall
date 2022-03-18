@@ -9,9 +9,7 @@
                 "PowerfulEnemiesAre": "1",
                 "EnemyMoveSpeed": "1",
                 "SkillAdvancementDifficulty": "1",
-                "BossProximityWarning": "True",
-                "DisplayEnemyLevel": "True",
-                "AlternateLootPiles": "True"
+                "BossProximityWarning": "True"
             },
             "Miscellaneous": {
                 "DisplayEnemyLevel": "True",

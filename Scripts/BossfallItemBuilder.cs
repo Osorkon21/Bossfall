@@ -20,7 +20,6 @@ using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Utility;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace BossfallMod.Items
@@ -65,7 +64,7 @@ namespace BossfallMod.Items
 
         // This array is mostly vanilla code from LootTables, but I changed it to be a readonly instance method. I also changed
         // some numbers for Bossfall's custom loot generation.
-        readonly LootChanceMatrix[] BossfallLootTables = new LootChanceMatrix[] {
+        readonly LootChanceMatrix[] bossfallLootTables = new LootChanceMatrix[] {
             new LootChanceMatrix() {key = "-", MinGold = 0, MaxGold = 0, P1 = 0, P2 = 0, C1 = 0, C2 = 0, C3 = 0, M1 = 0, AM = 0, WP = 0, MI = 0, CL = 0, BK = 0, M2 = 0, RL = 0 },
             new LootChanceMatrix() {key = "A", MinGold = 1, MaxGold = 10, P1 = 0, P2 = 0, C1 = 0, C2 = 0, C3 = 0, M1 = 0, AM = 5, WP = 5, MI = 2, CL = 4, BK = 0, M2 = 2, RL = 0 },
             new LootChanceMatrix() {key = "B", MinGold = 0, MaxGold = 0, P1 = 10, P2 = 10, C1 = 0, C2 = 0, C3 = 0, M1 = 0, AM = 0, WP = 0, MI = 0, CL = 0, BK = 0, M2 = 0, RL = 0 },
@@ -198,17 +197,17 @@ namespace BossfallMod.Items
         LootChanceMatrix GetMatrix(string key)
         {
             // I reroute this call to an array contained in this script.
-            for (int i = 0; i < BossfallLootTables.Length; i++)
+            for (int i = 0; i < bossfallLootTables.Length; i++)
             {
                 // I reroute this call to an array contained in this script.
-                if (BossfallLootTables[i].key == key)
+                if (bossfallLootTables[i].key == key)
 
                     // I reroute this call to an array contained in this script.
-                    return BossfallLootTables[i];
+                    return bossfallLootTables[i];
             }
 
             // I reroute this call to an array contained in this script.
-            return BossfallLootTables[0];
+            return bossfallLootTables[0];
         }
 
         /// <summary>
@@ -740,21 +739,21 @@ namespace BossfallMod.Items
 
             DaggerfallUnityItem newItem = null;
 
-            // DELETE AFTER IMPLEMENTATION
-            // Reroute this to use ur custom MagicItemTemplates, do whatever u need to do to get this method to do that
-            MagicItemTemplate[] magicItems = DaggerfallUnity.Instance.ItemHelper.MagicItemTemplates;
+            // I reroute the call to a custom array of regular magic item templates.
+            MagicItemTemplate[] magicItems = BossfallMagicItemTemplates.Instance.CustomMagicItemTemplates;
 
-            MagicItemTemplate[] regularMagicItems = magicItems.Where(template => template.type == MagicItemTypes.RegularMagicItem).ToArray();
-            if (chosenItem > regularMagicItems.Length)
+            // I replaced "regularMagicItems" with "magicItems" in the line below.
+            if (chosenItem > magicItems.Length)
                 throw new Exception(string.Format("Magic item subclass {0} does not exist", chosenItem));
 
             // I send the "chooseAtRandom" call to a field in this script, which I copied from vanilla's ItemBuilder script.
             if (chosenItem == chooseAtRandom)
             {
-                chosenItem = UnityEngine.Random.Range(0, regularMagicItems.Length);
+                // I replaced "regularMagicItems" with "magicItems" in the line below.
+                chosenItem = UnityEngine.Random.Range(0, magicItems.Length);
             }
-
-            MagicItemTemplate magicItem = regularMagicItems[chosenItem];
+            // I replaced "regularMagicItems" with "magicItems" in the line below.
+            MagicItemTemplate magicItem = magicItems[chosenItem];
 
             ItemGroups group = 0;
             if (magicItem.group == 0)

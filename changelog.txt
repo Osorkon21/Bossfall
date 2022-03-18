@@ -20,15 +20,19 @@ All canned classes except for Barbarians start with 45 HP and gain 20 HP/lvl, Ba
 
 ITEMS:
 
-Arrow weights restored to vanilla values (in previous Bossfall versions arrows weighed something, I found this annoying)
+Arrow weights restored to vanilla's weight of 0 (in previous Bossfall versions arrows weighed something, I found this annoying)
 
 LOOT:
 
-Reduced armor piece generation chances for enemies that spawn with equipped armor
+Reduced each armor piece's generation chance by approx. 38% for enemies that spawn with equipped armor
+
+MAGIC ITEMS:
+
+All non-quest-reward magic items are custom and have different names, enchantments, and/or uses
 
 POTIONS:
 
-Slightly increased potion generation chance for all enemies that can spawn with them
+Increased potion generation chance by 33% for all enemies that can spawn with them
 
 QUESTING:
 
@@ -48,7 +52,6 @@ Make sure enemy spellcasters cast proper number o' spells & u approve
 Test vampire/lycan on enemy death stuff make sure u approve
 Test dungeon entrance flavor msgs w/a few dungeons make sure u approve
 Test skill advancement difficulty on all 3 settings make sure u approve?
-Test magic item creation make sure ur items r the ones getting created
 Test potion creation make sure Dispel Magic potion (use console 2 create potions) & potion recipe (from Alchemist shops) get created
 Test item creation w/enemies that use starting equipment w/out mods make sure it works & u approve
 Test item creation w/enemies that use starting equipment w/mods (RPR:I mainly) make sure it works & u approve
@@ -57,16 +60,22 @@ Test startup quest make sure it pops on new game start
 
 BOSSFALL v1.3.1 TO-DO:
 
+.DFMOD DL FOLDER CONTENTS:
+
+bossfall.dfmod for appropriate OS
+README, main copy is on desktop (quick run through of important changes up top, then full v1.3.1 Changelog below that)
+StreamingAssets/Quests folder w/Bossfall quests that remove Assassins from ez aboveground quests (pull list from GitHub), advise users to paste entire folder on their StreamingAssets folder, say "yes" to overwrite/replace old file versions
+
 .DFMOD ESSENTIALS:
 
+Implement ur previous justice system changes? U can change rep hit for crime easily (I think), changing court window to follow ur previous changes will take a lot more time I think? Do this if really motivated
+Add Bossfall Soul Gem Soul Points value array 2 SoulBound script using Reflection (it's static I think)
 Change falling dmg (follow .DFMOD NOTES section for specific guidance)
-Additional wpn swing fatigue cost in BFPlayerActivate Update method (22 extra Fat/swing IIRC, I want it to be the same as vanilla BF, which is 33? Verify all these numbers 2 make sure ofc)
-Use ur BossfallMagicItemTemplates 2 create all magic items
+Additional wpn swing fatigue cost in new BossfallPlayerEntity? (think of better name if possible) script's Update method (22 extra Fat/swing IIRC, I want it to be the same as vanilla BF, which is 33? Verify all these numbers 2 make sure ofc)
 40 Spell Cost FormulaOverride for enemies (remember 2 register it w/RegisterOverride)
 Add Potion of Dispel Magic
-Skill difficulty formula override, use previous skill difficulty tables, vary by Bossfall difficulty setting
-Bossfall startup quest
-Add BossfallEnemyDeath event handler 4 vampire/lycan on death stuff in BossfallEnemyMotor 2 make it instanced by enemy? Or do it @ end o' FormulaOverride CalculateAttackDamage? See how u did it in v1.3 for guidance
+Bossfall startup quest (u will need 2 add a Bossfall-QuestList or whatever as a new file, see base game's QuestList file for template)
+Add BossfallEnemyDeath event handler 4 vampire/lycan on death stuff in BossfallEnemyMotor 2 make it instanced by enemy? See how u did it in v1.3 for guidance
 Include StreamingAssets/Quests folder alongside .dfmod file in DL package that contains ur altered vanilla quests, add "put this whole folder in StreamingAssets/Quests if u don't wanna fite Assassins early" note
 Include updated v1.3.1 Changelog in DL package
 
@@ -81,9 +90,8 @@ In BFEnemyMotor in spellcast bools include check 4 enemy's current HP if it's fu
 Change Legal Info on NexusMods & 3rd forum post, include blurb about "not all code was written by me, I've marked all code I didn't write, check code for author before using/crediting"
 Read thru all scripts, make sure u remove all unnecessary Debug.Log lines and DWI/DELETE WHEN IMPLEMENTED references (after implementing them ofc) b4 releasing anything
 In ur enemy loot generation methods, for the (up to) 2 random custom items @ the end, use ItemHelper.GetCustomItemsForGroup(ItemGroups.Weapons) or (ItemGroups.Armor) to find custom wpns/armor & if that method returns something add one or two custom items
-Advise users of .dfmod to always put Bossfall last, Meaner Monsters, Unleveled Loot, & RPR:I will conflict w/Bossfall
+Advise users of .dfmod to put Bossfall below Meaner Monsters, Unleveled Loot, PCAO, & RPR:I, as those will change BF behavior (if player wants to ofc)
 5189333 is ur Dispel Magic potion key (that uses ur custom Dispel Magic potion recipe)
-Create a custom SpellRecords.json file? If this will allow u to easily implement previous Bossfall spell changes, DFU will load it and overwrite vanilla's SpellRecords.txt with ur custom data, remember to include it in Bossfall mod Assets
 If u add BossfallEnemyDeath script remember to add this component to custom enemies in BossfallOnLootSpawned method in Bossfall.cs
 GameManager.Instance.Dungeon.Summary.DungeonType (or whatever) can be called to see what dungeon type ur entering, use that for ur dungeon entrance flavor msgs, make popup HUD msgs last twice as long as normal? (or SETTING: Make actual msg box popup 2 display ur dungeon entrance flavor txt?)
 Add fastMoveSpeeds array to BossfallOverrides populate it w/Bossfall EnemyBasics MoveSpeed field contents
@@ -91,10 +99,8 @@ Add skill method override to BossfallOverrides, remember 2 register it w/Formula
 Download latest version of all used mods to make sure latest versions work w/Bossfall .dfmod b4 releasing anything
 Update all FAQ questions (if necessary) for relevance after .dfmod release on NexusMods and 3rd forum post
 Add "why doesn't Disable AI work" FAQ question to NexusMods & 3rd forum post
-Add mod interaction settings so Bossfall is always positioned last? If necessary ofc
 Write Bossfall .dfmod
-After implementing previous version's changes to Bossfall .dfmod add proper section to v1.3.1 Changelog, use old changelog comments if possible, if necessary edit lines for brevity/clarity, delete old line(s), if u can't do it w/current mod support or w/Reflection add IMPOSSIBLE
-End goal is clear changelog below v1.3.1 section as it's all been added, but this is a long-term goal not a v1.3.1 goal
+After implementing previous version's changes to Bossfall .dfmod add proper section to v1.3.1 Changelog, use old changelog comments if possible, if necessary edit lines for brevity/clarity, delete old line(s), if u can't find a way to add previous changes add IMPOSSIBLE before previous Changelog's entry
 Update lines of code & comments added or modified in 2 NexusMods credits spots & 3rd forum post, just put lines o' code & comments in .dfmod
 Remove lines of comments from 2 NexusMods credits spots and 3rd forum post
 Update time spent in 2 NexusMods credits spots & 3rd forum post, just put "worked on since mid-October 2021", whatever that value in months is
@@ -124,11 +130,6 @@ If player with Lycanthropy kills a Guard "Guard just died." message is replaced 
 
 Make heal happen only if player kills enemy, include distance check from GitHub Bossfall branch so player only heals in melee range
 Figure something out that only fires when player kills an enemy and use that
-Edit ur current Vampire msg array, make them generic, not enemy specific
-Edit ur current Vampire msg array for tense make any msg fit any enemy name
-Add 1 to Zombie/FleshAtronach elements in VampireHealAmount array
-Delete current Zombie/FleshAtronach death msgs from Vampire msg array, delete all empty strings from same array as well, delete Harpy msg from same array as well
-Display random msg from separate array filled w/gross msgs if VampireHealAmount array element == 1, msgs are "You retch on old %s blood.", "You gag on foul %s blood.", etc.
 Display random msg from current Vampire msg array if VampireHealAmount array element > 1, call string.Replace(%s) method, put %s in all msgs 2 indicate where to put enemy name
 Add screenshot of Vampire HUD message (an eye-catching msg) to NexusMods, and to forum post somewhere from post 1-3
 Add +10 player HP for Vampire civilian NPC kills, pop up standard Vampire on kill HUD msg, put this check in wherever u end up putting Vampire checks
@@ -763,8 +764,13 @@ HomePoor: 0.1 lM
 Graveyard 0.1 lM, gen standard adventuring loot
 Coven: 0.25 lM, lots o' religious items, books, magic items, higher chance o' Daedric
 
+MAGIC ITEMS:
+
+Greatly increase cost of any magic item w/cost above 1000 (to avoid nerfing cheap effects like Heal), multiply it by 10-20? U can do this in CreateMagicItem (or whatever) in BFItemBuilder
+
 MISCELLANEOUS:
 
+End goal is clear changelog below v1.3.1 section as that means you've added all previous changes to .dfmod (delete previous Changelog version's entries as u add them to .dfmod)
 Credit "thevm" for this fix - armor durability is being dmged even if player fully blocks all incoming dmg w/Shield, make it so if Shield blocks all dmg armor doesn't get dmged (to accomplish this, check 4 shield presence in BossfallOverrides.CalculateAttackDamage, dmg armor if appropriate, use code in DaggerfallEntity.DecreaseHealth as template)
 Rework Spell Absorption Special Advantage and from the Item Maker - make it not 100%. Similar to how the spell Spell Absorption works? Or dependent on your WIL? Once rework's done, re-enable Spell Absorption from character creation & from Item Maker
 Add avatar to DFWorkshop & NexusMods (the Ancient Lich pose from Bossfall cover picture?)
@@ -799,6 +805,7 @@ For ur store material tier caps make separate GenerateRandomMaterial method for 
 SPELLS:
 
 Mod template to use for new spells is in EntityEffectBroker in RegisterCustomEffectDemo & RaiseOnRegisterCustomEffectsEvent methods (do u want to use this w/ur new spells? prolly cuz u won't have a classic effect key)
+Create a custom SpellRecords.json file? If this will allow u to easily implement previous Bossfall spell changes, DFU will load it and overwrite vanilla's SpellRecords.txt with ur custom data, remember to include it in Bossfall mod
 
 ADD Enfeeble - all target types 'cept caster only, reduces target wpn damage (~33%?)
 ADD Fear - all target types 'cept caster only, reduces target armor (~33%?) & target accuracy (~33%?)

@@ -104,6 +104,7 @@ namespace BossfallMod
             go.AddComponent<BossfallItemBuilder>();
             go.AddComponent<BossfallOverrides>();
             go.AddComponent<BossfallEncounterTables>();
+            go.AddComponent<BossfallMagicItemTemplates>();
 
             // This gives enemies Bossfall stats.
             int index = 0;

@@ -18,9 +18,9 @@
         "Assets/Game/Mods/Bossfall/Scripts/BossfallEnemySenses.cs",
         "Assets/Game/Mods/Bossfall/Scripts/BossfallPlayerActivate.cs",
         "Assets/Game/Mods/Bossfall/Scripts/BossfallEventHandlers.cs",
-        "Assets/Game/Mods/Bossfall/BossfallMagicItemTemplates.json",
         "Assets/Game/Mods/Bossfall/Scripts/BossfallItemBuilder.cs",
         "Assets/Game/Mods/Bossfall/Scripts/BossfallItem.cs",
-        "Assets/Game/Mods/Bossfall/ItemTemplates.json"
+        "Assets/Game/Mods/Bossfall/ItemTemplates.json",
+        "Assets/Game/Mods/Bossfall/Scripts/BossfallMagicItemTemplates.cs"
     ]
 }
