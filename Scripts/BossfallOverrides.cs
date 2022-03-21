@@ -34,22 +34,10 @@ namespace BossfallMod.Formulas
     {
         #region Fields
 
-        // Expanded loot pile icon array. It replaces a vanilla array if the Alternate Loot Piles setting is on.
-        readonly int[] bossfallAlternateRandomTreasureIconIndices = new int[]
-        { 0,1,3,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,36,37,38,39,40,43,44,45,46,47 };
-
         /// <summary>
-        /// Most of this enormous array is copied from vanilla DFU's EnemyBasics script. I changed every monster's level,
-        /// HP, damage, or armor. In Bossfall spawn frequency generally determines monster difficulty. Common enemies
-        /// are weak and low level. As spawn frequency falls, monster Armor, HP, Level, and damage smoothly rise. Rare
-        /// enemies are very dangerous compared to vanilla. HP doesn't follow the standard DFU xd8 + 10 pattern - all
-        /// monsters have MaxHealth of (MinHealth * 3). Non-boss human HP is unchanged. All non-boss monsters (except
-        /// for those with Bonus To Hit: Humanoids) have a minimum damage of 1. Empty soul gems cost 50,000 gold so I
-        /// added 50,000 to all SoulPts for consistency otherwise filled soul gems would be too cheap. I also greatly
-        /// increased boss soul gem value. The only enemies that see Invisible are all bosses (except Orc Warlords),
-        /// Daedra Seducers, and Level 20 Mages/Sorcerers/Nightblades. I set every MinMetalToHit to None.
-        /// Weaknesses/resistances/immunities are implemented later in this script. I increased all monster weights to
-        /// reduce knockback stunlocks, and changed the field to a readonly instance field.
+        /// Most of this array is the Enemies field from vanilla's EnemyBasics script. I changed every monster's level, HP,
+        /// damage, and/or armor, SoulPts value, Weight, and MinMetalToHit. I changed the field to be a readonly instance
+        /// field and changed which enemies see Invisible. All comments are mine.
         /// </summary>
         readonly MobileEnemy[] bossfallEnemyStats = new MobileEnemy[]
         {
@@ -330,7 +318,7 @@ namespace BossfallMod.Formulas
                 Team = MobileTeams.Orcs,
             },
 
-            // Less damage, more HP. They don't wield weapons - they carried too much loot in
+            // Less damage, more HP. They don't wield weapons anymore - they carried too much loot in
             // vanilla. They move fast. They are never in dungeons or towns at night, only appearing in
             // daytime temperate and mountain wilderness.
             new MobileEnemy()
@@ -1061,7 +1049,7 @@ namespace BossfallMod.Formulas
                 MapChance = 0,
                 Weight = 100000,
                 LootTableKey = "E",
-                SoulPts = 60000,
+                SoulPts = 150000,
                 PrimaryAttackAnimFrames = new int[] { 0, 1, -1, 2, 3, 4, -1, 5 },
                 ChanceForAttack2 = 33,
                 PrimaryAttackAnimFrames2 = new int[] { 4, -1, 5, 0 },
@@ -1183,7 +1171,7 @@ namespace BossfallMod.Formulas
                 SeesThroughInvisibility = true,
                 LootTableKey = "Q",
                 NoShadow = true,
-                SoulPts = 1500000,
+                SoulPts = 2250000,
                 PrimaryAttackAnimFrames = new int[] { 0, 1, 2, 3, -1, 4, 5 },
                 SpellAnimFrames = new int[] { 1, 1, 5, 5 },
                 Team = MobileTeams.Undead,
@@ -1219,7 +1207,7 @@ namespace BossfallMod.Formulas
                 Weight = 100000,
                 SeesThroughInvisibility = true,
                 LootTableKey = "S",
-                SoulPts = 1500000,
+                SoulPts = 2250000,
                 PrimaryAttackAnimFrames = new int[] { 0, 1, -1, 2, 3, -1, 4 },
                 ChanceForAttack2 = 33,
                 PrimaryAttackAnimFrames2 = new int[] { 3, -1, 4, 0, -1, 4, 3, -1, 4, 0, -1, 4, 3 },
@@ -1303,7 +1291,7 @@ namespace BossfallMod.Formulas
                 Weight = 100000,
                 SeesThroughInvisibility = true,
                 LootTableKey = "S",
-                SoulPts = 1500000,
+                SoulPts = 2250000,
                 PrimaryAttackAnimFrames = new int[] { 0, 1, 1, 2, -1, 3, 4, 4 },
                 SpellAnimFrames = new int[] { 0, 1, 2, 3, 4 },
                 Team = MobileTeams.Undead,
@@ -2249,229 +2237,168 @@ namespace BossfallMod.Formulas
         };
 
         /// <summary>
-        /// This array represents enemy IDs from 0-38 (Rat to IceAtronach). Monsters in that ID range
-        /// have varying weapon resistances/immunities/weaknesses, and with this array I was able to greatly improve
-        /// code efficiency over the enormous if/else if list that was in previous versions of Bossfall.
+        /// This is the classicParamCosts field from vanilla DFU's SoulBound script, changed to a readonly instance array.
+        /// Comments indicate changes I made.
+        /// </summary>
+        readonly short[] enchantmentPointsByEnemyID = new short[]
+        {
+            -0, -10, -20, -0, -0, -0, -0, -10, -30, -90, -100, -0, -10, -30, -140, -0, -30, -0, -300, -100, -0, -30, -30, -300,
+
+            -15000, // Modified Orc Warlord value
+
+            -500, -500,
+
+            -1000, // Modified Daedroth value
+            -7500, // Modified Vampire value
+
+            -1500,
+
+            -22500, -22500, -7500, -22500, // Modified Ancient Vampire, Daedra Lord, Lich, Ancient Lich values
+
+            -0, -300, -300, -300, -300, -0,
+
+            -15000, // Modified Dragonling_Alternate value
+
+            -100, -100
+        };
+
+        /// <summary>
+        /// Vanilla treasure pile sprites.
+        /// </summary>
+        readonly int[] bossfallAlternateRandomTreasureIconIndices = new int[]
+        {
+            0, 1, 3, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 36, 37, 38, 39, 40, 43, 44, 45, 46, 47
+        };
+
+        /// <summary>
+        /// Covers enemy IDs 0-146. Player heals when they kill an enemy.
+        /// </summary>
+        readonly byte[] bossfallVampireHealAmounts = new byte[]
+        {
+            3, 2, 0, 3, 75, 50, 9, 40, 50, 40, 15, 5, 50, 15, 50, 0, 150, 1, 0, 0, 12, 45, 0, 0, 200, 0, 0, 100, 175, 150, 255,
+            255, 0, 0, 15, 0, 0, 1, 0, 0, 200, 20, 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 20, 25, 15, 15, 20, 20, 20, 25, 15, 20, 200,
+            35, 30, 35, 50, 45, 40, 50
+        };
+
+        readonly string[] bossfallVampireHUDMessages = new string[]
+        {
+            "You discard the drained %s.", "Barely any blood. Worthless %s.", "You gorge on %s blood.",
+            "You feast on %s blood.", "Not enough blood in this %s.", "You greedily lap up the %s's blood.",
+            "Fresh %s blood, and plenty of it!", "You ache for more %s blood.", "There's not much blood in the %s.",
+            "You guzzle the %s's blood.", "You yearn for more %s blood.", "%s blood. Almost enough to satisfy you.",
+            "Not much blood in this %s.", "You savor the %s's blood.", "%s blood revitalizes you!", "%s blood. So sweet...",
+            "This %s's blood is now yours.", "%s blood mends your wounds.", "%s blood sates your hunger. For now.",
+            "You feel the heady rush of %s blood!", "You crave more %s blood.", "Such powerful %s blood!",
+            "%s blood is marvelous. You want more.", "The %s succumbs to your fangs.", "You gulp down the %s's blood.",
+            "%s's blood cannot assuage your hunger.", "The %s's blood gushes into your mouth.", "You lust for more %s blood.",
+            "You rob the %s of blood.", "This %s's blood is delicious.", "You imbibe the %s's powerful blood!",
+            "You drain the %s of blood.", "You sup on the %s's vital fluids.", "You eagerly drink the %s's blood.",
+            "Hearty %s blood!", "This %s's blood fortifies you.", "The %s's blood fills your belly.",
+            "You consume the %s's blood. You want more.", "You exsanguinate the %s.", "You delight in the %s's blood.",
+            "You revel in %s blood.", "You desire more %s blood.", "You'd love more %s blood.",
+            "%s blood quenches your thirst. For now.", "You don't waste a drop of the %s's blood."
+        };
+
+        /// <summary>
+        /// Used when Vampire player characters kill a Zombie or Flesh Atronach.
+        /// </summary>
+        readonly string[] bossfallOldBloodHUDMessages = new string[]
+        {
+            "You gag on old %s blood.", "You retch on foul %s blood.", "You regurgitate the %s's blood.",
+            "Your stomach rebels at %s blood.", "You consume disgusting %s blood.", "There's no good blood in this %s.",
+            "You can't stand %s blood.", "Worthless %s blood.", "This %s blood tastes awful.",
+            "Even you can't drink the %s's blood.", "You crave anything other than %s blood.",
+            "%s blood. What a waste of time.", "%s blood tastes as vile as it smells.", "Old %s blood fails to satisfy you."
+        };
+
+        /// <summary>
+        /// Used when player with Lycanthropy kills an innocent.
+        /// </summary>
+        readonly string[] bossfallInnocentHUDMessages = new string[]
+        {
+            "Your urge to kill subsides.", "The innocent collapses.", "The innocent breathes their last.",
+            "One final twitch and the innocent goes still.", "A pool of blood spreads from the innocent.",
+            "You shed innocent blood.", "You are soaked with innocent blood.", "Your urge to hunt fades.",
+            "You tear innocent flesh from bone.", "You spill innocent blood.", "The innocent shrieks, then goes silent.",
+            "You lock eyes with the dying innocent.", "Blood fountains from the innocent's neck.",
+            "Innocent blood soaks the ground.", "Life fades from the innocent's eyes.", "Your urge to hunt recedes.",
+            "The innocent recoils, then falls.", "You end an innocent life.", "Innocent screams fill the air.",
+            "The innocent gasps, then goes limp.", "You cut short an innocent life.", "The innocent lies in a broken heap.",
+            "Blood gushes from the innocent's chest.", "Eyes wide with shock, the innocent topples.",
+            "Silently, the innocent expires.", "You wipe innocent blood from your face.", "You stop an innocent heart.",
+            "The innocent crumples to the ground.", "Blood spouts from the innocent's mouth.",
+            "Writhing, the innocent drops to the earth.", "An innocent heart beats no more.",
+            "With a pitiful moan, the innocent dies.", "The innocent's mangled body lies still.",
+            "Your face is covered with innocent blood.", "Your urge to hunt dissipates.", "You snuff out an innocent life.",
+            "An innocent corpse lies at your feet.", "Blood spurts from the innocent's belly."
+        };
+
+        /// <summary>
+        /// Covers enemy IDs from 0-146.
+        /// </summary>
+        readonly float[] fastMoveSpeeds = new float[]
+        {
+            6.5f, 5.5f, 3f, 8f, 6.75f, 7.25f, 8f, 5f, 7f, 8f, 4.5f, 4.5f, 5.75f, 7.5f, 7f, 6f, 6.5f, 3f, 3.5f, 3.5f, 7f, 5.25f,
+            3.5f, 4f, 6f, 4f, 7f, 6f, 9f, 7.5f, 12f, 7f, 4f, 4.5f, 7.5f, 7f, 3f, 3f, 3f, 0, 9f, 3.5f, 4f, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            4f, 7f, 6f, 4f, 4f, 7.5f, 6.5f, 7.5f, 7.5f, 8f, 7.5f, 9f, 7f, 4.5f, 4.5f, 6.5f, 5.75f, 5f, 8f
+        };
+
+        /// <summary>
+        /// Covers enemy IDs from 0-146.
+        /// </summary>
+        readonly float[] veryFastMoveSpeeds = new float[]
+        {
+            7f, 6f, 3f, 8.5f, 7.5f, 8f, 9f, 5f, 7.5f, 9f, 4.5f, 4.5f, 5.75f, 8f, 7.5f, 6f, 7f, 3f, 3.5f, 3.5f, 7.5f, 5.75f,
+            4.5f, 4f, 6.5f, 5f, 7.5f, 6.5f, 10f, 7.5f, 12f, 7.5f, 4f, 4.5f, 8f, 7.5f, 3f, 3f, 3f, 0, 10f, 3.5f, 4f, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 4f, 7.5f, 6f, 4f, 4f, 8f, 7f, 8f, 8f, 8.5f, 8f, 10f, 7.5f, 4.5f, 4.5f, 7f, 5.75f, 5f, 8.5f
+        };
+
+        /// <summary>
+        /// Covers enemy IDs from 0-38 (Rat to IceAtronach).
         /// </summary> 
-        readonly byte[] bossfallMonsterSpecialHandling = new byte[] { 0, 0, 1, 0, 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 13, 3, 0, 2,
-        5, 6, 4, 0, 7, 5, 0, 0, 11, 0, 12, 0, 12, 0, 12, 12, 0, 9, 8, 2, 10 };
+        readonly byte[] bossfallMonsterSpecialHandling = new byte[]
+        {
+            0, 0, 1, 0, 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 13, 3, 0, 2, 5, 6, 4, 0, 7, 5, 0, 0, 11, 0, 12, 0, 12, 0, 12, 12, 0, 9,
+            8, 2, 10
+        };
 
         /// <summary>
-        /// Each element in this array represents a weapon material, Iron through Daedric. Each material has a
-        /// (element / 1025) percent chance of being generated, unless the RandomMaterial formula override is generating items for an
-        /// enemy above level 15. In that case high tier material generation is more likely. Details are in my comments in the
-        /// RandomMaterial formula override.
+        /// Represents Iron through Daedric.
         /// </summary>
-        readonly short[] bossfallMaterialProbabilities = new short[] { 327, 654, 8, 12, 8, 5, 4, 3, 2, 1 };
-
-        /// <summary>
-        /// This 147-element monstrosity covers enemy IDs from 0-146 and determines how much HP Vampire player characters
-        /// heal when they kill a given enemy. Bossfall v1.3 healed Vampire players 2 HP with every successful Hand-to-Hand attack
-        /// whether or not it made sense to do so - I added this feature as an afterthought. I am not satisfied with my previous
-        /// addition and want to add something more memorable (and useful). This array is used to determine whether
-        /// Vampire player characters should be healed and by how much - more powerful enemies have more powerful blood so they
-        /// heal player more. Most of this array is unused filler as enemies with IDs 43-127 don't exist, but it's more efficient
-        /// to declare this whole thing and then search by ID without modification than it would be to declare a 62-element array
-        /// (to match the 62 enemies in DFU) and then subtract 85 from every enemy ID above 127 to get the correct index number.
-        /// </summary>
-        readonly byte[] bossfallVampireHealAmounts = new byte[] { 3, 2, 0, 3, 75, 50, 9, 40, 50, 40, 15, 5, 50, 15,
-        50, 0, 150, 1, 0, 0, 12, 45, 0, 0, 200, 0, 0, 100, 175, 150, 255, 255, 0, 0, 15, 0, 0, 1,
-        0, 0, 200, 20, 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 20, 25, 15, 15, 20, 20, 20, 25, 15, 20, 200, 35, 30, 35, 50, 45, 40, 50 };
-
-        /// <summary>
-        /// This array contains messages that are displayed after a Vampire player character kills an enemy with fresh blood. %s
-        /// is replaced with the enemy's name. I added these for extra roleplaying flavor.
-        /// </summary>
-        readonly string[] bossfallVampireHUDMessages = new string[] { "You discard the drained %s.",
-            "Barely any blood. Worthless %s.", "You gorge on %s blood.", "You feast on %s blood.", "Not enough blood in this %s.",
-            "You greedily lap up the %s's blood.", "Fresh %s blood, and plenty of it!", "You ache for more %s blood.",
-            "There's not much blood in the %s.", "You guzzle the %s's blood.", "You yearn for more %s blood.",
-            "%s blood. Almost enough to satisfy you.", "Not much blood in this %s.", "You savor the %s's blood.",
-            "%s blood revitalizes you!", "%s blood. So sweet...", "This %s's blood is now yours.", "%s blood mends your wounds.",
-            "%s blood sates your hunger. For now.", "You feel the heady rush of %s blood!", "You crave more %s blood.",
-            "Such powerful %s blood!", "%s blood is marvelous. You want more.", "The %s succumbs to your fangs.",
-            "You gulp down the %s's blood.", "%s's blood cannot assuage your hunger.", "The %s's blood gushes into your mouth.",
-            "You lust for more %s blood.", "You rob the %s of blood.", "This %s's blood is delicious.",
-            "You imbibe the %s's powerful blood!", "You drain the %s of blood.", "You sup on the %s's vital fluids.",
-            "You eagerly drink the %s's blood.", "Hearty %s blood!", "This %s's blood fortifies you.",
-            "The %s's blood fills your belly.", "You consume the %s's blood. You want more.", "You exsanguinate the %s.",
-            "You delight in the %s's blood.", "You revel in %s blood.", "You desire more %s blood.", "You'd love more %s blood.",
-            "%s blood quenches your thirst. For now.", "You don't waste a drop of the %s's blood." };
-
-        /// <summary>
-        /// This array contains messages that are displayed when Vampire player characters kill a Zombie or Flesh Atronach. %s
-        /// is replaced with the enemy's name. I added these for extra roleplaying flavor.
-        /// </summary>
-        readonly string[] bossfallOldBloodHUDMessages = new string[] { "You gag on old %s blood.", "You retch on foul %s blood.",
-            "You regurgitate the %s's blood.", "Your stomach rebels at %s blood.", "You consume disgusting %s blood.",
-            "There's no good blood in this %s.", "You can't stand %s blood.", "Worthless %s blood.", "This %s blood tastes awful.",
-            "Even you can't drink the %s's blood.", "You crave anything other than %s blood.", "%s blood. What a waste of time.",
-            "%s blood tastes as vile as it smells.", "Old %s blood fails to satisfy you." };
-
-        /// <summary>
-        /// When a player with stage two Lycanthropy kills an innocent a string is randomly selected from this array
-        /// and displayed as a HUD message. Added for extra roleplaying flavor.
-        /// </summary>
-        readonly string[] bossfallInnocentHUDMessages = new string[] { "Your urge to kill subsides.", "The innocent collapses.",
-        "The innocent breathes their last.", "One final twitch and the innocent goes still.", "A pool of blood spreads from the innocent.",
-        "You shed innocent blood.", "You are soaked with innocent blood.", "Your urge to hunt fades.", "You tear innocent flesh from bone.",
-        "You spill innocent blood.", "The innocent shrieks, then goes silent.", "You lock eyes with the dying innocent.",
-        "Blood fountains from the innocent's neck.", "Innocent blood soaks the ground.", "Life fades from the innocent's eyes.",
-        "Your urge to hunt recedes.", "The innocent recoils, then falls.", "You end an innocent life.", "Innocent screams fill the air.",
-        "The innocent gasps, then goes limp.", "You cut short an innocent life.", "The innocent lies in a broken heap.",
-        "Blood gushes from the innocent's chest.", "Eyes wide with shock, the innocent topples.", "Silently, the innocent expires.",
-        "You wipe innocent blood from your face.", "You stop an innocent heart.", "The innocent crumples to the ground.",
-        "Blood spouts from the innocent's mouth.", "Writhing, the innocent drops to the earth.", "An innocent heart beats no more.",
-        "With a pitiful moan, the innocent dies.", "The innocent's mangled body lies still.", "Your face is covered with innocent blood.",
-        "Your urge to hunt dissipates.", "You snuff out an innocent life.", "An innocent corpse lies at your feet." };
-
-        /// <summary>
-        /// This monstrosity represents enemy move speeds by enemy ID and covers IDs from 0-146. This array is used
-        /// if the "Enemy Move Speed" setting is "Fast", and these speeds are Bossfall v1.3 enemy move speeds. I use this array to
-        /// make the enemy movespeed selection process much faster than the giant if/else if tree I had in TakeAction in versions
-        /// v1.2.1 and earlier. Most of this array is unused filler as enemies with IDs 43-127 don't exist, but it's more efficient
-        /// to declare this whole thing and then search by ID without modification than it would be to declare a 62-element array
-        /// (to match the 62 enemies in DFU) and then subtract 85 from every enemy ID above 127 to get the correct index number.
-        /// </summary>
-        readonly float[] fastMoveSpeeds = new float[] { 7f, 6f, 3f, 8.5f, 7.5f, 8f, 9f, 5f, 7.5f, 9f, 4.5f, 4.5f, 5.75f, 8f,
-        7.5f, 6f, 7f, 3f, 3.5f, 3.5f, 7.5f, 5.75f, 4.5f, 4f, 6.5f, 5f, 7.5f, 6.5f, 10f, 7.5f, 12f, 7.5f, 4f, 4.5f, 8f, 7.5f, 3f, 3f,
-        3f, 0, 10f, 3.5f, 4f, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4f, 7.5f, 6f, 4f, 4f, 8f, 7f, 8f, 8f, 8.5f, 8f, 10f, 7.5f, 4.5f, 4.5f, 7f, 5.75f, 5f, 8.5f };
-
-        /// <summary>
-        /// This monstrosity represents enemy move speeds by enemy ID and covers IDs from 0-146. This array is used if the
-        /// "Enemy Move Speed" setting is "Very Fast", and these speeds are Bossfall v1.2.1 enemy move speeds. I use this array to
-        /// make the enemy movespeed selection process much faster than the giant if/else if tree I had in TakeAction in versions
-        /// v1.2.1 and earlier. Most of this array is unused filler as enemies with IDs 43-127 don't exist, but it's more efficient
-        /// to declare this whole thing and then search by ID without modification than it would be to declare a 62-element array
-        /// (to match the 62 enemies in DFU) and then subtract 85 from every enemy ID above 127 to get the correct index number.
-        /// </summary>
-        readonly float[] veryFastMoveSpeeds = new float[] { 7f, 6f, 3f, 8.5f, 7.5f, 8f, 9f, 5f, 7.5f, 9f, 4.5f, 4.5f, 5.75f, 8f,
-        7.5f, 6f, 7f, 3f, 3.5f, 3.5f, 7.5f, 5.75f, 4.5f, 4f, 6.5f, 5f, 7.5f, 6.5f, 10f, 7.5f, 12f, 7.5f, 4f, 4.5f, 8f, 7.5f, 3f, 3f,
-        3f, 0, 10f, 3.5f, 4f, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4f, 7.5f, 6f, 4f, 4f, 8f, 7f, 8f, 8f, 8.5f, 8f, 10f, 7.5f, 4.5f, 4.5f, 7f, 5.75f, 5f, 8.5f };
+        readonly short[] bossfallMaterialProbabilities = new short[]
+        {
+            327, 654, 8, 12, 8, 5, 4, 3, 2, 1
+        };
 
         #endregion
 
         #region Properties
 
-        /// <summary>
-        /// Returns the only instance of BossfallOverrides.
-        /// </summary>
         public static BossfallOverrides Instance { get { return Bossfall.Instance.GetComponent<BossfallOverrides>(); } }
 
-        /// <summary>
-        /// Returns an expanded array of treasure pile sprites.
-        /// </summary>
+        public MobileEnemy[] BossfallEnemyStats { get { return bossfallEnemyStats; } }
+        public short[] EnchantmentPointsByEnemyID { get { return enchantmentPointsByEnemyID; } }
         public int[] BossfallAlternateRandomTreasureIconIndices { get { return bossfallAlternateRandomTreasureIconIndices; } }
 
-        /// <summary>
-        /// Returns Bossfall's array of enemy stats.
-        /// </summary>
-        public MobileEnemy[] BossfallEnemyStats { get { return bossfallEnemyStats; } }
-
-        /// <summary>
-        /// Returns HP heal amounts keyed to enemy IDs.
-        /// </summary>
         public byte[] BossfallVampireHealAmounts { get { return bossfallVampireHealAmounts; } }
-
-        /// <summary>
-        /// Returns an array filled with vampire-related messages.
-        /// </summary>
         public string[] BossfallVampireHUDMessages { get { return bossfallVampireHUDMessages; } }
-
-        /// <summary>
-        /// Returns an array filled with messages if Vampire player character kills a Zombie or Flesh Atronach.
-        /// </summary>
         public string[] BossfallOldBloodHUDMessages { get { return bossfallOldBloodHUDMessages; } }
 
-        /// <summary>
-        /// Returns an array filled with lycanthropy-related messages.
-        /// </summary>
         public string[] BossfallInnocentHUDMessages { get { return bossfallInnocentHUDMessages; } }
 
-        /// <summary>
-        /// Returns an array of custom enemy move speeds.
-        /// </summary>
         public float[] FastMoveSpeeds { get { return fastMoveSpeeds; } }
-
-        /// <summary>
-        /// Returns an array of custom enemy move speeds.
-        /// </summary>
         public float[] VeryFastMoveSpeeds { get { return veryFastMoveSpeeds; } }
 
         #endregion
 
-        #region Generic Overrides
+        #region Public Methods
 
-        /// <summary>
-        /// This method makes shields of high tier materials actually useful. Leather/Chain/Steel/Silver shield armor
-        /// unchanged from vanilla. An Iron shield grants 1 less armor than vanilla, an Elven shield grants 1 more
-        /// armor than vanilla, a Dwarven shield grants 2 more armor than vanilla, etc.
-        /// </summary>
-        /// <returns>Shield armor value, adjusted for shield material.</returns>
-        public int BossfallShieldArmorValue(DaggerfallUnityItem item)
-        {
-            int shieldMaterialModifier;
-
-            switch (item.nativeMaterialValue)
-            {
-                case (int)ArmorMaterialTypes.Iron:
-                    shieldMaterialModifier = -1;
-                    break;
-                case (int)ArmorMaterialTypes.Elven:
-                    shieldMaterialModifier = 1;
-                    break;
-                case (int)ArmorMaterialTypes.Dwarven:
-                    shieldMaterialModifier = 2;
-                    break;
-                case (int)ArmorMaterialTypes.Mithril:
-                case (int)ArmorMaterialTypes.Adamantium:
-                    shieldMaterialModifier = 3;
-                    break;
-                case (int)ArmorMaterialTypes.Ebony:
-                    shieldMaterialModifier = 4;
-                    break;
-                case (int)ArmorMaterialTypes.Orcish:
-                    shieldMaterialModifier = 5;
-                    break;
-                case (int)ArmorMaterialTypes.Daedric:
-                    shieldMaterialModifier = 6;
-                    break;
-
-                default:
-                    shieldMaterialModifier = 0;
-                    break;
-            }
-
-            switch (item.TemplateIndex)
-            {
-                case (int)Armor.Buckler:
-                    return 1 + shieldMaterialModifier;
-                case (int)Armor.Round_Shield:
-                    return 2 + shieldMaterialModifier;
-                case (int)Armor.Kite_Shield:
-                    return 3 + shieldMaterialModifier;
-                case (int)Armor.Tower_Shield:
-                    return 4 + shieldMaterialModifier;
-
-                default:
-                    return 0;
-            }
-        }
-
-        #endregion
-
-        #region FormulaHelper Overrides
-
-        /// <summary>
-        /// This method registers Bossfall's numerous formula overrides.
-        /// </summary>
-        /// <param name="mod">The mod providing the override - Bossfall in this case.</param>
         public void RegisterOverrides(Mod mod)
         {
             FormulaHelper.RegisterOverride<Func<int, int>>(mod, "DamageModifier", DamageModifier);
@@ -2501,11 +2428,60 @@ namespace BossfallMod.Formulas
             FormulaHelper.RegisterOverride<Func<int, ArmorMaterialTypes>>(mod, "RandomArmorMaterial", RandomArmorMaterial);
         }
 
-        /// <summary>
-        /// This bool detects WeaponStates that are Hand-to-Hand punch attacks. I use this to rework H2H skill.
-        /// </summary>
-        /// <param name="onscreenWeapon">The weapon displayed on player's HUD.</param>
-        /// <returns>True if attack type is a punch when using Hand-to-Hand.</returns>
+        public int BossfallShieldArmorValue(DaggerfallUnityItem shield)
+        {
+            int shieldMaterialModifier;
+
+            switch (shield.nativeMaterialValue)
+            {
+                case (int)ArmorMaterialTypes.Iron:
+                    shieldMaterialModifier = -1;
+                    break;
+                case (int)ArmorMaterialTypes.Elven:
+                    shieldMaterialModifier = 1;
+                    break;
+                case (int)ArmorMaterialTypes.Dwarven:
+                    shieldMaterialModifier = 2;
+                    break;
+                case (int)ArmorMaterialTypes.Mithril:
+                case (int)ArmorMaterialTypes.Adamantium:
+                    shieldMaterialModifier = 3;
+                    break;
+                case (int)ArmorMaterialTypes.Ebony:
+                    shieldMaterialModifier = 4;
+                    break;
+                case (int)ArmorMaterialTypes.Orcish:
+                    shieldMaterialModifier = 5;
+                    break;
+                case (int)ArmorMaterialTypes.Daedric:
+                    shieldMaterialModifier = 6;
+                    break;
+
+                default:
+                    shieldMaterialModifier = 0;
+                    break;
+            }
+
+            switch (shield.TemplateIndex)
+            {
+                case (int)Armor.Buckler:
+                    return 1 + shieldMaterialModifier;
+                case (int)Armor.Round_Shield:
+                    return 2 + shieldMaterialModifier;
+                case (int)Armor.Kite_Shield:
+                    return 3 + shieldMaterialModifier;
+                case (int)Armor.Tower_Shield:
+                    return 4 + shieldMaterialModifier;
+
+                default:
+                    return 0;
+            }
+        }
+
+        #endregion
+
+        #region Private Methods
+
         bool IsPunch(FPSWeapon onscreenWeapon)
         {
             if (onscreenWeapon != null)
@@ -2520,6 +2496,10 @@ namespace BossfallMod.Formulas
             return false;
         }
 
+        #endregion
+
+        #region FormulaHelper Method Overrides
+
         /// <summary>
         /// Formula is vanilla's, but I changed it to be an instance method and also replaced "5f" with "10f" to match
         /// scaling of other stats.
@@ -2532,10 +2512,7 @@ namespace BossfallMod.Formulas
         }
 
         /// <summary>
-        /// Formula is vanilla's, changed to an instance method. Comments precede changes or additions I made. Changes to
-        /// this formula are relatively pointless without changes to ClimbingMotor - there are several constant base
-        /// success percentages and a skill check override in that script that effectively negate changes I make here.
-        /// Unless I change what script is used for climbing, this method change is the best I can do.
+        /// Formula is vanilla's, changed to an instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <param name="player">Player entity.</param>
         /// <param name="basePercentSuccess">I didn't use this in my new climbing skill checks.</param>
@@ -2560,9 +2537,7 @@ namespace BossfallMod.Formulas
         }
 
         /// <summary>
-        /// Formula is vanilla's, but I changed it to be an instance method and set all minimum damages to 1. I made the
-        /// damage change very early on when I was trying to make the game more realistic. My realism craze has faded but
-        /// this change remains.
+        /// Formula is vanilla's, but I changed it to be an instance method and set all minimum damages to 1.
         /// </summary>
         /// <param name="weapon">Weapon type.</param>
         /// <returns>1 for every weapon.</returns>
@@ -2615,15 +2590,15 @@ namespace BossfallMod.Formulas
             PlayerEntity player = GameManager.Instance.PlayerEntity;
             short skillID = 0;
 
-            // These variables are used in my new calculations.
+            // I added these variables.
             DaggerfallUnityItem gloves = player.ItemEquipTable.GetItem(EquipSlots.Gloves);
             DaggerfallUnityItem boots = player.ItemEquipTable.GetItem(EquipSlots.Feet);
             DaggerfallUnityItem poisonWeapon = attacker.ItemEquipTable.GetItem(EquipSlots.RightHand);
             EnemyEntity enemyTarget = target as EnemyEntity;
             EnemyEntity AIAttacker = attacker as EnemyEntity;
 
-            // I modified this check to also make human class enemies use Hand-to-Hand if that would be more
-            // effective. This makes humans far more dangerous at higher levels, which is one of Bossfall's main goals.
+            // I modified this check to make human class enemies use Hand-to-Hand if that would be more
+            // effective. This makes humans far more dangerous at higher levels.
             if (AIAttacker != null && weapon != null)
             {
                 int weaponAverage = (weapon.GetBaseDamageMin() + weapon.GetBaseDamageMax()) / 2;
@@ -2670,9 +2645,7 @@ namespace BossfallMod.Formulas
                 chanceToHitMod += backstabChance;
 
                 // This long list checks whether player's H2H attacks are punches or kicks and buffs
-                // to-hit rolls according to what armor material is on player's hands or feet. To-hit bonuses
-                // scale exactly like vanilla DFU weapon materials. Leather, Chain, Steel, and Silver do not
-                // change to-hit rolls. If player is using a weapon or in wereform these checks don't run.
+                // to-hit rolls according to what armor material is on player's hands or feet.
                 if (skillID == (short)DFCareer.Skills.HandToHand
                     && GameManager.Instance.WeaponManager.ScreenWeapon.WeaponType != WeaponTypes.Werecreature)
                 {
@@ -2813,13 +2786,7 @@ namespace BossfallMod.Formulas
 
             // I moved poison formulas out of the weapon != null check. Enemies with poisoned weapons
             // now usually use Hand-to-Hand and I want their poison to be inflicted anyway, so I check
-            // right-handed items for poison and apply that poison to the target. Enemies only spawn with poison
-            // on right-handed items, so from the player's perspective enemy poison functions exactly like
-            // vanilla, which is my goal. This method comes with some downsides. For instance, if poisoned weapons
-            // ever become a part of the player's arsenal (added by mods, I assume) this formula will never
-            // apply poison if player is using a poisoned weapon with their left hand. If that circumstance ever
-            // arises I'll have to revisit this formula. Note the Assassin customization - their poison will
-            // bypass player's Poison Immunity, but only if player is at least level 7.
+            // right-handed items for poison and apply that poison to the target.
             if (damage > 0 && poisonWeapon != null && poisonWeapon.poisonType != Poisons.None)
             {
                 if (AIAttacker.MobileEnemy.ID == (int)MobileTypes.Assassin && GameManager.Instance.PlayerEntity.Level > 6)
@@ -2838,10 +2805,7 @@ namespace BossfallMod.Formulas
 
             DamageEquipment(attacker, target, damage, weapon, struckBodyPart);
 
-            // This inflicts durability damage on player's gloves or boots depending on whether H2H attack is a punch
-            // or kick. I didn't put this in the DamageEquipment formula override because then I'd have to re-declare a bunch of local
-            // variables and I assume that would be less efficient. If player misses their H2H attack, is using a weapon, or in
-            // wereform, these checks don't run.
+            // This damages player's gloves or boots dependent on whether H2H attack is a punch or kick.
             if (attacker == player && skillID == (short)DFCareer.Skills.HandToHand && damage > 0
              && GameManager.Instance.WeaponManager.ScreenWeapon.WeaponType != WeaponTypes.Werecreature)
             {
@@ -2864,25 +2828,15 @@ namespace BossfallMod.Formulas
                 }
             }
 
-            // I desperately needed to improve implementation of Bossfall's custom enemy weapon immunities, resistances, and
-            // weaknesses, as the massive if/else if list I used previously was not ideal. This switch tree is the most efficient
-            // option I came up with. Enemy special handling checks are run if the player lands a hit and is not in wereform, the enemy
-            // ID is less than 39, and the element at the index matching the enemy's ID in the enemySpecialHandling array is greater
-            // than 0. I don't think DFU mods support enums, so I can't use the enumerations I used previously to make the case selection
-            // more readable. I didn't want to split enemy special handling into a bunch of different functions as then I'd have to
-            // re-declare a ton of variables and run checks to find out if player is using Hand-to-Hand, which I assume is less efficient.
+            // Implements Bossfall's custom enemy weapon immunities, resistances, and weaknesses.
             if (attacker == player && damage > 0 && enemyTarget.MobileEnemy.ID < 39
              && GameManager.Instance.WeaponManager.ScreenWeapon.WeaponType != WeaponTypes.Werecreature)
             {
-                // If array element keyed to enemy ID is 0, don't do anything.
                 if (bossfallMonsterSpecialHandling[enemyTarget.MobileEnemy.ID] != 0)
                 {
-                    // Gives me access to instance variables for HUD messages.
                     BossfallEnemyMotor motor = enemyTarget.EntityBehaviour.GetComponent<BossfallEnemyMotor>();
 
-                    // If enemy requires special handling, this enormous switch goes through all possible enemy/weapon combinations.
-                    // Whenever anything custom happens a HUD message is displayed so player knows what's happening. HUD messages
-                    // are displayed once per enemy per weapon/material type used, for a total of six possible unique HUD messages.
+                    // This enormous switch goes through all possible enemy/weapon combinations.
                     switch (bossfallMonsterSpecialHandling[enemyTarget.MobileEnemy.ID])
                     {
                         // Spriggan
@@ -3610,8 +3564,7 @@ namespace BossfallMod.Formulas
         /// <returns>Adjusted weapon attack damage.</returns>
         public int CalculateWeaponAttackDamage(DaggerfallEntity attacker, DaggerfallEntity target, int damageModifier, int weaponAnimTime, DaggerfallUnityItem weapon)
         {
-            // I copied this variable from the "CalculateAttackDamage" function as I already knew
-            // it worked. With this I could add bonus damage based on what type of enemy is attacking player.
+            // I added this variable.
             EnemyEntity AIAttacker = attacker as EnemyEntity;
 
             int damage = UnityEngine.Random.Range(weapon.GetBaseDamageMin(), weapon.GetBaseDamageMax() + 1) + damageModifier;
@@ -3646,8 +3599,7 @@ namespace BossfallMod.Formulas
         /// <returns>Adjusted Hand-to-Hand damage.</returns>
         public int CalculateHandToHandAttackDamage(DaggerfallEntity attacker, DaggerfallEntity target, int damageModifier)
         {
-            // I copied this variable from the "CalculateAttackDamage" function as I already knew
-            // it worked. With this I could add bonus damage based on what type of enemy is attacking player.
+            // I added this variable.
             EnemyEntity AIAttacker = attacker as EnemyEntity;
 
             int minBaseDamage = FormulaHelper.CalculateHandToHandMinDamage(attacker.Skills.GetLiveSkillValue(DFCareer.Skills.HandToHand));
@@ -4045,7 +3997,7 @@ namespace BossfallMod.Formulas
         public int RollRandomSpawn_LocationNight()
         {
             // I don't want to use vanilla's random spawn methods. By returning 1, vanilla will never create
-            // a FoeSpawner for random encounters. Instead, if roll is 0 I create a FoeSpawner that mimics vanilla spawn
+            // a FoeSpawner for random encounters. Instead, if I roll a 0 I create a FoeSpawner that mimics vanilla spawn
             // behavior but uses Bossfall's expanded encounter tables.
             if (UnityEngine.Random.Range(0, 40 + 1) == 0)
             {
@@ -4062,7 +4014,7 @@ namespace BossfallMod.Formulas
         public int RollRandomSpawn_WildernessDay()
         {
             // I don't want to use vanilla's random spawn methods. By returning 1, vanilla will never create
-            // a FoeSpawner for random encounters. Instead, if roll is 0 I create a FoeSpawner that mimics vanilla spawn
+            // a FoeSpawner for random encounters. Instead, if I roll a 0 I create a FoeSpawner that mimics vanilla spawn
             // behavior but uses Bossfall's expanded encounter tables.
             if (UnityEngine.Random.Range(0, 40 + 1) == 0)
             {
@@ -4079,7 +4031,7 @@ namespace BossfallMod.Formulas
         public int RollRandomSpawn_WildernessNight()
         {
             // I don't want to use vanilla's random spawn methods. By returning 1, vanilla will never create
-            // a FoeSpawner for random encounters. Instead, if roll is 0 I create a FoeSpawner that mimics vanilla spawn
+            // a FoeSpawner for random encounters. Instead, if I roll a 0 I create a FoeSpawner that mimics vanilla spawn
             // behavior but uses Bossfall's expanded encounter tables.
             if (UnityEngine.Random.Range(0, 40 + 1) == 0)
             {
@@ -4098,7 +4050,7 @@ namespace BossfallMod.Formulas
             if (GameManager.Instance.PlayerEntity.EnemyAlertActive)
             {
                 // I don't want to use vanilla's random spawn methods. By returning 1, vanilla will never create
-                // a FoeSpawner for random encounters. Instead, if roll is 0 I create a FoeSpawner that mimics vanilla spawn
+                // a FoeSpawner for random encounters. Instead, if I roll a 0 I create a FoeSpawner that mimics vanilla spawn
                 // behavior but uses Bossfall's expanded encounter tables.
                 if (UnityEngine.Random.Range(0, 40 + 1) == 0)
                 {
@@ -4128,34 +4080,14 @@ namespace BossfallMod.Formulas
         /// <returns>WeaponMaterialTypes value of material selected.</returns>
         public WeaponMaterialTypes RandomMaterial(int enemyLevelModifier)
         {
-            // If you are already familiar with how item materials are generated in vanilla DFU, you likely
-            // won't learn anything from my long paragraph immediately below. I wrote this long comment because I had
-            // a very hard time figuring out precisely how item materials were generated even after I read the vanilla
-            // comments and an explanation on the forums. If anybody else is as confused as I initially was, hopefully
-            // my extended paragraph will help make item material generation clearer. This explanation is for Bossfall
-            // loot generation - the numbers I use are different from vanilla DFU, but the process is similar.
-
-            // In Bossfall when a weapon or plate armor item is generated from a loot pile or an enemy
-            // below level 16, this method generates a random number from 0 to 1024. A result of 327 or less generates
-            // an Iron item, while a result of 328 to 981 or less generates a Steel item. A result of 982 to 1024
-            // generates Silver through Daedric - as material tier increases, generation chance decreases, and a result
-            // of 1024 is required to generate a Daedric item. The random number from this function is not changed by
-            // player level or any other player-dependent factors, which results in Bossfall's unleveled static drop
-            // chances for all materials. Once the enemy is level 16 or higher, progressively higher values
-            // (50 per level above 15) are added to the random number from this method, which often results in a
-            // value higher than 1024. If the value is 1024 or higher, a Daedric item will be generated.
-
-            // enemyLevelModifier is (enemy level * 50).
+            // I changed this line. The enemyLevelModifier is (enemy level * 50).
             int levelModifier = enemyLevelModifier - 750;
 
-            // Without this check, enemies below level 15 would never drop anything but Iron or Steel. I want
-            // the player to (rarely) find great loot anywhere.
+            // Without this check, enemies below level 15 would never drop anything but Iron or Steel.
             if (levelModifier < 0)
                 levelModifier = 0;
 
-            // I increased the maximum range from vanilla's 256 to 1024. In Bossfall v1.1 I failed to include
-            // the +1 modifier at the end, which had embarrassing results. Enemies below level 11, loot piles, and stores
-            // never generated Daedric items. *facepalm*
+            // I increased the maximum range from vanilla's 256 to 1024.
             int randomModifier = UnityEngine.Random.Range(0, 1024 + 1);
 
             int combinedModifiers = levelModifier + randomModifier;
@@ -4165,8 +4097,7 @@ namespace BossfallMod.Formulas
 
             int material = 0;
 
-            // I changed this "while" to use an array I declare in this script rather than call one from
-            // vanilla DFU's ItemBuilder script. I did this so I could greatly increase rarity of high tier materials. 
+            // I changed this "while" to use an array from this script.
             while (bossfallMaterialProbabilities[material] < combinedModifiers)
             {
                 combinedModifiers -= bossfallMaterialProbabilities[material++];

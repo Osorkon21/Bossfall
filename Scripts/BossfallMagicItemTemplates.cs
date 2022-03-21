@@ -2409,9 +2409,6 @@ namespace BossfallMod.Items
 
         #region Properties
 
-        /// <summary>
-        /// Returns the only instance of BossfallMagicItemTemplates.
-        /// </summary>
         public static BossfallMagicItemTemplates Instance { get { return Bossfall.Instance.GetComponent<BossfallMagicItemTemplates>(); } }
 
         public MagicItemTemplate[] CustomMagicItemTemplates { get { return customMagicItemTemplates; } }

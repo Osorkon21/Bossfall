@@ -25,12 +25,8 @@ namespace BossfallMod.Utility
         #region Fields
 
         /// <summary>
-        /// The EncounterTables array's skeleton is from vanilla DFU's RandomEncounters script. I rewrote
-        /// all the Enemies arrays. I greatly increased the length of every Enemies array so I could make bosses rarer. I
-        /// also added a lot more enemy variety. I implemented enemy variation by climate. Enemies I thought would prefer cold
-        /// or warm climates are rarer or don't appear in climates not matching their preference. Most dungeons have themes
-        /// and I give a quick overview of what to expect above each encounter table. I also changed the array to be a private
-        /// readonly instance field.
+        /// The EncounterTables array's skeleton is from vanilla DFU's RandomEncounters script, but I rewrote all the Enemies
+        /// arrays. I also changed the array to be a private readonly instance field.
         /// </summary>
         readonly RandomEncounterTable[] EncounterTables = new RandomEncounterTable[]
         {
@@ -6743,9 +6739,6 @@ namespace BossfallMod.Utility
 
         #region Properties
 
-        /// <summary>
-        /// Returns the only instance of BossfallEncounterTables.
-        /// </summary>
         public static BossfallEncounterTables Instance { get { return Bossfall.Instance.GetComponent<BossfallEncounterTables>(); } }
 
         #endregion
@@ -6910,23 +6903,13 @@ namespace BossfallMod.Utility
             RandomEncounterTable encounterTable = EncounterTables[encounterTableIndex];
 
             // If the "Powerful Enemies Are" setting is "More Common" randomly pick an enemy from the first 100
-            // slots of the encounter table. When I made powerful enemies less common for Bossfall v1.3, I added 40 slots
-            // at the end of each encounter table and didn't change the first 100. So, by picking only from the first 100,
-            // the "More Common" setting uses v1.2.1 enemy rarities. I don't think this setting is balanced so I recommend
-            // using "Less Common".
+            // slots of the encounter table.
             if (Bossfall.Instance.PowerfulEnemiesAre == 0)
             {
                 return encounterTable.Enemies[Random.Range(0, 100)];
             }
 
-            // In Bossfall there are two types of random spawns. The first is dungeon enemies that spawn at set points
-            // in dungeon blocks, which is not handled here. The second is random spawns when player is resting in a dungeon or
-            // outside at certain locations and times, and that is what the line below handles. If the "Powerful Enemies Are"
-            // setting is "Less Common" (I recommend using this setting as I think it's the most balanced) a random enemy is
-            // selected from the entire array - this random selection is not altered by any external variables such as player level
-            // - and this random selection is how Bossfall implements unleveled enemies. How often a specific enemy spawns is
-            // determined by probabilities - that enemy has a (amount of times enemy is listed / length of the encounter table)
-            // percent chance of spawning every time this function is called.
+            // If the "Powerful Enemies Are" setting is "Less Common" a random enemy is selected from the array.
             return encounterTable.Enemies[Random.Range(0, encounterTable.Enemies.Length)];
         }
 

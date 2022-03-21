@@ -34,9 +34,6 @@ namespace BossfallMod.EnemyAI
         const float systemTimerUpdatesDivisor = .0549254f;
         const float classicSpawnDespawnExterior = 4096 * MeshReader.GlobalScale;
 
-        // I added the senses field.
-        EnemySenses senses;
-
         MobileUnit mobile;
         DaggerfallEntityBehaviour entityBehaviour;
         EnemyMotor motor;
@@ -59,8 +56,8 @@ namespace BossfallMod.EnemyAI
         float classicDespawnXZDist = 0f;
         float classicDespawnYDist = 0f;
 
-        // Using Reflection, this section of fields ends up reading from/assigning to private fields with identical identifiers
-        // in vanilla's EnemySenses script.
+        // I added the following 7 fields.
+        EnemySenses senses;
         FieldInfo distanceToPlayer;
         FieldInfo targetInSight;
         FieldInfo targetInEarshot;
@@ -82,16 +79,14 @@ namespace BossfallMod.EnemyAI
         #region Unity
 
         /// <summary>
-        /// I moved everything in vanilla DFU's EnemySenses Start method to this Awake method. I need some of them for my
-        /// canDetectInvisible check. This script is added after vanilla components are added so there won't be any conflicts.
+        /// I moved everything in vanilla DFU's EnemySenses Start method to this Awake method.
         /// </summary>
         void Awake()
         {
-            // I added the senses line.
+            // I added this line.
             senses = GetComponent<EnemySenses>();
 
-            // Using Reflection I access all private vanilla fields necessary to make Bossfall AI work with other mods that read
-            // vanilla AI data. Very little of this is necessary to make Bossfall AI work, but I don't want to break other mods.
+            // I added the next 7 lines. They're mostly not necessary for Bossfall. I added them so I don't break other mods.
             Type type = senses.GetType();
             distanceToPlayer = type.GetField("distanceToPlayer", BindingFlags.NonPublic | BindingFlags.Instance);
             targetInSight = type.GetField("targetInSight", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -120,11 +115,9 @@ namespace BossfallMod.EnemyAI
             classicDespawnXZDist = classicDespawnXZDistArray[index] * MeshReader.GlobalScale;
             classicDespawnYDist = classicDespawnYDistArray[index] * MeshReader.GlobalScale;
 
-            // Checks if an enemy is a Level 20 Mage, Sorcerer, or Nightblade. Only needs to be checked once.
+            // I added this. It checks if enemy is a Level 20 Mage, Sorcerer, or Nightblade.
             if (enemyEntity.Level == 20 && (mobile.Enemy.ID == 128 || mobile.Enemy.ID == 131 || mobile.Enemy.ID == 133))
-            {
                 CanDetectInvisible = true;
-            }
         }
 
         void FixedUpdate()
@@ -492,8 +485,7 @@ namespace BossfallMod.EnemyAI
                     if (!senses.QuestBehaviour && entityBehaviour && motor &&
                         (entityBehaviour.EntityType == EntityTypes.EnemyMonster || entityBehaviour.EntityType == EntityTypes.EnemyClass))
                     {
-                        // I rerouted this method call to a method I added to this script so I could change which
-                        // language skills pacify certain human enemies.
+                        // I rerouted this method call to a method I added to this script.
                         DFCareer.Skills languageSkill = GetBossfallLanguageSkill(enemyEntity.EntityType, enemyEntity.CareerIndex);
                         if (languageSkill != DFCareer.Skills.None)
                         {
@@ -503,14 +495,12 @@ namespace BossfallMod.EnemyAI
                                 motor.IsHostile = false;
                                 DaggerfallUI.AddHUDText(TextManager.Instance.GetLocalizedText("languagePacified").Replace("%e", enemyEntity.Name).Replace("%s", languageSkill.ToString()), 5);
 
-                                // I lowered TallySkill from 3 to 1. As far as I'm aware, no other skills tally more
-                                // than 1 on success. Bossfall greatly increases speed at which language skills level anyway.
+                                // I lowered TallySkill from 3 to 1.
                                 player.TallySkill(languageSkill, 1);
                             }
                             else
                                 // I removed the conditions that excluded Etiquette and Streetwise from getting tallies
-                                // if enemy pacification wasn't successful. Player will notice Etiquette and Streetwise increasing
-                                // at a much faster rate. All language skills now function the same way. I like consistency.
+                                // if enemy pacification wasn't successful.
                                 player.TallySkill(languageSkill, 1);
                         }
                     }
@@ -768,8 +758,7 @@ namespace BossfallMod.EnemyAI
             {
                 switch (careerIndex)
                 {
-                    // I added Sorcerers, Barbarians, and Rangers to the Streetwise list. Now class
-                    // enemies are half pacified by Streetwise and the other half Etiquette. I like balance.
+                    // I added Sorcerers, Barbarians, and Rangers to the Streetwise list.
                     case (int)ClassCareers.Burglar:
                     case (int)ClassCareers.Rogue:
                     case (int)ClassCareers.Acrobat:

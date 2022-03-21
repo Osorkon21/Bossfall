@@ -17,34 +17,15 @@ namespace BossfallMod.Items
 {
     #region Buckler
 
-    /// <summary>
-    /// There may be an easier way to do this, but I couldn't figure out how to vary vanilla shield armor values based
-    /// on shield material, so this creates a Buckler that acts exactly like vanilla's except its armor value varies
-    /// based on shield's material. I substitute this new Buckler wherever a vanilla loot function would normally
-    /// generate a vanilla Buckler.
-    /// </summary>
     public class Buckler : DaggerfallUnityItem
     {
         /// <summary>
-        /// I tried registering this Buckler type as a custom item but I ran into a serious problem. Vanilla has shield
-        /// detection hard coded into read-only properties and non-virtual methods so I couldn't make this new Buckler
-        /// act like a vanilla shield. As a rather desperate workaround, I then tried running the Buckler through a
-        /// base constructor that resets its item template to that of a vanilla Buckler. I was very surprised when it worked.
+        /// This creates an item that acts like a vanilla Buckler except its armor varies depending on material type.
         /// </summary>
-        public Buckler() : base(ItemGroups.Armor, (int)Armor.Buckler - 102)
-        { }
+        public Buckler() : base(ItemGroups.Armor, (int)Armor.Buckler - 102) { }
 
-        /// <summary>
-        /// Alternate constructor, used to restore this shield on game load.
-        /// </summary>
-        /// <param name="itemData">Item save data.</param>
-        public Buckler(ItemData_v1 itemData) : base(itemData)
-        { }
+        public Buckler(ItemData_v1 itemData) : base(itemData) { }
 
-        /// <summary>
-        /// Reroutes armor calculation to my new method.
-        /// </summary>
-        /// <returns>Shield armor, adjusted for shield material.</returns>
         public override int GetShieldArmorValue()
         {
             return BossfallOverrides.Instance.BossfallShieldArmorValue(this);
@@ -55,32 +36,15 @@ namespace BossfallMod.Items
 
     #region Round Shield
 
-    /// <summary>
-    /// There may be an easier way to do this, but I couldn't figure out how to vary vanilla shield armor values based
-    /// on shield material, so this creates a Round Shield that acts exactly like vanilla's except its armor value varies
-    /// based on shield's material. I substitute this new shield wherever a vanilla loot function would normally
-    /// generate a vanilla Round Shield.
-    /// </summary>
     public class RoundShield : DaggerfallUnityItem
     {
         /// <summary>
-        /// Vanilla has shield detection hard coded into read-only properties and non-virtual methods, so as a workaround
-        /// I run this shield through a base constructor that resets its item template to the vanilla shield value.
+        /// This creates an item that acts like a vanilla Round Shield except its armor varies depending on material type.
         /// </summary>
-        public RoundShield() : base(ItemGroups.Armor, (int)Armor.Round_Shield - 102)
-        { }
+        public RoundShield() : base(ItemGroups.Armor, (int)Armor.Round_Shield - 102) { }
 
-        /// <summary>
-        /// Alternate constructor, used to restore this shield on game load.
-        /// </summary>
-        /// <param name="itemData">Item save data.</param>
-        public RoundShield(ItemData_v1 itemData) : base(itemData)
-        { }
+        public RoundShield(ItemData_v1 itemData) : base(itemData) { }
 
-        /// <summary>
-        /// Reroutes armor calculation to my new method.
-        /// </summary>
-        /// <returns>Shield armor, adjusted for shield material.</returns>
         public override int GetShieldArmorValue()
         {
             return BossfallOverrides.Instance.BossfallShieldArmorValue(this);
@@ -91,32 +55,15 @@ namespace BossfallMod.Items
 
     #region Kite Shield
 
-    /// <summary>
-    /// There may be an easier way to do this, but I couldn't figure out how to vary vanilla shield armor values based
-    /// on shield material, so this creates a Kite Shield that acts exactly like vanilla's except its armor value varies
-    /// based on shield's material. I substitute this new shield wherever a vanilla loot function would normally
-    /// generate a vanilla Kite Shield.
-    /// </summary>
     public class KiteShield : DaggerfallUnityItem
     {
         /// <summary>
-        /// Vanilla has shield detection hard coded into read-only properties and non-virtual methods, so as a workaround
-        /// I run this shield through a base constructor that resets its item template to the vanilla shield value.
+        /// This creates an item that acts like a vanilla Kite Shield except its armor varies depending on material type.
         /// </summary>
-        public KiteShield() : base(ItemGroups.Armor, (int)Armor.Kite_Shield - 102)
-        { }
+        public KiteShield() : base(ItemGroups.Armor, (int)Armor.Kite_Shield - 102) { }
 
-        /// <summary>
-        /// Alternate constructor, used to restore this shield on game load.
-        /// </summary>
-        /// <param name="itemData">Item save data.</param>
-        public KiteShield(ItemData_v1 itemData) : base(itemData)
-        { }
+        public KiteShield(ItemData_v1 itemData) : base(itemData) { }
 
-        /// <summary>
-        /// Reroutes armor calculation to my new method.
-        /// </summary>
-        /// <returns>Shield armor, adjusted for shield material.</returns>
         public override int GetShieldArmorValue()
         {
             return BossfallOverrides.Instance.BossfallShieldArmorValue(this);
@@ -127,32 +74,15 @@ namespace BossfallMod.Items
 
     #region Tower Shield
 
-    /// <summary>
-    /// There may be an easier way to do this, but I couldn't figure out how to vary vanilla shield armor values based
-    /// on shield material, so this creates a Tower Shield that acts exactly like vanilla's except its armor value varies
-    /// based on shield's material. I substitute this new shield wherever a vanilla loot function would normally
-    /// generate a vanilla Tower Shield.
-    /// </summary>
     public class TowerShield : DaggerfallUnityItem
     {
         /// <summary>
-        /// Vanilla has shield detection hard coded into read-only properties and non-virtual methods, so as a workaround
-        /// I run this shield through a base constructor that resets its item template to the vanilla shield value.
+        /// This creates an item that acts like a vanilla Tower Shield except its armor varies depending on material type.
         /// </summary>
-        public TowerShield() : base(ItemGroups.Armor, (int)Armor.Tower_Shield - 102)
-        { }
+        public TowerShield() : base(ItemGroups.Armor, (int)Armor.Tower_Shield - 102) { }
 
-        /// <summary>
-        /// Alternate constructor, used to restore this shield on game load.
-        /// </summary>
-        /// <param name="itemData">Item save data.</param>
-        public TowerShield(ItemData_v1 itemData) : base(itemData)
-        { }
+        public TowerShield(ItemData_v1 itemData) : base(itemData) { }
 
-        /// <summary>
-        /// Reroutes armor calculation to my new method.
-        /// </summary>
-        /// <returns>Shield armor, adjusted for shield material.</returns>
         public override int GetShieldArmorValue()
         {
             return BossfallOverrides.Instance.BossfallShieldArmorValue(this);

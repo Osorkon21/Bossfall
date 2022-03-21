@@ -31,40 +31,73 @@ namespace BossfallMod.Items
     {
         #region Fields
 
-        // Vanilla's field from ItemBuilder. It was private and I needed it here.
+        // The following 11 fields are vanilla fields from ItemBuilder. I changed all the arrays to be instance fields.
         const int chooseAtRandom = -1;
 
-        // Vanilla's array from ItemBuilder, changed to be an instance field. It was private and I needed it here.
-        readonly short[] weightMultipliersByMaterial = new short[] { 4, 5, 4, 4, 3, 4, 4, 2, 4, 5 };
+        readonly short[] weightMultipliersByMaterial = new short[]
+        {
+            4, 5, 4, 4, 3, 4, 4, 2, 4, 5
+        };
 
-        // Vanilla's array from ItemBuilder, changed to be an instance field. It was private and I needed it here.
-        readonly short[] valueMultipliersByMaterial = new short[] { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512 };
+        readonly short[] valueMultipliersByMaterial = new short[]
+        {
+            1, 2, 4, 8, 16, 32, 64, 128, 256, 512
+        };
 
-        // Vanilla's arrays from ItemBuilder for enchanted item calculations, changed to be instance fields. They
-        // were private and I needed them here.
-        readonly int[] extraSpellPtsEnchantPts = new int[] { 0x1F4, 0x1F4, 0x1F4, 0x1F4, 0xC8, 0xC8, 0xC8, 0x2BC, 0x320,
-            0x384, 0x3E8 };
-        readonly int[] potentVsEnchantPts = new int [] { 0x320, 0x384, 0x3E8, 0x4B0 };
-        readonly int[] regensHealthEnchantPts = new int[] { 0x0FA0, 0x0BB8, 0x0BB8 };
-        readonly int[] vampiricEffectEnchantPts = new int[] { 0x7D0, 0x3E8 };
-        readonly int[] increasedWeightAllowanceEnchantPts = new int[] { 0x190, 0x258 };
-        readonly int[] improvesTalentsEnchantPts = new int[] { 0x1F4, 0x258, 0x258 };
-        readonly int[] goodRepWithEnchantPts = new int[] { 0x3E8, 0x3E8, 0x3E8, 0x3E8, 0x3E8, 0x1388 };
-        readonly ushort[] enchantmentPointCostsForNonParamTypes = new ushort[] { 0, 0x0F448, 0x0F63C, 0x0FF9C, 0x0FD44,
-            0, 0, 0, 0x384, 0x5DC, 0x384, 0x64, 0x2BC };
+        readonly int[] extraSpellPtsEnchantPts = new int[]
+        {
+            0x1F4, 0x1F4, 0x1F4, 0x1F4, 0xC8, 0xC8, 0xC8, 0x2BC, 0x320, 0x384, 0x3E8
+        };
 
-        // I assign vanilla's value to this field in Awake - I changed every field to be non-static so I can't refer to
-        // non-static fields in other field initializers.
+        readonly int[] potentVsEnchantPts = new int []
+        {
+            0x320, 0x384, 0x3E8, 0x4B0
+        };
+
+        readonly int[] regensHealthEnchantPts = new int[]
+        {
+            0x0FA0, 0x0BB8, 0x0BB8
+        };
+
+        readonly int[] vampiricEffectEnchantPts = new int[]
+        {
+            0x7D0, 0x3E8
+        };
+
+        readonly int[] increasedWeightAllowanceEnchantPts = new int[]
+        {
+            0x190, 0x258
+        };
+
+        readonly int[] improvesTalentsEnchantPts = new int[]
+        {
+            0x1F4, 0x258, 0x258
+        };
+
+        readonly int[] goodRepWithEnchantPts = new int[]
+        {
+            0x3E8, 0x3E8, 0x3E8, 0x3E8, 0x3E8, 0x1388
+        };
+
+        readonly ushort[] enchantmentPointCostsForNonParamTypes = new ushort[]
+        {
+            0, 0x0F448, 0x0F63C, 0x0FF9C, 0x0FD44, 0, 0, 0, 0x384, 0x5DC, 0x384, 0x64, 0x2BC
+        };
+
+        // Vanilla's array from ItemBuilder, changed to be a non-readonly instance field. I assign vanilla's value to this
+        // field in Awake.
         int[][] enchantmentPtsForItemPowerArrays;
 
-        // This array is used to greatly reduce high tier material durability. Durability decreases as material tier increases.
-        // I want high tier materials to be treated like the powerful weapons they are - very useful, but they won't last long.
-        // I think that makes it more exciting when the player finds something good.
-        readonly short[] bossfallConditionMultipliersByMaterial = new short[] { 2, 3, 2, 2, 2, 1, 1, 1, 1, 1 };
+        // This array represents materials, Iron through Daedric. Durability decreases as material tier increases.
+        readonly short[] bossfallConditionMultipliersByMaterial = new short[]
+        {
+            2, 3, 2, 2, 2, 1, 1, 1, 1, 1
+        };
 
         // This array is mostly vanilla code from LootTables, but I changed it to be a readonly instance method. I also changed
         // some numbers for Bossfall's custom loot generation.
-        readonly LootChanceMatrix[] bossfallLootTables = new LootChanceMatrix[] {
+        readonly LootChanceMatrix[] bossfallLootTables = new LootChanceMatrix[]
+        {
             new LootChanceMatrix() {key = "-", MinGold = 0, MaxGold = 0, P1 = 0, P2 = 0, C1 = 0, C2 = 0, C3 = 0, M1 = 0, AM = 0, WP = 0, MI = 0, CL = 0, BK = 0, M2 = 0, RL = 0 },
             new LootChanceMatrix() {key = "A", MinGold = 1, MaxGold = 10, P1 = 0, P2 = 0, C1 = 0, C2 = 0, C3 = 0, M1 = 0, AM = 5, WP = 5, MI = 2, CL = 4, BK = 0, M2 = 2, RL = 0 },
             new LootChanceMatrix() {key = "B", MinGold = 0, MaxGold = 0, P1 = 10, P2 = 10, C1 = 0, C2 = 0, C3 = 0, M1 = 0, AM = 0, WP = 0, MI = 0, CL = 0, BK = 0, M2 = 0, RL = 0 },
@@ -93,9 +126,6 @@ namespace BossfallMod.Items
 
         #region Properties
 
-        /// <summary>
-        /// Returns the only instance of BossfallItemBuilder.
-        /// </summary>
         public static BossfallItemBuilder Instance { get { return Bossfall.Instance.GetComponent<BossfallItemBuilder>(); } }
 
         #endregion
@@ -104,11 +134,14 @@ namespace BossfallMod.Items
 
         void Awake()
         {
-            // I assign vanilla's value to the field here, I can't do it in field initialization as I changed all fields
-            // to be non-static.
-            enchantmentPtsForItemPowerArrays = new int[][] { null, null, null, extraSpellPtsEnchantPts, potentVsEnchantPts,
-                regensHealthEnchantPts, vampiricEffectEnchantPts, increasedWeightAllowanceEnchantPts, null, null, null, null,
-                null, improvesTalentsEnchantPts, goodRepWithEnchantPts};
+            // I assign vanilla's value from the ItemBuilder script to this field, which is also from vanilla's ItemBuilder
+            // script.
+            enchantmentPtsForItemPowerArrays = new int[][]
+            {
+                null, null, null, extraSpellPtsEnchantPts, potentVsEnchantPts, regensHealthEnchantPts, vampiricEffectEnchantPts,
+                increasedWeightAllowanceEnchantPts, null, null, null, null, null, improvesTalentsEnchantPts,
+                goodRepWithEnchantPts
+            };
         }
 
         #endregion
@@ -225,18 +258,16 @@ namespace BossfallMod.Items
             // I added "UnityEngine." to the below line.
             UnityEngine.Random.InitState(items.GetHashCode());
 
-            // I removed vanilla's formula for gold generation based on player level and replaced it with this
-            // awkward-looking formula. This randomly generates gold amounts that don't vary based on player level. When a
-            // gold pile is generated for an enemy there's a 20% chance of the playerMod being above 1. The playerMod is
-            // then multiplied by a number between MinGold and MaxGold, which originate from this script's BossfallLootTables
-            // array. The playerMod can be as high as 20 so the gold pile can be quite large.
-
             // DELETE WHEN IMPLEMENTED
             // Make gold generated scale w/enemy level rather than player's, don't just use enemyLevelModifier tho as then gold
             // would be way too ez to get... think of another scaling system
-            int roll = Dice100.Roll();
+
             int playerMod;
 
+            // I added this declaration.
+            int roll = Dice100.Roll();
+
+            // I added this condition tree. It randomly determines how much gold will be generated and ignores player level.
             if (roll > 80)
             {
                 if (roll > 85)
@@ -314,6 +345,7 @@ namespace BossfallMod.Items
             {
                 // I replaced playerEntity.Level with enemyLevelModifier and rerouted the method call.
                 items.Add(CreateRandomWeapon(enemyLevelModifier));
+
                 chance *= 0.5f;
             }
 
@@ -322,6 +354,7 @@ namespace BossfallMod.Items
             {
                 // I replaced playerEntity.Level with enemyLevelModifier and rerouted the method call.
                 items.Add(CreateRandomArmor(enemyLevelModifier, playerEntity.Gender, playerEntity.Race));
+
                 chance *= 0.5f;
             }
 
@@ -342,6 +375,7 @@ namespace BossfallMod.Items
             {
                 // I replaced playerEntity.Level with enemyLevelModifier and rerouted the method call.
                 items.Add(CreateRandomMagicItem(enemyLevelModifier, playerEntity.Gender, playerEntity.Race));
+
                 chance *= 0.5f;
             }
 
@@ -364,6 +398,7 @@ namespace BossfallMod.Items
             {
                 // I rerouted the method call to a method in this script.
                 items.Add(CreateRandomReligiousItem());
+
                 chance *= 0.5f;
             }
 
@@ -371,7 +406,7 @@ namespace BossfallMod.Items
         }
 
         /// <summary>
-        /// Vanilla's method from LootTables, changed to be an instance method. Comments precede changes or additions I made.
+        /// Vanilla's method from LootTables, changed to be an instance method.
         /// </summary>
         /// <param name="chance">Generation chance.</param>
         /// <param name="ingredientGroup">Which ingredient group to generate items from.</param>
@@ -465,6 +500,7 @@ namespace BossfallMod.Items
 
             // I added "ItemBuilder." to send it to vanilla's ItemBuilder method.
             DaggerfallUnityItem newItem = ItemBuilder.CreateItem(ItemGroups.MiscItems, (int)MiscItems.Soul_trap);
+
             newItem.TrappedSoulType = soul;
             MobileEnemy mobileEnemy = GameObjectHelper.EnemyDict[(int)soul];
 
@@ -490,6 +526,7 @@ namespace BossfallMod.Items
                 // I changed the maximum value from 20 to 30. Arrows now spawned with this function
                 // generate in stacks of up to 30.
                 newItem.stackCount = UnityEngine.Random.Range(1, 30 + 1);
+
                 newItem.currentCondition = 0;
             }
             else
@@ -530,6 +567,7 @@ namespace BossfallMod.Items
                 // I changed the maximum value from 20 to 30. Now arrows generated in shops and on
                 // enemies spawn in stacks of up to 30.
                 newItem.stackCount = UnityEngine.Random.Range(1, 30 + 1);
+
                 newItem.currentCondition = 0;
                 newItem.nativeMaterialValue = 0;
             }
@@ -780,10 +818,12 @@ namespace BossfallMod.Items
                 // I pass on enemyLevelModifier so loot scales with enemy level rather than player's. I also reroute the method
                 // call to a method in this script.
                 newItem = CreateRandomArmor(enemyLevelModifier, gender, race);
+
             else if (group == ItemGroups.MensClothing || group == ItemGroups.WomensClothing)
 
                 // I added "ItemBuilder." to send it to vanilla's ItemBuilder method.
                 newItem = ItemBuilder.CreateRandomClothing(gender, race);
+
             else if (group == ItemGroups.ReligiousItems)
             {
                 // I reroute the method call to a method contained in this script.
@@ -891,6 +931,7 @@ namespace BossfallMod.Items
 
             // I reroute the array call to an array contained in this script.
             float matQuarterKgs = (float)(quarterKgs * weightMultipliersByMaterial[(int)material]) / 4;
+
             return Mathf.Round(matQuarterKgs) / 4;
         }
 
@@ -931,6 +972,7 @@ namespace BossfallMod.Items
                 // I reroute the method call to a method contained in this script and pass enemyLevelModifier on to
                 // FormulaHelper.RandomMaterial method rather than the player's level.
                 DaggerfallUnityItem weapon = CreateWeapon((Weapons)item, FormulaHelper.RandomMaterial(enemyLevelModifier));
+
                 enemyEntity.ItemEquipTable.EquipItem(weapon, true, false);
                 enemyEntity.Items.AddItem(weapon);
 
@@ -944,6 +986,7 @@ namespace BossfallMod.Items
                     // instead of "Items.Armor". I also reroute the method call to a method contained in this script and
                     // pass enemyLevelModifier on to FormulaHelper.RandomArmorMaterial method rather than the player's level.
                     DaggerfallUnityItem armor = CreateArmor(playerGender, race, (Armor)item, FormulaHelper.RandomArmorMaterial(enemyLevelModifier));
+
                     enemyEntity.ItemEquipTable.EquipItem(armor, true, false);
                     enemyEntity.Items.AddItem(armor);
                 }
@@ -954,6 +997,7 @@ namespace BossfallMod.Items
                     // I reroute the method call to a method contained in this script and pass enemyLevelModifier on to
                     // FormulaHelper.RandomMaterial method rather than the player's level.
                     weapon = CreateWeapon((Weapons)item, FormulaHelper.RandomMaterial(enemyLevelModifier));
+
                     enemyEntity.ItemEquipTable.EquipItem(weapon, true, false);
                     enemyEntity.Items.AddItem(weapon);
                 }
@@ -965,6 +1009,7 @@ namespace BossfallMod.Items
                 // I reroute the method call to a method contained in this script and pass enemyLevelModifier on to
                 // FormulaHelper.RandomMaterial method rather than the player's level.
                 DaggerfallUnityItem weapon = CreateWeapon((Weapons)item, FormulaHelper.RandomMaterial(enemyLevelModifier));
+
                 enemyEntity.ItemEquipTable.EquipItem(weapon, true, false);
                 enemyEntity.Items.AddItem(weapon);
 
@@ -972,6 +1017,7 @@ namespace BossfallMod.Items
 
                     // I didn't like how often enemies were generated with full suits of armor, so I reduced item generation chances.
                     chance = 45;
+
                 else if (variant == 2)
 
                     // I didn't like how often enemies were generated with full suits of armor, so I reduced item generation chances.
@@ -983,6 +1029,7 @@ namespace BossfallMod.Items
                 // I reroute the method call to a method contained in this script and pass enemyLevelModifier on
                 // to FormulaHelper.RandomArmorMaterial method rather than the player's level.
                 DaggerfallUnityItem armor = CreateArmor(playerGender, race, Armor.Helm, FormulaHelper.RandomArmorMaterial(enemyLevelModifier));
+
                 enemyEntity.ItemEquipTable.EquipItem(armor, true, false);
                 enemyEntity.Items.AddItem(armor);
             }
@@ -992,6 +1039,7 @@ namespace BossfallMod.Items
                 // I reroute the method call to a method contained in this script and pass enemyLevelModifier on
                 // to FormulaHelper.RandomArmorMaterial method rather than the player's level.
                 DaggerfallUnityItem armor = CreateArmor(playerGender, race, Armor.Right_Pauldron, FormulaHelper.RandomArmorMaterial(enemyLevelModifier));
+
                 enemyEntity.ItemEquipTable.EquipItem(armor, true, false);
                 enemyEntity.Items.AddItem(armor);
             }
@@ -1001,6 +1049,7 @@ namespace BossfallMod.Items
                 // I reroute the method call to a method contained in this script and pass enemyLevelModifier on
                 // to FormulaHelper.RandomArmorMaterial method rather than the player's level.
                 DaggerfallUnityItem armor = CreateArmor(playerGender, race, Armor.Left_Pauldron, FormulaHelper.RandomArmorMaterial(enemyLevelModifier));
+
                 enemyEntity.ItemEquipTable.EquipItem(armor, true, false);
                 enemyEntity.Items.AddItem(armor);
             }
@@ -1010,6 +1059,7 @@ namespace BossfallMod.Items
                 // I reroute the method call to a method contained in this script and pass enemyLevelModifier on
                 // to FormulaHelper.RandomArmorMaterial method rather than the player's level.
                 DaggerfallUnityItem armor = CreateArmor(playerGender, race, Armor.Cuirass, FormulaHelper.RandomArmorMaterial(enemyLevelModifier));
+
                 enemyEntity.ItemEquipTable.EquipItem(armor, true, false);
                 enemyEntity.Items.AddItem(armor);
             }
@@ -1019,6 +1069,7 @@ namespace BossfallMod.Items
                 // I reroute the method call to a method contained in this script and pass enemyLevelModifier on
                 // to FormulaHelper.RandomArmorMaterial method rather than the player's level.
                 DaggerfallUnityItem armor = CreateArmor(playerGender, race, Armor.Greaves, FormulaHelper.RandomArmorMaterial(enemyLevelModifier));
+
                 enemyEntity.ItemEquipTable.EquipItem(armor, true, false);
                 enemyEntity.Items.AddItem(armor);
             }
@@ -1028,6 +1079,7 @@ namespace BossfallMod.Items
                 // I reroute the method call to a method contained in this script and pass enemyLevelModifier on
                 // to FormulaHelper.RandomArmorMaterial method rather than the player's level.
                 DaggerfallUnityItem armor = CreateArmor(playerGender, race, Armor.Boots, FormulaHelper.RandomArmorMaterial(enemyLevelModifier));
+
                 enemyEntity.ItemEquipTable.EquipItem(armor, true, false);
                 enemyEntity.Items.AddItem(armor);
             }

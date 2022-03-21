@@ -34,7 +34,7 @@ namespace BossfallMod.EnemyAI
     [RequireComponent(typeof(CharacterController))]
     public class BossfallEnemyMotor : MonoBehaviour
     {
-        // I changed this region name to Fields. Seemed more appropriate.
+        // I changed this region name to Fields.
         #region Fields
 
         float stopDistance = 1.7f;
@@ -77,14 +77,12 @@ namespace BossfallMod.EnemyAI
         bool flyerFalls;
         float originalHeight;
 
-        // These bools are used for Bossfall enemy AI and custom boss proximity warning HUD messages.
+        // I added the following 8 lines.
         bool prefersBow;
         bool alwaysCharges;
         bool isBoss;
         bool showBossWarning;
         bool showPowerfulBossWarning;
-
-        // I added these next three lines.
         EnemyMotor motor;
         MethodInfo setAccessor;
         FieldInfo lastGroundedY;
@@ -104,35 +102,36 @@ namespace BossfallMod.EnemyAI
 
         #endregion
 
+        // I added this entire region.
         #region Properties
 
         /// <summary>
-        /// This is used to display a custom enemy weakness/resistance/immunity HUD message. It's displayed once per enemy.
+        /// This is used to display a custom enemy weakness/resistance/immunity HUD message.
         /// </summary>
         public bool ShownMsg { get; set; }
 
         /// <summary>
-        /// This is used to display a custom enemy weakness/resistance/immunity HUD message. It's displayed once per enemy.
+        /// This is used to display a custom enemy weakness/resistance/immunity HUD message.
         /// </summary>
         public bool ShownMsgTwo { get; set; }
 
         /// <summary>
-        /// This is used to display a custom enemy weakness/resistance/immunity HUD message. It's displayed once per enemy.
+        /// This is used to display a custom enemy weakness/resistance/immunity HUD message.
         /// </summary>
         public bool ShownMsgThree { get; set; }
 
         /// <summary>
-        /// This is used to display a custom enemy weakness/resistance/immunity HUD message. It's displayed once per enemy.
+        /// This is used to display a custom enemy weakness/resistance/immunity HUD message.
         /// </summary>
         public bool ShownMsgFour { get; set; }
 
         /// <summary>
-        /// This is used to display a custom enemy weakness/resistance/immunity HUD message. It's displayed once per enemy.
+        /// This is used to display a custom enemy weakness/resistance/immunity HUD message.
         /// </summary>
         public bool ShownMsgFive { get; set; }
 
         /// <summary>
-        /// This is used to display a custom enemy weakness/resistance/immunity HUD message. It's displayed once per enemy.
+        /// This is used to display a custom enemy weakness/resistance/immunity HUD message.
         /// </summary>
         public bool ShownMsgSix { get; set; }
 
@@ -142,14 +141,11 @@ namespace BossfallMod.EnemyAI
 
         void Start()
         {
-            // I added this line.
+            // I added the next 5 lines.
             motor = GetComponent<EnemyMotor>();
-
-            // Using Reflection I access the private lastGroundedY field and the private set accessor of the Bashing property
-            // in vanilla's EnemyMotor script.
             Type type = motor.GetType();
-            lastGroundedY = type.GetField("lastGroundedY", BindingFlags.NonPublic | BindingFlags.Instance);
             PropertyInfo property = type.GetProperty("Bashing");
+            lastGroundedY = type.GetField("lastGroundedY", BindingFlags.NonPublic | BindingFlags.Instance);
             setAccessor = property.GetSetMethod(true);
 
             senses = GetComponent<EnemySenses>();
@@ -160,8 +156,9 @@ namespace BossfallMod.EnemyAI
             // I redirect property calls to vanilla properties, using Reflection if necessary.
             motor.IsHostile = mobile.Enemy.Reactions == MobileReactions.Hostile;
 
-            // I rerouted the method call to a method in this script.
+            // I reroute the method call to a method in this script.
             flies = CanFly();
+
             swims = mobile.Enemy.Behaviour == MobileBehaviour.Aquatic;
             entityBehaviour = GetComponent<DaggerfallEntityBehaviour>();
             entityBlood = GetComponent<EnemyBlood>();
@@ -177,29 +174,20 @@ namespace BossfallMod.EnemyAI
 
             originalHeight = controller.height;
 
-            // If enemy is an Archer or Ranger prefersBow is true. Only needs to be checked once.
+            // If enemy is an Archer or Ranger prefersBow is true.
             if (mobile.Enemy.ID == 141 || mobile.Enemy.ID == 142)
-            {
                 prefersBow = true;
-            }
 
-            // If enemy is non-sentient or very stupid alwaysCharges is true. Only needs to be checked once.
+            // If enemy is non-sentient or very stupid alwaysCharges is true.
             if (mobile.Enemy.ID == 32 || mobile.Enemy.ID == 33)
-            {
                 alwaysCharges = false;
-            }
             else if (mobile.Enemy.Affinity == MobileAffinity.Animal || mobile.Enemy.Affinity == MobileAffinity.Undead)
-            {
                 alwaysCharges = true;
-            }
             else if (mobile.Enemy.ID == 11 || mobile.Enemy.ID == 16 || mobile.Enemy.ID == 22 || mobile.Enemy.ID == 143)
-            {
                 alwaysCharges = true;
-            }
 
             // If enemy is a boss isBoss is true. If enemy is an OrcWarlord/Vampire/Lich/Dragonling_Alternate
-            // showBossWarning is true. If enemy is a VampireAncient/DaedraLord/AncientLich showPowerfulBossWarning is
-            // true. Only needs to be checked once.
+            // showBossWarning is true. If enemy is a VampireAncient/DaedraLord/AncientLich showPowerfulBossWarning is true.
             if (mobile.Enemy.ID == 24 || mobile.Enemy.ID == 28 || mobile.Enemy.ID == 32 || mobile.Enemy.ID == 40)
             {
                 isBoss = true;
@@ -218,12 +206,14 @@ namespace BossfallMod.EnemyAI
             if (!GameManager.Instance.DisableAI)
                 return;
 
+            // I reroute this method call to a method in this script.
             flies = CanFly();
+
             canAct = true;
             flyerFalls = false;
             falls = false;
 
-            // I rerouted these method calls to methods in this script.
+            // I reroute these method calls to methods in this script.
             HandleParalysis();
             KnockbackMovement();
             ApplyGravity();
@@ -237,10 +227,8 @@ namespace BossfallMod.EnemyAI
             OpenDoors();
             HeightAdjust();
 
-            // If the Boss Proximity Warning setting is ON, this checks for nearby bosses and creates warning
-            // HUD messages. Detection radius is roughly half a dungeon block. Assassins won't trigger warning messages,
-            // they're too stealthy to detect. The three toughest bosses (Daedra Lord, Vampire Ancient, Ancient Lich)
-            // get a unique HUD message. The HUD message appears once per boss.
+            // If the Boss Proximity Warning setting is on, this new check checks for nearby bosses and creates warning
+            // HUD messages if there are any. No message will display for stealthy Assassins.
             if (Bossfall.Instance.BossProximityWarning && isBoss)
             {
                 if (showBossWarning)
@@ -313,7 +301,7 @@ namespace BossfallMod.EnemyAI
 
                 if (swims)
 
-                    // I rerouted the method call to a method in this script.
+                    // I reroute the method call to a method in this script.
                     WaterMove(motion);
 
                 // If the vanilla field or property can be set from outside the script, I call the vanilla version.
@@ -343,7 +331,7 @@ namespace BossfallMod.EnemyAI
                 // are setting.
                 if (motor.KnockbackSpeed > (10 / (PlayerSpeedChanger.classicToUnitySpeedUnitRatio / 10)))
                 {
-                    // I rerouted the method call to a method in this script.
+                    // I reroute the method call to a method in this script.
                     EvaluateMoveInForAttack();
                 }
 
@@ -377,7 +365,7 @@ namespace BossfallMod.EnemyAI
             // I redirect property calls to vanilla properties, using Reflection if necessary.
             if (senses.Target == null || motor.GiveUpTimer <= 0 || senses.PredictedTargetPos == EnemySenses.ResetPlayerPos)
             {
-                // I rerouted the method call to a method in this script.
+                // I reroute the method call to a method in this script.
                 SetChangeStateTimer();
                 searchMult = 0;
 
@@ -445,10 +433,7 @@ namespace BossfallMod.EnemyAI
             // I changed the declaration of this variable to avoid unnecessary moveSpeed calculations.
             float moveSpeed;
 
-            // This sets enemy movement speed based on which "Enemy Move Speed" setting is used. The first option
-            // is the recommended "Fast" setting, which is rebalanced speeds for Bossfall v1.3. The second option is the
-            // "Very Fast" setting - which is v1.2.1 speeds - and the last option is the "Vanilla" setting, which is vanilla
-            // DFU speed set using the vanilla formula.
+            // This sets enemy movement speed based on which "Enemy Move Speed" setting is used.
             if (Bossfall.Instance.EnemyMoveSpeed == 1)
             {
                 moveSpeed = BossfallOverrides.Instance.FastMoveSpeeds[mobile.Enemy.ID];
@@ -479,7 +464,7 @@ namespace BossfallMod.EnemyAI
                     stopDistance = attack.ClassicMeleeDistanceVsAI;
             }
 
-            // I rerouted the method call to a method in this script.
+            // I reroute the method call to a method in this script.
             GetDestination();
 
             Vector3 direction = (destination - transform.position).normalized;
@@ -495,17 +480,17 @@ namespace BossfallMod.EnemyAI
             if (isPlayingOneShot && mobile.OneShotPauseActionsWhilePlaying())
                 return;
 
-            // I rerouted the method call to a method in this script.
+            // I reroute the method call to a method in this script.
             if (DoRangedAttack(direction, moveSpeed, distance, isPlayingOneShot))
                 return;
 
-            // I rerouted the method call to a method in this script.
+            // I reroute the method call to a method in this script.
             if (DoTouchSpell())
                 return;
 
             if (moveInForAttackTimer <= 0 && avoidObstaclesTimer <= 0)
 
-                // I rerouted the method call to a method in this script.
+                // I reroute the method call to a method in this script.
                 EvaluateMoveInForAttack();
 
             // If enemy is an Archer or Ranger, I never want them to move in to attack. I put these bool
@@ -518,29 +503,29 @@ namespace BossfallMod.EnemyAI
 
             if (avoidObstaclesTimer > 0)
             {
-                // I rerouted the method call to a method in this script.
+                // I reroute the method call to a method in this script.
                 AttemptMove(direction, moveSpeed);
             }
             else if ((!retreating && distance >= (stopDistance * 2.75)) || (distance > stopDistance && moveInForAttack))
             {
                 if (changeStateTimer <= 0 || pursuing)
 
-                    // I rerouted the method call to a method in this script.
+                    // I reroute the method call to a method in this script.
                     AttemptMove(direction, moveSpeed);
 
                 else if (!senses.TargetIsWithinYawAngle(22.5f, destination))
 
-                    // I rerouted the method call to a method in this script.
+                    // I reroute the method call to a method in this script.
                     TurnToTarget(direction);
             }
             else if (DaggerfallUnity.Settings.EnhancedCombatAI && strafeTimer <= 0)
             {
-                // I rerouted the method call to a method in this script.
+                // I reroute the method call to a method in this script.
                 StrafeDecision();
             }
             else if (doStrafe && strafeTimer > 0 && (distance >= stopDistance * .8f))
             {
-                // I rerouted the method call to a method in this script.
+                // I reroute the method call to a method in this script.
                 AttemptMove(direction, moveSpeed / 4, false, true, distance);
             }
             else if (DaggerfallUnity.Settings.EnhancedCombatAI && senses.TargetInSight && (distance < stopDistance * .8f ||
@@ -550,17 +535,17 @@ namespace BossfallMod.EnemyAI
 
                     // Vanilla has moveSpeed / 2 here, I removed the 2. This makes enemies back up at full speed.
                     // The player can run backwards at full speed, I wanted enemies to do so as well. It's only fair.
-                    // I also rerouted the method call to a method in this script.
+                    // I also reroute the method call to a method in this script.
                     AttemptMove(direction, moveSpeed, true);
             }
             else if (!senses.TargetIsWithinYawAngle(22.5f, destination))
             {
-                // I rerouted the method call to a method in this script.
+                // I reroute the method call to a method in this script.
                 TurnToTarget(direction);
             }
             else
             {
-                // I rerouted the method call to a method in this script.
+                // I reroute the method call to a method in this script.
                 SetChangeStateTimer();
                 pursuing = false;
                 retreating = false;
@@ -575,7 +560,7 @@ namespace BossfallMod.EnemyAI
             {
                 destination = detourDestination;
             }
-            // I rerouted the method call to a method in this script.
+            // I reroute the method call to a method in this script.
             else if (ClearPathToPosition(senses.PredictedTargetPos, (destination - transform.position).magnitude) || (senses.TargetInSight && (hasBowAttack || entity.CurrentMagicka > 0)))
             {
                 destination = senses.PredictedTargetPos;
@@ -608,12 +593,12 @@ namespace BossfallMod.EnemyAI
             // I use different min/max range values here. Enemies now fire bows and spells at closer and longer ranges.
             bool inRange = senses.DistanceToTarget > BossfallEnemyAttack.minRangedDistance && senses.DistanceToTarget < BossfallEnemyAttack.maxRangedDistance;
 
-            // I rerouted these method calls to methods in this script.
+            // I reroute these method calls to methods in this script.
             if (inRange && senses.TargetInSight && senses.DetectedTarget && (CanShootBow() || CanCastRangedSpell()))
             {
                 if (DaggerfallUnity.Settings.EnhancedCombatAI && senses.TargetIsWithinYawAngle(22.5f, destination) && strafeTimer <= 0)
                 {
-                    // I rerouted the method call to a method in this script.
+                    // I reroute the method call to a method in this script.
                     StrafeDecision();
                 }
 
@@ -621,7 +606,7 @@ namespace BossfallMod.EnemyAI
                 {
                     // Vanilla has moveSpeed / 4 here, I changed that to 2 so enemies at range strafe faster.
                     // I got annoyed at how easy it was to hit enemies with arrows at long distances.
-                    // I also rerouted the method call to a method in this script.
+                    // I also reroute the method call to a method in this script.
                     AttemptMove(direction, moveSpeed / 2, false, true, distance);
                 }
 
@@ -651,7 +636,7 @@ namespace BossfallMod.EnemyAI
                     }
                 }
                 else
-                    // I rerouted the method call to a method in this script.
+                    // I reroute the method call to a method in this script.
                     TurnToTarget(direction);
 
                 return true;
@@ -662,7 +647,7 @@ namespace BossfallMod.EnemyAI
 
         bool DoTouchSpell()
         {
-            // I rerouted the method call to a method in this script.
+            // I reroute the method call to a method in this script.
             if (senses.TargetInSight && senses.DetectedTarget && attack.MeleeTimer == 0
                 && senses.DistanceToTarget <= attack.MeleeDistance + senses.TargetRateOfApproach
                 && CanCastTouchSpell() && entityEffectManager.SetReadySpell(selectedSpell))
@@ -707,7 +692,7 @@ namespace BossfallMod.EnemyAI
             Vector3 sphereCastDir2d = sphereCastDir;
             sphereCastDir2d.y = 0;
 
-            // I rerouted these method calls to methods in this script.
+            // I reroute these method calls to methods in this script.
             ObstacleCheck(sphereCastDir2d);
             FallCheck(sphereCastDir2d);
 
@@ -772,7 +757,7 @@ namespace BossfallMod.EnemyAI
             if (!hasBowAttack)
                 return false;
 
-            // I rerouted the method call to a method in this script.
+            // I reroute the method call to a method in this script.
             return HasClearPathToShootProjectile(35f, 0.15f);
         }
 
@@ -805,11 +790,11 @@ namespace BossfallMod.EnemyAI
             EffectBundleSettings selectedSpellSettings = rangeSpells[UnityEngine.Random.Range(0, count)];
             selectedSpell = new EntityEffectBundle(selectedSpellSettings, entityBehaviour);
 
-            // I rerouted the method call to a method in this script.
+            // I reroute the method call to a method in this script.
             if (EffectsAlreadyOnTarget(selectedSpell))
                 return false;
 
-            // I rerouted the method call to a method in this script.
+            // I reroute the method call to a method in this script.
             return HasClearPathToShootProjectile(25f, 0.45f);
         }
 
@@ -843,7 +828,7 @@ namespace BossfallMod.EnemyAI
             EffectBundleSettings selectedSpellSettings = rangeSpells[UnityEngine.Random.Range(0, count)];
             selectedSpell = new EntityEffectBundle(selectedSpellSettings, entityBehaviour);
 
-            // I rerouted the method call to a method in this script.
+            // I reroute the method call to a method in this script.
             if (EffectsAlreadyOnTarget(selectedSpell))
                 return false;
 
@@ -898,7 +883,7 @@ namespace BossfallMod.EnemyAI
 
             if (!senses.TargetIsWithinYawAngle(5.625f, destination))
             {
-                // I rerouted the method call to a method in this script.
+                // I reroute the method call to a method in this script.
                 TurnToTarget(direction);
 
                 if (!DaggerfallUnity.Settings.EnhancedCombatAI || !senses.TargetInSight)
@@ -926,7 +911,7 @@ namespace BossfallMod.EnemyAI
             if (!flies && !swims && !motor.IsLevitating && controller.isGrounded)
                 direction.y = -2f;
 
-            // I redirected the FindGroundPosition method call to use vanilla's method.
+            // I reroute the FindGroundPosition method call to vanilla's method.
             if (flies && avoidObstaclesTimer <= 0 && direction.y < 0 && motor.FindGroundPosition((originalHeight / 2) + 1f) != transform.position)
                 direction.y = 0.1f;
 
@@ -947,7 +932,7 @@ namespace BossfallMod.EnemyAI
                     }
                     else if (senses.TargetIsAbove() && changeStateTimer <= 0)
                     {
-                        // I rerouted the method call to a method in this script.
+                        // I reroute the method call to a method in this script.
                         SetChangeStateTimer();
                         pausePursuit = true;
                     }
@@ -974,7 +959,7 @@ namespace BossfallMod.EnemyAI
                 }
             }
 
-            // I rerouted the method call to a method in this script.
+            // I reroute the method call to a method in this script.
             SetChangeStateTimer();
 
             Vector3 direction2d = direction;
@@ -983,7 +968,7 @@ namespace BossfallMod.EnemyAI
             if (!flies && !swims && !motor.IsLevitating)
                 direction2d.y = 0;
 
-            // I rerouted these method calls to methods in this script.
+            // I reroute these method calls to methods in this script.
             ObstacleCheck(direction2d);
             FallCheck(direction2d);
 
@@ -991,14 +976,14 @@ namespace BossfallMod.EnemyAI
             {
                 if (!strafe && !backAway)
 
-                    // I rerouted the method call to a method in this script.
+                    // I reroute the method call to a method in this script.
                     FindDetour(direction2d);
             }
             else
             {
                 if (swims)
 
-                    // I rerouted the method call to a method in this script.
+                    // I reroute the method call to a method in this script.
                     WaterMove(motion);
                 else
                     controller.Move(motion * Time.deltaTime);
@@ -1025,14 +1010,14 @@ namespace BossfallMod.EnemyAI
 
                 testMove = (direction2d + upOrDown).normalized;
 
-                // I rerouted the method call to a method in this script.
+                // I reroute the method call to a method in this script.
                 ObstacleCheck(testMove);
                 if (obstacleDetected)
                 {
                     upOrDown.y *= -1;
                     testMove = (direction2d + upOrDown).normalized;
 
-                    // I rerouted the method call to a method in this script.
+                    // I reroute the method call to a method in this script.
                     ObstacleCheck(testMove);
                 }
                 if (!obstacleDetected)
@@ -1057,7 +1042,7 @@ namespace BossfallMod.EnemyAI
 
                     testMove = Quaternion.AngleAxis(angle, Vector3.up) * direction2d;
 
-                    // I rerouted these method calls to methods in this script.
+                    // I reroute these method calls to methods in this script.
                     ObstacleCheck(testMove);
                     FallCheck(testMove);
 
@@ -1075,7 +1060,7 @@ namespace BossfallMod.EnemyAI
                         angle *= -1;
                         testMove = Quaternion.AngleAxis(angle, Vector3.up) * direction2d;
 
-                        // I rerouted these method calls to methods in this script.
+                        // I reroute these method calls to methods in this script.
                         ObstacleCheck(testMove);
                         FallCheck(testMove);
 
@@ -1127,7 +1112,7 @@ namespace BossfallMod.EnemyAI
 
                     testMove = Quaternion.AngleAxis(angle, Vector3.up) * direction2d;
 
-                    // I rerouted these method calls to methods in this script.
+                    // I reroute these method calls to methods in this script.
                     ObstacleCheck(testMove);
                     FallCheck(testMove);
                     count++;

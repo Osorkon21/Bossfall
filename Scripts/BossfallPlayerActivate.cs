@@ -38,7 +38,7 @@ namespace BossfallMod.Utility
         // I doubled vanilla's RayDistance.
         const float RayDistance = 6144 * MeshReader.GlobalScale;
 
-        // I added these declarations.
+        // I added these following 7 declarations.
         PlayerActivate activate;
         bool clearPopupText;
         bool clearMidScreenText;
@@ -52,27 +52,26 @@ namespace BossfallMod.Utility
         #region Unity
 
         /// <summary>
-        /// I changed this method from "Start" to "Awake". This component is added well after vanilla components so there
-        /// won't be any conflicts.
+        /// I changed vanilla's method name from "Start" to "Awake".
         /// </summary>
         void Awake()
         {
             mainCamera = GameManager.Instance.MainCamera;
             playerLayerMask = ~(1 << LayerMask.NameToLayer("Player"));
 
-            // I added this line.
+            // I added the rest of this method.
             activate = GameManager.Instance.PlayerActivate;
 
-            // I added this. Using Reflection I access the private "textRows" field in PopupText.
             PopupText dfHUDText = DaggerfallUI.Instance.DaggerfallHUD.PopupText;
-            Type type = dfHUDText.GetType();
-            FieldInfo fieldInfo = type.GetField("textRows", BindingFlags.NonPublic | BindingFlags.Instance);
-            list = (LinkedList<TextLabel>)fieldInfo.GetValue(dfHUDText);
-
-            // I added this. Using Reflection I access the private "midScreenTextLabel" field in DaggerfallHUD.
             DaggerfallHUD dfHUD = DaggerfallUI.Instance.DaggerfallHUD;
+
+            Type type = dfHUDText.GetType();
             Type type1 = dfHUD.GetType();
+
+            FieldInfo fieldInfo = type.GetField("textRows", BindingFlags.NonPublic | BindingFlags.Instance);
             FieldInfo fieldInfo1 = type1.GetField("midScreenTextLabel", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            list = (LinkedList<TextLabel>)fieldInfo.GetValue(dfHUDText);
             text = (TextLabel)fieldInfo1.GetValue(dfHUD);
         }
 
@@ -86,25 +85,21 @@ namespace BossfallMod.Utility
             if (clearMidScreenText && !string.IsNullOrEmpty(text.Text))
             {
                 text.Text = string.Empty;
+
                 ActivateMobileEnemy(storedEntity);
 
-                // Resets used fields to defaults.
                 storedEntity = null;
                 clearMidScreenText = false;
             }
 
-            // PlayerActivate's enemy activation HUD message is always added to the "textRows" field in
-            // PopupText after BossfallPlayerActivate executes and I can't figure out why. The scripts have the same
-            // execution order so that's not the source of the timing issue. Even if I change this method to LateUpdate
-            // PlayerActivate's HUD message still is added to "textRows" after this script executes. I'm at a loss as
-            // to why this is happening, so I'm resorting to brute force. If clearPopupText is true I check for
-            // popupText every frame. Once I find it I delete the most recent message and add a custom HUD message.
+            // If clearPopupText is true I check for popupText every frame. Once I find it I delete the most recent
+            // message and add a custom HUD message.
             if (clearPopupText && list.Count > 0)
             {
                 list.RemoveLast();
+
                 ActivateMobileEnemy(storedEntityTwo);
 
-                // Resets used fields to defaults.
                 storedEntityTwo = null;
                 clearPopupText = false;
             }
@@ -249,11 +244,8 @@ namespace BossfallMod.Utility
         #region Activation Methods
 
         /// <summary>
-        /// This method is entirely vanilla's, from PlayerActivate. It was private and I needed it here.
+        /// This method is entirely vanilla's, from PlayerActivate.
         /// </summary>
-        /// <param name="building">The building being activated.</param>
-        /// <param name="buildingType">The type of building being activated.</param>
-        /// <param name="buildingUnlocked">True if building is open.</param>
         void ActivateBuilding(
         StaticBuilding building,
         DFLocation.BuildingTypes buildingType,
@@ -318,11 +310,8 @@ namespace BossfallMod.Utility
         }
 
         /// <summary>
-        /// This method is entirely vanilla's, from PlayerActivate. It was private and I needed it here.
+        /// This method is entirely vanilla's, from PlayerActivate.
         /// </summary>
-        /// <param name="hitInfo">RaycastHit information about struck object.</param>
-        /// <param name="questResourceBehaviour">The method checks if struck object contains this.</param>
-        /// <returns>True if struck object contains QuestResourceBehaviour.</returns>
         bool QuestResourceBehaviourCheck(RaycastHit hitInfo, out QuestResourceBehaviour questResourceBehaviour)
         {
             questResourceBehaviour = hitInfo.transform.GetComponent<QuestResourceBehaviour>();
@@ -331,11 +320,8 @@ namespace BossfallMod.Utility
         }
 
         /// <summary>
-        /// This method is entirely vanilla's, from PlayerActivate. It was private and I needed it here.
+        /// This method is entirely vanilla's, from PlayerActivate.
         /// </summary>
-        /// <param name="hitInfo">RaycastHit information about struck object.</param>
-        /// <param name="mobileEnemy">The method checks if struck object contains this.</param>
-        /// <returns>True if struck object contains DaggerfallEntityBehaviour.</returns>
         bool MobileEnemyCheck(RaycastHit hitInfo, out DaggerfallEntityBehaviour mobileEnemy)
         {
             mobileEnemy = hitInfo.transform.GetComponent<DaggerfallEntityBehaviour>();

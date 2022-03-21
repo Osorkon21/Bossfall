@@ -25,13 +25,11 @@ namespace BossfallMod.EnemyAI
     {
         #region Fields
 
-        // I reduced the minRangedDistance by 60 and doubled the maxRangedDistance. I got annoyed at
-        // how easy it was to kite enemies at long range without them ever shooting back. Enemies will also fire
-        // arrows and spells at the normal Enhanced AI "stopDistance" instead of standing there staring at you.
+        // I reduced the minRangedDistance by 60 and doubled the maxRangedDistance.
         public const float minRangedDistance = 180 * MeshReader.GlobalScale;
         public const float maxRangedDistance = 4096 * MeshReader.GlobalScale;
 
-        // I added the following field.
+        // I added the following line.
         EnemyAttack attack;
 
         EnemySenses senses;
@@ -45,7 +43,7 @@ namespace BossfallMod.EnemyAI
 
         void Start()
         {
-            // I added the attack line.
+            // I added the following line.
             attack = GetComponent<EnemyAttack>();
 
             senses = GetComponent<EnemySenses>();
@@ -85,11 +83,11 @@ namespace BossfallMod.EnemyAI
             // I changed the call to vanilla's MeleeTimer field.
             if (GameManager.ClassicUpdate && (DFRandom.rand() % speed >= (speed >> 3) + 6 && attack.MeleeTimer == 0))
             {
-                // I rerouted the method call to a method in this script.
+                // I reroute the method call to a method in this script.
                 if (!MeleeAnimation())
                     return;
 
-                // I rerouted the method call to a method in this script.
+                // I reroute the method call to a method in this script.
                 ResetMeleeTimer();
             }
         }
