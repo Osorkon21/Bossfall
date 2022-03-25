@@ -22,66 +22,60 @@ README SECTIONS:
     ADDITIONAL INFO:
 
         PROJECT HISTORY
-        v1.3.1 CHANGELOG
-        FORMULAS
+        CHANGELOG
+        FORMULAS & TABLES
         ITEM TABLES
+        CREDITS & THANKS
+        LEGAL INFO
 
 
 SETUP INSTRUCTIONS:
 
     - These instructions are for Windows, they may vary slightly depending on your OS.
 
-    - Unzip this folder to your operating system (location doesn't matter).
 
-    - Put the bossfall.dfmod file in DaggerfallUnity's StreamingAssets/Mods folder.
+        REQUIRED:
 
-    - Optionally, right-click on the StreamingAssets folder included in this folder, select COPY.
+            1. Unzip this folder to your operating system (location doesn't matter).
+            2. Put the bossfall.dfmod file in DaggerfallUnity's StreamingAssets/Mods folder.
+            3. Check out Bossfall's Settings page when you start up DFU, I suggest using the Recommended preset.
 
-    - Right-click on DaggerfallUnity's StreamingAssets folder, PASTE Bossfall's StreamingAssets folder here.
 
-    - Select YES when prompted to overwrite files (this removes Assassin bosses from easy non-dungeon vanilla quests).
+            OPTIONAL:
 
-    - Make sure to look at Bossfall's Settings page when you start up DFU, I suggest using the Recommended preset.
+                - This will remove Assassin bosses from easy non-dungeon vanilla quests. It won't change main storyline quests.
+
+                1. Right-click on the StreamingAssets folder included in this folder, select COPY.
+                2. Right-click on DaggerfallUnity's StreamingAssets folder, PASTE Bossfall's StreamingAssets folder here.
+                3. Select YES when prompted to overwrite files.
 
 
 MOD COMPATIBILITY:
 
-    - Your mod list will determine mod load order. If you have multiple mods in your list that attempt to change the same thing, the
-      mod that is lower in your mod list will take priority.
+    - I recommend placing Bossfall at the bottom of your mod list.
 
-    - For example, if your mod list looks like this:
+    - If Bossfall is at the bottom of your mod list, it may override some features of the following mods, and vice versa:
 
-        // other mods...
-        Unleveled Loot
-        Meaner Monsters
+        Roleplay & Realism
+        Roleplay & Realism: Items
         Physical Combat & Armor Overhaul
-        Bossfall
-
-
-    - In the above list, Bossfall takes priority. All other mods that try to change what Bossfall changes will be ignored.
-
-    - Or if your mod list looks like this:
-
-        // other mods...
-        Unleveled Loot
+        Unleveled Mobs and Quests
         Meaner Monsters
-        Bossfall
-        Physical Combat & Armor Overhaul
-
-
-    - In the above list, you'll play using Bossfall rules for everything but combat formulas, and you'll play using PCAO's combat
-      rules. If you want to use PCAO, I recommend using the mod orders in this list.
-
-    - I recommend placing Bossfall last in your mod list. You're welcome to do otherwise, but depending on the mod below Bossfall
-      the game may be very imbalanced or behave strangely. If you run into any errors, please contact me.
+        Shield Module
+        Unleveled Loot
+        Combat Overhaul Alpha
+        Dodge Mod
+        Better Default Classes
 
 
 SUMMARY OF CHANGES:
 
-    - Bossfall changes nearly every aspect of DFU gameplay (except for Questing). These are the important things you should know.
+    - Bossfall changes nearly every aspect of DFU gameplay. These are the important things you should know.
 
 
     BOSSES:
+
+        - All bosses can be damaged by weapons of any material. Silver deals double damage to undead bosses.
 
         - Boss enemies are rare. They are extremely dangerous and some have unique abilities.
 
@@ -92,9 +86,9 @@ SUMMARY OF CHANGES:
 
         - Boss Dragonlings, Assassins, Vampires, and Ancient Vampires move incredibly fast.
 
-        - Assassin bosses always wield a poisoned weapon, and this poison will pierce your Poison Immunity.
+        - Assassins become bosses once you hit level 7 - at this point, their poisoned weapon will pierce your Poison Immunity.
 
-        - Enable the "Boss Proximity Warning" setting to be shown a HUD message whenever a boss is nearby. You won't be shown a
+        - Enable the "Boss Proximity Warning" setting to be shown a HUD message whenever a boss is nearby. You won't get a
           warning message for stealthy Assassins.
 
         - The "Powerful Enemies Are" setting determines how often bosses and other tough enemies spawn.
@@ -113,20 +107,22 @@ SUMMARY OF CHANGES:
 
     COMBAT:
 
-        - Hand-to-Hand accuracy is buffed by equipped Gauntlet/Boot material. This scales like vanilla weapon material bonuses.
-
-        - Some monsters have custom immunities or weaknesses. HUD messages will tell you what works.
-
-        - All enemies have new combat AI. For example, Archers and Rangers will never advance into melee range.
+        - Your Hand-to-Hand accuracy is buffed by equipped glove/boot material. This scales like vanilla weapon material bonuses.
 
 
     ENEMIES:
 
         - Most enemies are tougher, faster, hit harder, and are harder to hit.
 
+        - Vanilla's weapon material requirements to damage certain monsters have been removed.
+
+        - Some monsters have new immunities or weaknesses. HUD messages will tell you what works.
+
         - Each dungeon type and outdoor environment has a unique list of enemies you can encounter. These lists were written
           using common sense. For example, you will find a lot of Giant Scorpions in Desert environments, and you'll find mostly
           Orcs in Orc Stronghold dungeons.
+
+        - All enemies have new combat AI. For example, Archers and Rangers will never advance into melee range.
 
         - Tough, high level monsters are relatively rare.
 
@@ -143,11 +139,9 @@ SUMMARY OF CHANGES:
 
         - Enemy difficulty and loot quality scales with their level. Bosses have greatly increased chances to drop good loot.
 
-        - Once you are Level 7 or higher human enemies are unleveled, and Assassins will have boss stats and damage. Assassin
-          poison will pierce your Poison Immunity.
+        - Once you are Level 7 or higher human enemies are unleveled.
 
-        - If you are Level 6 or lower, all human enemies will be within 2 levels of you, and Assassins won't have boss stats
-          or damage. Assassin poison will not pierce your Poison Immunity.
+        - If you are Level 6 or lower, all human enemies will be within 2 levels of you.
 
 
     ITEMS:
@@ -168,26 +162,12 @@ SUMMARY OF CHANGES:
 
         - All magic items are custom. They have different names, enchantments, and/or uses.
 
-        - Certain Holy items have unique enchantments.
-
-        - You can find a new Dispel Magic potion and potion recipe.
+        - Certain Holy items have new enchantments.
 
 
     SHOPS:
 
         - Store quality determines what items are available. Best-in-slot weapons and armor are not in low quality shops.
-
-
-    SKILLS:
-
-        - By default, most skills are very difficult to level. Language skills are much easier to level.
-
-        - The "Skill Advancement Difficulty" setting determines how fast you gain skill levels.
-
-
-    VAMPIRISM:
-
-        - If you are a Vampire, you will be healed varying amounts when you kill anything with fresh blood.
 
 
 PROJECT HISTORY:
@@ -249,12 +229,12 @@ PROJECT HISTORY:
     process, I figured it was time to bite the bullet and begin work on a .dfmod. After weeks of more frustration trying to learn
     an entirely new programming system, I began to make significant progress. And finally, I released the Bossfall .dfmod.
 
-    You've read my story, now it's time to make your own. The bosses are waiting for you...
+    You've read my story, now it's time to make your own. Tamriel is waiting...
 
 
-v1.3.1 CHANGELOG:
+CHANGELOG:
 
-    Documents every change I made. If no entry on a subject exists, its behavior or values are still vanilla's.
+    - Documents every change I made. If no entry on a subject exists, its behavior and values are vanilla's.
 
 
     BANKING:
@@ -264,20 +244,25 @@ v1.3.1 CHANGELOG:
 
     BOSS INFO:
 
+        - All bosses can be damaged by weapons of any material. Silver deals double damage to undead bosses.
+
         - Bosses are generally very rare and are the only enemies - besides Guards (HALT!) - that can be above Level 20.
 
         - All bosses drop loot and its quality scales heavily with their level.
 
-        - Spellcaster spell variety greatly increased and they all use the same spell kit. Vampire Ancients no longer cast spells.
+        - Vampire Ancients no longer cast spells.
+
+        - Spellcaster spell variety greatly increased and they all use the same spells.
 
         - Each climate region and dungeon type has different potential bosses, with some overlap.
 
         - Two types of Dragonling exist - the non-boss and the boss version. Use "Display Enemy Level" to tell between the two.
           Boss Dragonlings move much faster than the non-boss version.
 
-        - See the DUNGEON ENCOUNTER TABLES and NON-DUNGEON ENCOUNTER TABLES sections for details on which bosses can spawn where.
+        - See the FORMULAS & TABLES section of the ReadMe for details on which bosses can spawn where.
 
-        - See the FORMULAS section of the ReadMe for spell kits and precise numbers on loot scaling by boss level.
+        - See the FORMULAS & TABLES section of the ReadMe for spell kits and precise numbers on boss spawn chances and loot scaling
+          by boss level.
 
 
     BOSS STATS:
@@ -286,6 +271,8 @@ v1.3.1 CHANGELOG:
 
 
         VAMPIRE:
+
+            - Can be damaged by any weapon material.
 
             - Moves extremely fast.
 
@@ -309,6 +296,8 @@ v1.3.1 CHANGELOG:
 
 
         LICH:
+
+            - Can be damaged by any weapon material.
 
             - Moves slowly.
 
@@ -346,13 +335,13 @@ v1.3.1 CHANGELOG:
 
             - Level 21-30 if player is above level 6.
 
-            - Assassin poison will pierce player's Poison Immunity if player is above level 6.
+            - Weapon poison will pierce Poison Immunity if player is above level 6.
 
             - If player is above level 1, Assassins will always wield a poisoned weapon.
 
             - Sees through Invisibility at any player level.
 
-            - Boss proximity warning HUD message will not display for Assassins.
+            - "Boss Proximity Warning" HUD message will not display for stealthy Assassins.
 
 
         DRAGONLING_ALTERNATE:
@@ -393,6 +382,8 @@ v1.3.1 CHANGELOG:
 
         DAEDRA LORD:
 
+            - Can be damaged by any weapon material.
+
             - Moves fast.
 
             - 30-60 damage per hit.
@@ -411,6 +402,8 @@ v1.3.1 CHANGELOG:
 
 
         VAMPIRE ANCIENT:
+
+            - Can be damaged by any weapon material.
 
             - Moves incredibly fast, will outrun player with 100 Running and SPD.
 
@@ -434,6 +427,8 @@ v1.3.1 CHANGELOG:
 
 
         ANCIENT LICH:
+
+            - Can be damaged by any weapon material.
 
             - Moves slowly.
 
@@ -468,9 +463,129 @@ v1.3.1 CHANGELOG:
 
         - All canned classes except for Barbarians start with 45 HP and gain 20 HP/lvl, Barbarian starting HP and HP/lvl unchanged.
 
-        - Full special advantage/disadvantage cost table can be found in the FORMULAS section of the ReadMe.
+        - Full special advantage/disadvantage cost table can be found in the FORMULAS & TABLES section of the ReadMe.
+
 
     COMBAT:
+
+        - All landed attacks damage armor or shield of target struck. In vanilla only weapon attacks damaged armor/shields.
+
+        - All Steel weapons have a minimum damage of 1.
+
+        - Knockbacks heavily nerfed to reduce stunlocks.
+
+        - Strength weapon damage bonus halved.
+
+        - Body parts hit with equal likelihood. In vanilla this was weighted towards chest strikes.
+
+
+    CRIME & PUNISHMENT:
+
+        - Hostile guards use Knight animations, move faster, shoot arrows, and hit much harder. HALT!
+
+        - If player is level 1-6, Guards will be up to 2 levels below or 12 levels above player. HALT! 
+
+        - Once player is at least level 7, Guards are on average around level 15. Their level range is 1-30. HALT!
+
+        - See FORMULAS & TABLES section of the ReadMe for exact Guard level scaling formulas.
+
+        - Guards carry weapons and armor of any material. HALT!
+
+
+    ENEMY COMBAT:
+
+        - Vanilla weapon material requirements to damage certain monsters removed. Any material will now damage most enemies.
+
+        - Some monsters have new weapon/material immunities, resistances, and/or weaknesses. HUD messages will tell you what works.
+          See MONSTER STATS section for detailed information.
+
+        - All enemies have new combat AI. Some AI changes only apply if you are using Enhanced Combat AI.
+
+        - Enemies fire bows and spells much more often. They also fire them at closer range and from greater distances.
+
+        - Enemies back up and turn much faster. They will retreat and strafe less frequently.
+
+        - When not in melee range, enemies strafe much faster. When in melee range, enemies strafe slowly.
+
+        - Enemy accuracy scales heavily with their level. Their accuracy scales up much faster than vanilla. The toughest enemies
+          are nearly twice as accurate as vanilla. See FORMULAS & TABLES section of the ReadMe for detailed accuracy formulas.
+
+        - Enemy attack speed unleveled. In vanilla enemies attacked faster at higher player levels, but in Bossfall enemy attack
+          speed is always equal to vanilla's enemy attack speed at player level 10, with greater random variation. See
+          FORMULAS & TABLES section of the ReadMe for attack speed formula.
+
+        - Enemy move speed is not reduced while enemy is melee attacking.
+
+        - Enemy STR attribute bonus added to their Hand-to-Hand attack damage, scale is identical to that of player's.
+
+        - Most non-boss enemies have a minimum damage of 1. This is not the case for enemies with Bonus to Hit: Humanoids or for
+          human class enemies using Hand-To-Hand - they'll start using Hand-to-Hand around enemy level 5 and higher.
+
+        - Enemies use drugs - Aegrotat, Quaesto Vil, Sursum, Indulcet - as weapon poisons, in addition to vanilla's weapon poisons.
+
+
+    ENEMY SPAWNING:
+
+        - Enemies unleveled - spawn chances and enemies spawned are not influenced by player level.
+
+        - Every enemy spawn is randomly picked from a list of 100 or 140 - the "Powerful Enemies Are" setting determines length.
+          Every dungeon type, location type, and climate has a different list. While outside, day and night have different lists.
+
+        - All dungeons have enemy themes. You will find undead in Crypts, Daedra and spellcasters in Covens, and so forth.
+          The easiest dungeons are Cemeteries, the toughest are Vampire Haunts.
+
+        - Heat-loving or heat-tolerant enemies are found outside in Desert, Rainforest, Subtropical, and Swamp wilderness.
+          Cold-loving or cold-tolerant enemies are found outside in Woodlands, Mountain, and Mountain Woods wilderness.
+
+        - Difficult, high-level enemies are generally rare.
+
+        - Orcs and humans spawn nearly anywhere, but they are usually rarer at night. Orcs and most humans do not spawn in
+          Mountain and Mountain Woods wilderness at night or in Desert wilderness during day or night.
+
+        - Rangers and Barbarians are outdoorsy types, they are rarely found in dungeons. They will spawn in Mountain and
+          Mountain Woods wilderness at night, where it is too cold for most humans. Rangers can be found in Desert wilderness
+          during the day and at night.
+
+        - Werewolves and Wereboars removed from dungeons, they now only appear outside. They are rare.
+
+        - Spawn frequency has been slightly reduced across all dungeons, locations, climates, and times.
+
+        - Dungeon and outdoor locations use the same spawn chance. In vanilla spawn chances varied depending on player's location.
+
+        - See FORMULAS & TABLES section of the ReadMe for spawn details about every dungeon, climate, location and time of day.
+
+
+    ENEMY SPELLS:
+
+        - Ghosts and Vampire Ancients no longer cast spells.
+
+        - Enemy spell variety increased, every spellcaster uses same kit except for Frost & Fire Daedra (their spell kits are
+          only slightly changed from vanilla's). Standard enemy spell kits include Sphere of Negation.
+
+        - Full enemy spell kits can be found in the FORMULAS & TABLES section of the ReadMe.
+
+        - Spellcaster Magicka scales with their level. They will cast 2 spells at level 1, this scales up to 8 at level 20.
+
+        - The exact Magicka/level scale can be found in the FORMULAS & TABLES section of the ReadMe.
+
+        - Enemies cast Caster Only spells at range. They cast Shalidor's Mirror, Spell Resistance, and Heal.
+
+        - Enemies cast any type of spell within appropriate ranges. In vanilla enemies wouldn't cast certain types of spells
+          depending on the Enhanced Combat AI setting in use.
+
+        - I didn't add Hand of Decay as enemies spam you with it in melee range.
+
+
+    GAMEPLAY:
+
+        - Climbing nerfed, success depends almost entirely on your skill level. Luck now influences your Climbing check success.
+
+        - With 50 Luck you get no Climbing skill check bonus, with 1 Luck you get a 5% penalty, with 100 Luck you get a 5% bonus.
+
+        - Building identification range in "Info" mode doubled.
+
+
+    HAND-TO-HAND:
 
         - Glove/boot material affects player's Hand-to-Hand to-hit roll, scales just like vanilla weapon materials.
 
@@ -486,35 +601,7 @@ v1.3.1 CHANGELOG:
 
         - If you're wearing silver boots you must use kick attacks to damage Ghosts/Wraiths/etc.
 
-        - Exact Hand-to-Hand material formula can be found in the FORMULAS section of the ReadMe.
-
-
-    DUNGEON ENCOUNTER TABLES:
-
-Sabertooth Tigers/Grizzly Bears removed from Mine dungeon types, more Giant Bats and Rats.
-Centaurs aren't in any dungeons, Imps are never found outside dungeons
-
-Human Stronghold - Sorcerers removed, replaced with Mages
-Prison - Mages removed, replaced with Sorcerers
-Desecrated Temple - Barbarians/Harpies added, less Daedra Seducers/Giant Bats
-Natural Cave - Sabertooth Tigers removed, more Rats
-Crypt - Sabertooth Tigers/Grizzly Bears/Spiders removed, more Skeletons/Zombies/Mummies
-Orc Stronghold - more Orc Sergeants/Orc Shamans, less Orcs
-Spider Nest - Ghosts added, less Mummies
-Barbarian Stronghold - Harpies added, slightly less Barbarians
-Cemetery - Added Ghosts (they're rare), less Giant Bats
-Underwater - Added Ghosts & Wraiths (they're very rare), less Lamias and Ice Atronachs, more Skeletons
-Default building - every human enemy, vermin, Assassin boss
-Guildhall - every human enemy, vermin, Alternate Dragonling boss
-Temple - every human enemy, vermin, Orc Warlord boss
-Palace, House 1 - every human enemy, vermin, Daedra Lord boss
-House 2 - every human enemy, vermin, Vampire boss
-House 3 - every human enemy, vermin, Ancient Lich boss
-
-
-    GAMEPLAY:
-
-        - Building identification range in "Info" mode doubled.
+        - Exact Hand-to-Hand material formula can be found in the FORMULAS & TABLES section of the ReadMe.
 
 
     HUMAN ENEMIES:
@@ -526,47 +613,70 @@ House 3 - every human enemy, vermin, Ancient Lich boss
         - Once player is level 7, human enemies will usually be around level 10. Level 1 and 20 humans are very rare.
 
         - Human weapon damage scales with their level. Low level humans deal slightly more than weapon damage up to an average
-          of 45-50 damage per hit at enemy level 20.
-
-        - When enemies are level 1-15, their material drop chances are static and good materials are quite rare. Material drop
-          chances begin scaling with their level at enemy level 16 and higher.
+          of 48 damage per hit at enemy level 20.
 
         - Human enemies have 4 armor at Level 1, which is slightly better than Imp armor. They scale up to -4 armor at Level
           20, which is slightly worse than Daedra Seducer armor. Their armor does not change based on their equipment.
 
         - Human spellcaster spell variety greatly increased, all human spellcasters use the same spells regardless of level.
 
-        - Spellcaster Magicka scales with their level. They will cast 2 spells at level 1, this scales up to 8 at level 20.
-
         - If using Enhanced Combat AI, Archers and Rangers never voluntarily move into melee range and will always retreat when
           approached. They'd rather shoot arrows.
 
         - If using Enhanced Combat AI, Barbarians will always charge the player. They're not too bright.
 
+        - Level 20 Mages, Sorcerers, and Nightblades can see Invisible.
+
         - Sorcerers, Barbarians, and Rangers are now pacified by the Streetwise language skill.
 
-        - The exact formulas referenced in this section can be found in the FORMULAS section of the ReadMe.
+        - The exact formulas and tables referenced in this section can be found in the FORMULAS & TABLES section of the ReadMe.
 
 
-    LOOT GENERATION:
+    ITEMS:
+
+        - Weapon, armor, and shield durability heavily nerfed. Durability decreases as material tier increases.
+
+        - Shields have much more durability than armor.
+
+        - Many item weights changed, gems are worth much more. Weapon, armor and shield weights and costs unchanged.
+
+        - Enchantment Point capacities of weapons, armor, and shields changed. Staves have the highest capacity.
+
+        - All weapons have the same durability scale. Best-in-weapon-skill weapons last the longest. For example, a Steel
+          Warhammer will last exactly as long as a Steel Long Bow or a Steel Wakazashi. A Steel Staff will last exactly as
+          long as a Steel Short Bow or Steel Dagger.
+
+        - For exact gem values and durability and Enchantment Point values see the ITEM TABLES section of the ReadMe.
+
+
+    LOOT:
 
         - All non-enemy loot has been unleveled. This applies to shop shelves, house containers and dungeon and building loot
-          piles. The best materials are very rare but possible at any level. Player's level and Luck don't change these drop chances.
+          piles. The best materials are very rare but possible at any level. Player's level and Luck does not change drop chances.
 
         - If a level 1-15 enemy drops loot, it is normal unleveled loot (such as from loot piles, shop shelves, etc.).
 
         - If a level 16+ enemy drops loot, loot quality scales heavily with enemy's level. Level 30 enemies have extremely high
           chances to drop Daedric items. These drop chances are not changed by player's level or Luck.
 
-        - All gold generation unleveled, gold is much rarer. Player's level and Luck don't change gold generation chances.
+        - Enemies that spawn with equipped armor and weapons now have a greatly increased chance to drop Gauntlets and any type
+          of weapon or shield.
 
-        - Ingredient generation unleveled, ingredients are much rarer. Player's level and Luck don't change ingredient chances.
+        - All gold generation unleveled, gold is much rarer. Gold dropped by enemies now scales with their level, with significant
+          random variation. Player's level and Luck does not change gold generation chances.
 
-        - Reduced each armor piece's generation chance by approx. 38% for enemies that spawn with equipped armor.
+        - Ingredient generation unleveled, ingredients are much rarer. All ingredients dropped by enemies now scale with their
+          level, with significant random variation. Player's level and Luck does not change ingredient chances.
 
-        - Most enemies now have a greatly increased chance to drop Gauntlets.
+        - Reduced each armor piece's generation chance by an average of 38% for enemies that spawn with equipped armor.
 
-        - The exact formulas referenced in this section can be found in the FORMULAS section of the ReadMe.
+        - Reduced shield and off-hand Short Blade generation chance by 40% for enemies that spawn with these item types. 
+
+        - Reduced Plate armor generation chance to 10% and increased Leather armor generation chance to 70%.
+
+        - Arrows spawn with a maximum of 30 per stack.
+
+        - The exact formulas and tables referenced in this section can be found in the FORMULAS & TABLES section of the ReadMe.
 
 
     LYCANTHROPY:
@@ -578,7 +688,11 @@ House 3 - every human enemy, vermin, Ancient Lich boss
 
     MAGIC ITEMS:
 
-        - All non-quest-reward magic items are custom and have different names, enchantments, and/or uses.
+        - All non-quest-reward, non-artifact magic items are custom and have different names, enchantments, and/or uses.
+
+        - Pointless vanilla item powers (for example, "Item of Venom Spitting") replaced with more useful enchantments.
+
+        - Regular magic items no longer spawn with the "Absorbs Spells" power. Artifacts still can.
 
         - Holy Water, Holy Daggers, and Holy Tomes cast Dispel Undead/Undead/Daedra on use, have 1/3/3 charges.
 
@@ -601,230 +715,914 @@ House 3 - every human enemy, vermin, Ancient Lich boss
 
     MONSTER STATS:
 
-        - Some enemies are immune/resistant/weak to certain weapon types or materials, HUD messages will tell you what works.
+        - This section assumes you are using the Recommended setting preset, which sets the "Enemy Move Speed" setting to "Fast".
+          For exact enemy movement speed values for "Fast" and "Very Fast" settings, see the FORMULAS & TABLES section of the ReadMe.
 
-        - Enemy combat AI changes only apply if you are using Enhanced Combat AI.
+        - "Always charges" will only matter if you are using Enhanced Combat AI. If you are not, every enemy will always charge.
 
-        - If using Enhanced Combat AI enemy move speed will not be reduced while enemy is melee attacking.
+        - Monster level variation usually only changes their accuracy, dodging, and spell power. If monster is a Dreugh, Lamia,
+          or any Atronach, their level variation will also slightly change their damage ranges.
+
+        - Dreughs, Lamia, and all Atronachs will deal much less than stated damage if player is a Vampire.
 
 
-These enemies always charge:
+        RAT:
 
-Rat
-Giant Bat
-Grizzly Bear
-Sabertooth Tiger
-Spider
-Slaughterfish
-Skeletal Warrior
-Giant
-Zombie
-Ghost
-Mummy
-Giant Scorpion
-Gargoyle
-Wraith
+            - Moves somewhat fast.
 
-Spider/scorpion has 0.1%/hit of inflicting Drothweed that bypasses Poison Immunity
-Spider/Giant Scorpion poison chance nerfed to 10% per hit
+            - Always charges.
 
-Using Hand-to-Hand against Fire Atronachs/Fire Daedra damages player (if in wereform player won't take dmg)
-Fire Daedra spell kit now includes God's Fire
-Frost Daedra spell skill now includes Frostbite
+            - 1-3 damage per hit.
 
-Rat
-7 Armor (+1 buff)
+            - 2 average damage per attack animation.
 
-Spriggan
-6 Armor (+1 buff)
+            - Has 6-18 HP.
 
-Giant Bat
-5 Armor (-1 nerf)
+            - Has 7 Armor.
 
-Grizzly Bear
-6 Armor (+1 buff)
+            - Level 1-3.
 
-Sabertooth Tiger
-4 Armor (+1 buff)
+            - 5% chance per hit to inflict the Plague. In vanilla they could inflict other diseases.
 
-Orc
-Level 5 (-1 nerf)
+            - Soul Gems cost 50,000 gold.
 
-Nymph
-4 Armor (+1 buff)
 
-Orc Sergeant
-25 Max Damage (-5 nerf)
-Level 11 (-2 nerf)
-2 Armor (-1 nerf)
+        IMP:
 
-Zombie
-5 Armor (+1 buff)
+            - Can be damaged by any weapon material.
 
-Mummy
-2 Armor (+1 buff)
+            - Moves somewhat slowly.
 
-Orc Shaman
-55-165 HP (+12-36 buff)
-Level 16 (+3 buff)
--2 Armor (+2 buff)
+            - 1-10 damage per hit.
 
-Gargoyle
--1 Armor (+1 buff)
+            - 5.5 average damage per attack animation.
 
-Frost Daedra
-0 Armor (-1 nerf)
+            - Has 8-24 HP.
 
-Daedroth
-198 Max HP (-2 nerf)
+            - Has 5 Armor.
 
-Dragonling
-30 Max Damage (+3 buff)
-40-120 HP (+15-45 buff)
+            - Level 1-4.
 
-Iron Atronach
-198 Max HP (-2 nerf)
+            - Has Magicka for 2 spells.
 
-Lamia
-0 Armor (-2 nerf)
+            - Spell variety greatly increased. See FORMULAS & TABLES section for full spell list.
 
+            - Does not see Invisible.
+
+            - Soul Gems cost 51,000 gold.
 
 
         SPRIGGAN:
 
-            - Axe deals x2 damage.
+            - Hand-to-Hand attacks deal 1/4 damage and player suffers 1 HP damage every landed attack.
 
-            - Blunt Weapon deals x1 dmg.
+            - Moves extremely slowly.
 
-            - Long Blade deals x1 dmg, suffers x2 durability dmg.
+            - 1-12 damage per hit.
 
-            - Short Blade deals 1/2 dmg, suffers x2 durability dmg.
+            - 6.5 average damage per attack animation.
 
-            - Hand-to-Hand deals 1/4 dmg, player suffers 1 HP dmg.
+            - Has 14-42 HP.
 
-            - Archery Immune.
+            - Has 6 Armor.
+
+            - Level 1-5.
+
+            - Soul Gems cost 51,000 gold.
 
 
-        ZOMBIE, FLESH ATRONACH:
+            WEAPON EFFECTS:
 
-            - Axe deals x2 damage.
+                - Axes deal x2 damage.
 
-            - Blunt Weapon/Long Blade deals x1 dmg.
+                - Blunt Weapons deal x1 damage.
 
-            - Short Blade deals 1/2 dmg.
+                - Long Blades deal x1 damage and suffer x2 durability damage.
 
-            - Hand-to-Hand deals 1/3 dmg.
+                - Short Blades deal 1/2 damage and suffer x2 durability damage.
 
-            - Archery deals 1/4 dmg.
+                - Archery Immune.
+
+
+        GIANT BAT:
+
+            - Moves very fast.
+
+            - Always charges.
+
+            - 1-7 damage per hit.
+
+            - 4 average damage per attack animation.
+
+            - Has 8-24 HP.
+
+            - Has 5 Armor.
+
+            - Level 1-5.
+
+            - 5% chance per hit to inflict disease, increased from vanilla's 2%.
+
+            - Soul Gems cost 50,000 gold.
+
+
+        GRIZZLY BEAR:
+
+            - Moves somewhat fast.
+
+            - Always charges.
+
+            - 1-18 damage per hit.
+
+            - 9.5 average damage per attack animation.
+
+            - Has 33-99 HP.
+
+            - Has 6 Armor.
+
+            - Level 2-6.
+
+            - Soul Gems cost 50,000 gold.
+
+
+        SABERTOOTH TIGER:
+
+            - Moves fast.
+
+            - Always charges.
+
+            - 1-21 damage per hit.
+
+            - 11 average damage per attack animation.
+
+            - Has 25-75 HP.
+
+            - Has 4 Armor.
+
+            - Level 2-6.
+
+            - Soul Gems cost 50,000 gold.
+
+
+        SPIDER:
+
+            - Attacks will not paralyze targets.
+
+            - Has a 9.9% chance per hit to inflict one of eleven vanilla poisons. Poison selection is random. Each poison has the
+              same chance to be selected.
+
+            - Has a 0.1% chance per hit to inflict Drothweed. This pierces target's Poison Immunity if target is above level 1.
+
+            - Moves very fast.
+
+            - Always charges.
+
+            - 1-8 damage per hit.
+
+            - 4.5 average damage per attack animation.
+
+            - Has 14-42 HP.
+
+            - Has 5 Armor.
+
+            - Level 2-6.
+
+            - Soul Gems cost 50,000 gold.
+
+
+        ORC:
+
+            - Moves somewhat slowly.
+
+            - 1-12 damage per hit.
+
+            - 9.75 average damage per attack animation.
+
+            - Has 24-72 HP.
+
+            - Has 7 Armor.
+
+            - Level 3-7.
+
+            - Never wields a weapon, never drops large amounts of armor.
+
+            - Never wields a poisoned weapon.
+
+            - Soul Gems cost 51,000 gold.
+
+
+        CENTAUR:
+
+            - Moves fast.
+
+            - 1-15 damage per hit.
+
+            - 12 average damage per attack animation.
+
+            - Has 20-60 HP.
+
+            - Has 6 Armor.
+
+            - Level 3-7.
+
+            - Never wields a weapon, never drops large amounts of armor.
+
+            - Never wields a poisoned weapon.
+
+            - Soul Gems cost 53,000 gold.
+
+
+        WEREWOLF:
+
+            - Can be damaged by any weapon material.
+
+            - Moves very fast.
+
+            - 1-24 damage per hit.
+
+            - 25 average damage per attack animation.
+
+            - Has 33-99 HP.
+
+            - Has 0 Armor.
+
+            - Level 10-14.
+
+            - Soul Gems cost 51,000 gold.
+
+
+            WEAPON EFFECTS:
+
+                - Silver weapons deal x1 damage.
+
+                - Hand-to-Hand punches deal x1 damage if player is wearing Silver gloves.
+
+                - Hand-to-Hand kicks deal x1 damage if player is wearing Silver boots.
+
+                - All other weapon or Hand-to-Hand attacks deal 1/2 damage.
+
+
+        NYMPH:
+
+            - Can be damaged by any weapon material.
+
+            - Moves slowly.
+
+            - 1-10 damage per hit.
+
+            - 5.5 average damage per attack animation.
+
+            - Has 15-45 HP.
+
+            - Has 4 Armor.
+
+            - Level 4-8.
+
+            - Soul Gems cost 60,000 gold.
+
+
+        SLAUGHTERFISH:
+
+            - Swims slowly.
+
+            - Always charges.
+
+            - 1-12 damage per hit.
+
+            - 13 average damage per attack animation.
+
+            - Has 20-60 HP.
+
+            - Has 5 Armor.
+
+            - Level 5-9.
+
+            - Soul Gems cost 50,000 gold.
+
+
+        ORC SERGEANT:
+
+            - Moves somewhat slowly.
+
+            - 1-25 damage per hit.
+
+            - 19.5 average damage per attack animation.
+
+            - Has 50-150 HP.
+
+            - Has 2 Armor.
+
+            - Level 9-13.
+
+            - Soul Gems cost 51,000 gold.
+
+
+        HARPY:
+
+            - Can be damaged by any weapon material.
+
+            - Moves fast.
+
+            - 1-23 damage per hit.
+
+            - 12 average damage per attack animation.
+
+            - Has 25-75 HP.
+
+            - Has 5 Armor.
+
+            - Level 6-10.
+
+            - Soul Gems cost 53,000 gold.
+
+
+        WEREBOAR:
+
+            - Can be damaged by any weapon material.
+
+            - Moves fast.
+
+            - 1-48 damage per hit.
+
+            - 24.5 average damage per attack animation.
+
+            - Has 44-132 HP.
+
+            - Has 2 Armor.
+
+            - Level 10-14.
+
+            - Soul Gems cost 51,000 gold.
+
+
+            WEAPON EFFECTS:
+
+                - Silver weapons deal x1 damage.
+
+                - Hand-to-Hand punches deal x1 damage if player is wearing Silver gloves.
+
+                - Hand-to-Hand kicks deal x1 damage if player is wearing Silver boots.
+
+                - All other weapon or Hand-to-Hand attacks deal 1/2 damage.
 
 
         SKELETAL WARRIOR:
 
-            - Blunt Weapon deals x2 damage.
+            - Moves somewhat fast.
 
-            - Axe/Hand-to-Hand deals x1 dmg.
+            - Always charges.
 
-            - Long Blade deals 1/2 dmg, suffers x2 durability dmg.
+            - 1-19 damage per hit.
 
-            - Short Blade deals 1/3 dmg, suffers x3 durability dmg.
+            - 10 average damage per attack animation.
 
-            - Archery Immune.
+            - Has 17-51 HP.
+
+            - Has 4 Armor.
+
+            - Level 6-10.
+
+            - Does not see Invisible.
+
+            - 2% chance per hit to inflict any disease. In vanilla they didn't inflict disease.
+
+            - Soul Gems cost 50,000 gold.
 
 
-        GIANT SCORPION:
+            WEAPON EFFECTS:
 
-            - Axe deals x2 damage.
+                - Blunt Weapons deal x2 damage.
 
-            - Blunt Weapon/Long Blade/Short Blade deals x1 dmg.
+                - Axes or Hand-to-Hand attacks deal x1 damage.
 
-            - Hand-to-Hand deals 1/2 dmg, player suffers 1 HP dmg.
+                - Long Blades deal 1/2 dmg and suffer x2 durability damage.
 
-            - Archery deals 1/3 dmg.
+                - Short Blades deal 1/3 dmg and suffer x3 durability damage.
+
+                - Archery Immune.
 
 
-        GHOST, WRAITH:
+        GIANT:
 
-            - Silver weapons/gloves/boots deal x1 dmg.
+            - Moves somewhat fast.
 
-            - Immune to all other materials.
+            - Always charges.
+
+            - 1-30 damage per hit.
+
+            - 31 average damage per attack animation.
+
+            - Has 70-210 HP.
+
+            - Has 4 Armor.
+
+            - Level 10-14.
+
+            - Soul Gems cost 53,000 gold.
+
+
+        ZOMBIE:
+
+            - Moves extremely slowly.
+
+            - Always charges.
+
+            - 1-15 damage per hit.
+
+            - 8 average damage per attack animation.
+
+            - Has 33-99 HP.
+
+            - Has 5 Armor.
+
+            - Level 5-9.
+
+            - 5% chance per hit to inflict disease, increased from vanilla's 2%.
+
+            - Soul Gems cost 50,000 gold.
+
+
+            WEAPON EFFECTS:
+
+                - Axes deal x2 damage.
+
+                - Blunt Weapons and Long Blades deal x1 damage.
+
+                - Short Blades deal 1/2 damage.
+
+                - Hand-to-Hand attacks deal 1/3 damage.
+
+                - Archery attacks deal 1/4 damage.
+
+
+        GHOST:
+
+            - Moves extremely slowly.
+
+            - Always charges.
+
+            - 1-30 damage per hit.
+
+            - 15.5 average damage per attack animation.
+
+            - Has 5-15 HP.
+
+            - Has -4 Armor.
+
+            - Level 9-13.
+
+            - Casts no spells.
+
+            - Does not see Invisible.
+
+            - Soul Gems cost 80,000 gold.
+
+
+            WEAPON EFFECTS:
+
+                - Silver weapons deal x1 damage.
+
+                - Hand-to-Hand punches deal x1 damage if player is wearing Silver gloves.
+
+                - Hand-to-Hand kicks deal x1 damage if player is wearing Silver boots.
+
+                - Immune to all other weapon or Hand-to-Hand attacks.
 
 
         MUMMY:
 
-            - Axe/Long Blade deals x2 damage.
+            - Can be damaged by any weapon material.
 
-            - Blunt Weapon/Short Blade/Hand-to-Hand deals x1 dmg.
+            - Moves extremely slowly.
 
-            - Archery deals 1/2 dmg.
+            - Always charges.
+
+            - 1-25 damage per hit.
+
+            - 13 average damage per attack animation.
+
+            - Has 45-135 HP.
+
+            - Has 2 Armor.
+
+            - Level 8-12.
+
+            - Does not see Invisible.
+
+            - 2% chance per hit to inflict disease, decreased from vanilla's 5%.
+
+            - Soul Gems cost 60,000 gold.
+
+
+            WEAPON EFFECTS:
+
+                - Axes and Long Blades deal x2 damage.
+
+                - Blunt Weapons, Short Blades, and Hand-to-Hand attacks deal x1 damage.
+
+                - Archery attacks deal 1/2 damage.
+
+
+        GIANT SCORPION:
+
+            - Attacks will not paralyze targets.
+
+            - Has a 9.9% chance per hit to inflict one of eleven vanilla poisons. Poison selection is random. Each poison has the
+              same chance to be selected.
+
+            - Has a 0.1% chance per hit to inflict Drothweed. This pierces target's Poison Immunity if target is above level 1.
+
+            - Hand-to-Hand attacks deal 1/2 damage and player suffers 1 HP damage every landed attack.
+
+            - Moves fast.
+
+            - Always charges.
+
+            - 1-30 damage per hit.
+
+            - 15.5 average damage per attack animation.
+
+            - Has 33-99 HP.
+
+            - Has 1 Armor.
+
+            - Level 10-14.
+
+            - Soul Gems cost 50,000 gold.
+
+
+            WEAPON EFFECTS:
+
+                - Axes deal x2 damage.
+
+                - Blunt Weapons, Long Blades, and Short Blades deal x1 damage.
+
+                - Archery attacks deal 1/3 damage.
+
+
+        ORC SHAMAN:
+
+            - Moves somewhat slowly.
+
+            - 1-35 damage per hit.
+
+            - 28.8 average damage per attack animation.
+
+            - Has 55-165 HP.
+
+            - Has -2 Armor.
+
+            - Level 14-18.
+
+            - Has Magicka for 4-6 spells. See FORMULAS & TABLES section for full list of Magicka capacities by level.
+
+            - Spell variety greatly increased. See FORMULAS & TABLES section for full spell list.
+
+            - Soul Gems cost 53,000 gold.
 
 
         GARGOYLE:
 
-            - Blunt Weapon deals x1 damage, suffers x2 durability dmg.
+            - Hand-to-Hand attacks deal no damage and player suffers 2 HP damage every landed attack.
 
-            - Axe deals x1 dmg, suffers x3 durability dmg.
+            - Can be damaged by any weapon material.
 
-            - Long Blade deals 1/2 dmg, suffers x4 durability dmg.
+            - Moves extremely slowly.
 
-            - Short Blade deals 1/3 dmg, suffers x4 durability dmg.
+            - Always charges.
 
-            - Hand-to-Hand Immune, player suffers 2 HP dmg.
+            - 1-50 damage per hit.
 
-            - Archery Immune.
+            - 25.5 average damage per attack animation.
 
+            - Has 50-150 HP.
 
-        IRON ATRONACH:
+            - Has -1 Armor.
 
-            - Blunt Weapon deals x1 damage, suffers x3 durability dmg.
+            - Level 12-16.
 
-            - Axe deals 1/2 dmg, suffers x4 durability dmg.
-
-            - Long Blade deals 1/3 dmg, suffers x5 durability dmg.
-
-            - Short Blade deals 1/4 dmg, suffers x5 durability dmg.
-
-            - Hand-to-Hand Immune, player suffers 3 HP dmg.
-
-            - Archery Immune.
+            - Soul Gems cost 53,000 gold.
 
 
-        FIRE ATRONACH:
+            WEAPON EFFECTS:
 
-            - Player suffers 2 HP damage per landed Hand-to-Hand attack.
+                - Blunt Weapons deal x1 damage and suffer x2 durability damage.
+
+                - Axes deal x1 damage and suffer x3 durability damage.
+
+                - Long Blades deal 1/2 damage and suffer x4 durability damage.
+
+                - Short Blades deal 1/3 damage and suffer x4 durability damage.
+
+                - Archery Immune.
 
 
-        ICE ATRONACH:
+        WRAITH:
 
-            - Blunt Weapon deals x1 dmg.
+            - Moves slowly.
 
-            - Axe deals x1 damage, suffers x2 durability dmg.
+            - Always charges.
 
-            - Long Blade deals 1/2 dmg, suffers x3 durability dmg.
+            - 1-45 damage per hit.
 
-            - Short Blade deals 1/3 dmg, suffers x4 durability dmg.
+            - 23 average damage per attack animation.
 
-            - Hand-to-Hand Immune, player suffers 2 HP dmg.
+            - Has 10-30 HP.
 
-            - Archery Immune.
+            - Has -8 Armor.
+
+            - Level 13-17.
+
+            - Has Magicka for 4-5 spells. See FORMULAS & TABLES section for full list of Magicka capacities by level.
+
+            - Spell variety greatly increased. See FORMULAS & TABLES section for full spell list.
+
+            - Does not see Invisible.
+
+            - Soul Gems cost 80,000 gold.
+
+
+            WEAPON EFFECTS:
+
+                - Silver weapons deal x1 damage.
+
+                - Hand-to-Hand punches deal x1 damage if player is wearing Silver gloves.
+
+                - Hand-to-Hand kicks deal x1 damage if player is wearing Silver boots.
+
+                - Immune to all other weapon or Hand-to-Hand attacks.
+
+
+        FROST DAEDRA:
+
+            - Can be damaged by any weapon material.
+
+            - Moves slowly.
+
+            - 1-100 damage per hit.
+
+            - 75.75 average damage per attack animation.
+
+            - Has 35-105 HP.
+
+            - Has 0 Armor.
+
+            - Level 15-19.
+
+            - Has Magicka for 4-6 spells. See FORMULAS & TABLES section for full list of Magicka capacities by level.
+
+            - Spell variety slightly increased. See FORMULAS & TABLES section for full spell list.
+
+            - Always drops a weapon, usually drops large amounts of armor.
+
+            - Does not see Invisible.
+
+            - Soul Gems cost 100,000 gold.
 
 
         FIRE DAEDRA:
 
-            - Player suffers 4 HP damage per landed Hand-to-Hand attack.
+            - Player suffers 4 HP damage every landed Hand-to-Hand attack.
+
+            - Can be damaged by any weapon material.
+
+            - Moves fast.
+
+            - 1-50 damage per hit.
+
+            - 38.25 average damage per attack animation.
+
+            - Has 60-180 HP.
+
+            - Has -3 Armor.
+
+            - Level 15-19.
+
+            - Has Magicka for 4-6 spells. See FORMULAS & TABLES section for full list of Magicka capacities by level.
+
+            - Spell variety slightly increased. See FORMULAS & TABLES section for full spell list.
+
+            - Always drops a weapon, usually drops large amounts of armor.
+
+            - Does not see Invisible.
+
+            - Soul Gems cost 100,000 gold.
 
 
-        VAMPIRE, LICH, ANCIENT VAMPIRE, ANCIENT LICH:
+        DAEDROTH:
 
-            - Silver weapons/gloves/boots deal x2 damage.
+            - Can be damaged by any weapon material.
 
-            - All other materials deal x1 dmg.
+            - Moves somewhat fast.
+
+            - 1-50 damage per hit.
+
+            - 51 average damage per attack animation.
+
+            - Has 66-198 HP.
+
+            - Has -4 Armor.
+
+            - Level 16-20.
+
+            - Has Magicka for 5-8 spells. See FORMULAS & TABLES section for full list of Magicka capacities by level.
+
+            - Spell variety greatly increased. See FORMULAS & TABLES section for full spell list.
+
+            - Always drops a weapon, usually drops large amounts of armor.
+
+            - Does not see Invisible.
+
+            - Soul Gems cost 150,000 gold and are worth 1,000 Enchantment Points.
 
 
-        WEREWOLF, WEREBOAR:
+        DAEDRA SEDUCER:
 
-            - Silver weapons/gloves/boots deal x1 damage.
+            - Can be damaged by any weapon material.
 
-            - All other materials deal 1/2 dmg.
+            - Moves fast.
+
+            - 1-90 damage per hit.
+
+            - 45.5 average damage per attack animation.
+
+            - Has 75-225 HP.
+
+            - Has -5 Armor.
+
+            - Level 17-20.
+
+            - Has Magicka for 5-8 spells. See FORMULAS & TABLES section for full list of Magicka capacities by level.
+
+            - Spell variety greatly increased. See FORMULAS & TABLES section for full spell list.
+
+            - Always drops a weapon, usually drops large amounts of armor.
+
+            - Soul Gems cost 200,000 gold.
+
+
+        DRAGONLING:
+
+            - Moves fast.
+
+            - 1-30 damage per hit.
+
+            - 15.5 average damage per attack animation.
+
+            - Has 40-120 HP.
+
+            - Has 3 Armor.
+
+            - Level 8-12.
+
+            - Soul Gems cost 50,000 gold.
+
+
+        FIRE ATRONACH:
+
+            - Player suffers 2 HP damage every landed Hand-to-Hand attack.
+
+            - Moves fast.
+
+            - 15-33 average damage per hit, this will vary slightly depending on the Fire Atronach's level.
+
+            - 24 average damage per attack animation, this will vary slightly depending on the Fire Atronach's level.
+
+            - Has 40-120 HP.
+
+            - Has 3 Armor.
+
+            - Level 14-18.
+
+            - Soul Gems cost 80,000 gold.
+
+
+        IRON ATRONACH:
+
+            - Hand-to-Hand attacks deal no damage and player suffers 3 HP damage every landed attack.
+
+            - Moves extremely slowly.
+
+            - 15-43 average damage per hit, this will vary slightly depending on the Iron Atronach's level.
+
+            - 29 average damage per attack animation, this will vary slightly depending on the Iron Atronach's level.
+
+            - Has 66-198 HP.
+
+            - Has 2 Armor.
+
+            - Level 14-18.
+
+            - Soul Gems cost 80,000 gold.
+
+
+            WEAPON EFFECTS:
+
+
+                - Blunt Weapons deal x1 damage and suffer x3 durability damage.
+
+                - Axes deal 1/2 damage and suffer x4 durability damage.
+
+                - Long Blades deal 1/3 damage and suffer x5 durability damage.
+
+                - Short Blades deal 1/4 damage and suffer x5 durability damage.
+
+                - Archery Immune.
+
+
+        FLESH ATRONACH:
+
+            - Moves extremely slowly.
+
+            - 15-28 average damage per hit, this will vary slightly depending on the Flesh Atronach's level.
+
+            - 21.5 average damage per attack animation, this will vary slightly depending on the Flesh Atronach's level.
+
+            - Has 60-180 HP.
+
+            - Has 4 Armor.
+
+            - Level 14-18.
+
+            - Soul Gems cost 60,000 gold.
+
+
+            WEAPON EFFECTS:
+
+                - Axes deal x2 damage.
+
+                - Blunt Weapons and Long Blades deal x1 damage.
+
+                - Short Blades deal 1/2 damage.
+
+                - Hand-to-Hand attacks deal 1/3 damage.
+
+                - Archery attacks deal 1/4 damage.
+
+
+        ICE ATRONACH:
+
+            - Hand-to-Hand attacks deal no damage and player suffers 2 HP damage every landed attack.
+
+            - Moves extremely slowly.
+
+            - 15-38 average damage per hit, this will vary slightly depending on the Ice Atronach's level.
+
+            - 26.5 average damage per attack animation, this will vary slightly depending on the Ice Atronach's level.
+
+            - Has 50-150 HP.
+
+            - Has 3 Armor.
+
+            - Level 14-18.
+
+            - Soul Gems cost 80,000 gold.
+
+
+            WEAPON EFFECTS:
+
+                - Blunt Weapons deal x1 damage.
+
+                - Axes deal x1 damage and suffer x2 durability damage.
+
+                - Long Blades deal 1/2 damage and suffer x3 durability damage.
+
+                - Short Blades deal 1/3 damage and suffer x4 durability damage.
+
+                - Archery Immune.
+
+
+        DREUGH:
+
+            - Swims extremely slowly.
+
+            - 7-20 average damage per hit, this will vary slightly depending on the Dreugh's level.
+
+            - 18 average damage per attack animation, this will vary slightly depending on the Dreugh's level.
+
+            - Has 22-66 HP.
+
+            - Has 5 Armor.
+
+            - Level 6-10.
+
+            - Soul Gems cost 60,000 gold.
+
+
+        LAMIA:
+
+            - Swims slowly.
+
+            - 15-33 average damage per hit, this will vary slightly depending on the Lamia's level.
+
+            - 48 average damage per attack animation, this will vary slightly depending on the Lamia's level.
+
+            - Has 51-153 HP.
+
+            - Has 0 Armor.
+
+            - Level 14-18.
+
+            - Soul Gems cost 60,000 gold.
 
 
     POTIONS:
@@ -834,7 +1632,7 @@ Lamia
 
     QUESTING:
 
-        - Activating quest enemies in Info mode displays their level and name at any distance.
+        - Activating quest enemies in Info mode will display their level and name at greatly increased distances.
 
 
     SETTINGS:
@@ -856,14 +1654,6 @@ Lamia
             - Switch between vanilla enemy movespeed and two faster options.
 
             - "Very Fast" is Bossfall v1.2.1 speeds, "Fast" is rebalance I did for v1.3.
-
-
-        SKILL ADVANCEMENT DIFFICULTY:
-
-            - Switch between vanilla skill advancement difficulty and two harder options.
-
-            - "Hard" is rebalance I did for Bossfall v1.3, "Extremely Hard" is v1.2.1 difficulty, in my opinion suitable for only
-              the most patient adventurers.
 
 
         BOSS PROXIMITY WARNING:
@@ -897,13 +1687,21 @@ Lamia
 
         - Booksellers stock lots more books.
 
-        - Exact material generation numbers and other shop formulas are in the FORMULAS or ITEM TABLES section of the ReadMe.
+        - Exact material generation numbers and shop formulas are in the FORMULAS & TABLES or ITEM TABLES section of the ReadMe.
 
 
-    VAMPIRISM:
+    SKILLS:
+
+        - Etiquette and Streetwise are exercised when encountering human enemies even if you don't pacify them. This now matches
+          behavior of other language skills.
+
+        - Reduced skill tallies from 3 to 1 for successful language skill pacifications.
 
 
-FORMULAS:
+FORMULAS & TABLES:
+
+    - This section contains formulas and tables I added or modified. It does not contain any unmodified vanilla formulas or tables.
+
 
     BOSS SPAWN CHANCES:
 
@@ -917,7 +1715,7 @@ FORMULAS:
             - Each spawned enemy has a 1/140 chance (0.71%) to be a boss.
 
 
-        - These numbers can be higher if the environment or dungeon type has more than one boss. However, this is very rare. 
+        - These numbers can be higher if the environment or dungeon type has more than one boss. However, this is rare. 
 
         - Now, let's put these numbers into practice. In a large 4-block dungeon, let's say there will be 100 enemies spawned.
 
@@ -953,23 +1751,664 @@ FORMULAS:
 
     CHARACTER CREATION:
 
-        - Add ur special advantage/disadvantage table here (pull ur table from BFEventHandlers)
+        CUSTOM CLASS SKILL ADVANCEMENT DIFFICULTY:
+
+            - The maximum is 40, which will result in a Skill Advancement Difficulty of 3.0.
+
+            - The minimum is -12, which will result in a Skill Advancement Difficulty of 0.3.
+
+            - Going below Bossfall default HP per level of 20 will reduce the value by -4, going above will increase the value by 1.
+
+            SPECIAL ADVANTAGE COSTS:                                SPECIAL DISADVANTAGE COSTS:
+
+                Acute Hearing:              1                           Critical Weakness, each:        -14
+                Adrenaline Rush:            1                           Damage In Holy Places:          -7 
+                Athleticism:                2                           Damage In Sunlight:             -28
+                Bonus To Hit Animals:       3                           Lowered Magicka in Daylight:    -10
+                Bonus To Hit Daedra:        3                           No Magicka in Daylight:         -21
+                Bonus To Hit Humanoids:     3                           Forbidden Chain Armor:          -14
+                Bonus To Hit Undead:        3                           Forbidden Leather Armor:        -7
+                Expertise, each:            2                           Forbidden Plate Armor:          -28
+                Immunity, each:             28                          Forbidden Adamantium:           -8
+                INT In Spell Points:        2                           Forbidden Daedric:              -28
+                x1.5 INT In Spell Points:   5                           Forbidden Dwarven:              -4
+                x1.75 INT In Spell Points:  6                           Forbidden Ebony:                -10
+                x2 INT In Spell Points:     7                           Forbidden Elven:                -2
+                x3 INT In Spell Points:     10                          Forbidden Iron:                 -14
+                Rapid Healing, General:     4                           Forbidden Mithril:              -6
+                Rapid Healing, Darkness:    3                           Forbidden Orcish:               -12
+                Rapid Healing, Light:       2                           Forbidden Silver:               -28
+                Regenerate HP, General:     6                           Forbidden Steel:                -42
+                Regenerate HP, Darkness:    5                           Forbidden Shield, each:         -3
+                Regenerate HP, Light:       3                           Forbidden Weaponry, each:       -7
+                Regenerate HP, Water:       1                           Inability to Regen Magicka:     -28
+                Resistance, each:           14                          Lowered Magicka in Darkness:    -14
+                Spell Absorption, General:  400                         No Magicka in Darkness:         -28
+                Spell Absorption, Darkness: 400                         Low Tolerance, each:            -7
+                Spell Absorption, Light:    400                         Phobia, each:                   -7
+
+
+    ENEMY ATTACK SPEED:
+
+        - Attack timing ranges are determined randomly. Attacks may be chained in quick succession, and vice versa.
+
+        ATTACK SPEED BY REFLEXES SETTING:
+
+            Very High: One attack every 0.1 - 2.7 seconds
+
+            High: One attack every 0.6 - 3.1 seconds
+
+            Average: One attack every 1.0 - 3.6 seconds
+
+            Low: One attack every 1.5 - 4.0 seconds
+
+            Very Low: One attack every 1.9 - 4.5 seconds
 
 
     ENEMY EQUIPMENT:
 
-        - Add enemy equipment (GenerateEnemyEquipment) formula here w/spawn chances 4 each armor piece,
-          include all variations and possibilities ofc
+        ENEMIES THAT SPAWN WITH EQUIPMENT:
+
+            Orc Sergeant
+            Orc Shaman
+            Orc Warlord
+            Frost Daedra
+            Fire Daedra
+            Daedroth
+            Vampire
+            Daedra Seducer
+            Vampire Ancient
+            Daedra Lord
+            Lich
+            Ancient Lich
+            Dragonling_Alternate
+            Any human
+
+
+        EQUIPMENT SELECTION:
+
+            - There are three equipment variants. They determine most equipment spawn chances. All enemies that use equipment
+              will randomly use one of these three variants, and each spawned enemy can use a different variant. For example,
+              a given Mage may use equipment variant 1, but the next Mage spawned may use equipment variant 2.
+
+
+        EQUIPMENT VARIANT 1:                        EQUIPMENT VARIANT 2:                        EQUIPMENT VARIANT 3:
+
+            Randomly chooses one of these:              Randomly chooses one of these:              Randomly chooses one of these:
+
+                Broadsword                                  Claymore                                    Claymore
+                Saber                                       Dai-Katana                                  Dai-Katana
+                Longsword                                   Mace                                        Mace
+                Katana                                      Flail                                       Flail
+                                                            Warhammer                                   Warhammer
+                                                            Battle Axe                                  Battle Axe
+            Rolls a 30% chance once, randomly               War Axe                                     War Axe
+            chooses one of these on success:                Short Bow                                   Short Bow
+                                                            Long Bow                                    Long Bow
+                Buckler
+                Round Shield
+                Kite Shield
+                Tower Shield
+
+                
+            If no shield, rolls a 30% chance once,
+            randomly chooses one of these on success:                      
+                                                            
+                Dagger
+                Tanto
+                Staff
+                Shortsword
+                Wakazashi
+
+
+            Rolls a 30% chance for each item:           Rolls a 45% chance for each item:           Rolls a 60% chance for each item:
+
+                Helm                                        Helm                                        Helm
+                Right Pauldron                              Right Pauldron                              Right Pauldron
+                Left Pauldron                               Left Pauldron                               Left Pauldron
+                Cuirass                                     Cuirass                                     Cuirass
+                Greaves                                     Greaves                                     Greaves
+                Boots                                       Boots                                       Boots
+                Gauntlets                                   Gauntlets                                   Gauntlets
+
+
+    ENEMY MOVE SPEEDS:
+
+        - For comparison, the player's running speed with 100 Running and 100 SPD is 11.7.
+
+
+                               VANILLA:   FAST:   VERY FAST:
+
+                         Rat:   4.875     6.5         7
+                         Imp:   5.5       5.5         6
+                    Spriggan:   4.75      3           3
+                   Giant Bat:   5.5       8           8.5
+                Grizzly Bear:   5.5       6.75        7.5
+            Sabertooth Tiger:   5.5       7.25        8
+                      Spider:   5.5       8           9
+                         Orc:   5         5           5
+                     Centaur:   5.5       7           7.5
+                    Werewolf:   5.875     8           9
+                       Nymph:   5.5       4.5         4.5
+               Slaughterfish:   5.5       4.5         4.5
+                Orc Sergeant:   5         5.75        5.75
+                       Harpy:   5.5       7.5         8
+                    Wereboar:   5.5       7           7.5
+            Skeletal Warrior:   5.5       6           6
+                       Giant:   5.25      6.5         7
+                      Zombie:   5.5       3           3
+                       Ghost:   5.5       3.5         3.5
+                       Mummy:   5.5       3.5         3.5
+              Giant Scorpion:   5.5       7           7.5
+                  Orc Shaman:   5         5.25        5.75
+                    Gargoyle:   5.5       3.5         4.5
+                      Wraith:   5.875     4           4
+                 Orc Warlord:   5         6           6.5
+                Frost Daedra:   6.125     4           5
+                 Fire Daedra:   6.125     7           7.5
+                    Daedroth:   6.25      6           6.5
+                     Vampire:   6.25      9          10
+              Daedra Seducer:   5.5       7.5         7.5
+             Vampire Ancient:   6.75     12          12
+                 Daedra Lord:   6.75      7           7.5
+                        Lich:   5.75      4           4
+                Ancient Lich:   6.25      4.5         4.5
+                  Dragonling:   6.25      7.5         8
+               Fire Atronach:   5.25      7           7.5
+               Iron Atronach:   5.125     3           3
+              Flesh Atronach:   5.275     3           3
+                Ice Atronach:   5.375     3           3
+        Dragonling_Alternate:   5.5       9          10
+                      Dreugh:   5.5       3.5         3.5
+                       Lamia:   5.375     4           4
+                        Mage:   4.825     4           4
+                  Spellsword:   4.875     7           7.5
+                  Battlemage:   5         6           6
+                    Sorcerer:   4.875     4           4
+                      Healer:   4.9       4           4
+                  Nightblade:   5         7.5         8
+                        Bard:   5         6.5         7
+                     Burglar:   5.2       7.5         8
+                       Rogue:   5         7.5         8
+                     Acrobat:   5.325     8           8.5
+                       Thief:   5.2       7.5         8
+                    Assassin:   5         9          10
+                        Monk:   5.2       7           7.5
+                      Archer:   5.075     4.5         4.5
+                      Ranger:   4.925     4.5         4.5
+                   Barbarian:   5         6.5         7
+                     Warrior:   4.925     5.75        5.75
+                      Knight:   4.875     5           5
+                       Guard:   4.875     8           8.5
+
+
+    ENEMY SKILL LEVEL SCALING:
+
+        SKILL FORMULA:
+
+            (enemy level * 7) + 30
+
+            - This scales 40% faster than vanilla. It sets weapon, Dodging, Critical Strike, and all other skill levels.
+
+
+        SKILL CAP:
+
+            180
+
+            - This is 80% higher than vanilla. Bossfall enemies are more accurate and are harder to hit.
+
+
+    ENEMY SPAWN CHANCES:
+
+        - Every 2.4 game hours several random numbers from 0 to 40 are generated. If any of the random numbers are 0, and if
+          enemies are allowed to spawn given current game conditions, a number of enemies equal to the number of randomly generated
+          zeroes are spawned from the location or environment's encounter table. This process happens 10 times per game day.
+
+
+    ENEMY SPELLS:
+
+        FIRE DAEDRA SPELLS:
+
+            Fireball
+            Fire Storm
+            God's Fire
+
+
+        FROST DAEDRA SPELLS:
+
+            Frostbite
+            Ice Bolt
+            Ice Storm
+
+
+        GENERIC SPELLS:
+
+            Energy Leech
+            Far Silence
+            Fireball
+            Fire Storm
+            Force Bolt
+            God's Fire
+            Hand of Sleep
+            Heal
+            Ice Bolt
+            Ice Storm
+            Lightning
+            Magicka Leech
+            Medusa's Gaze
+            Paralysis
+            Shalidor's Mirror
+            Shock
+            Silence
+            Sleep
+            Spell Drain
+            Spell Resistance
+            Sphere of Negation
+            Strength Leech
+            Toxic Cloud
+            Vampiric Touch
+
+
+        SPELLS CAST PER LEVEL:
+
+            Level 1-7:      2
+            Level 8-12:     3
+            Level 13-15:    4
+            Level 16-17:    5
+            Level 18-19:    6
+            Level 20:       8
+            Level 21-25:    30
+            Level 26-30:    Infinite
+
+
+    EXTERIOR ENCOUNTER TABLES:
+
+        DESERT, IN TOWN, NIGHT:             DESERT, NOT IN TOWN, DAY:               DESERT, NOT IN TOWN, NIGHT:
+
+            COMMON:                             COMMON:                                 COMMON:
+
+                - Human                             - Giant Scorpion                        - Mummy
+
+                                                    - Dragonling                            - Skeletal Warrior
+                                           
+                                                    - Nymph                                 - Ghost
+                                          
+                                                    - Fire Atronach                         - Ranger
+                
+                                                
+                                                UNCOMMON:                               UNCOMMON:
+
+                                                    - Ranger                                - Gargoyle
+           
+                                                    - Gargoyle                              
+
+
+            RARE:                               RARE:                                   RARE:
+
+                - Werewolf                          - Daedra Seducer                        - Wraith
+
+                - Wereboar                          - Fire Daedra
+
+                - Gargoyle
+
+
+            BOSS:                               BOSS:                                   BOSSES:
+
+                - Vampire                           - Dragonling_Alternate                  - Lich
+
+                                                                                            - Ancient Lich
+
+
+        HAUNTED WOODLANDS, IN TOWN, NIGHT:  HAUNTED WOODLANDS, NOT IN TOWN, DAY:    HAUNTED WOODLANDS, NOT IN TOWN, NIGHT:
+
+            COMMON:                             COMMON:                                 COMMON:
+
+                - Human                             - Ghost                                 - Ghost
+
+                                                    - Wraith                                - Wraith
+
+                                                    - Spriggan                              - Werewolf
+
+                                                                                            - Wereboar
+
+
+            UNCOMMON:                           UNCOMMON:                               UNCOMMON:
+
+                - Ghost                             - Werewolf                              - Flesh Atronach
+
+                - Wraith                            - Wereboar                              - Mummy
+
+                                                    - Flesh Atronach                        - Skeletal Warrior
+
+                                                    - Mummy                                 - Zombie
+
+                                                    - Skeletal Warrior
+
+                                                    - Zombie
+
+
+            RARE:
+
+                - Flesh Atronach
+
+                - Werewolf
+
+                - Wereboar
+
+
+            BOSSES:                             BOSSES:                                 BOSSES:
+
+                - Vampire                           - Lich                                  - Vampire
+
+                - Vampire Ancient                   - Ancient Lich                          - Lich
+
+                                                                                            - Vampire Ancient
+
+                                                                                            - Ancient Lich
+
+
+        MOUNTAIN, IN TOWN, NIGHT:           MOUNTAIN, NOT IN TOWN, DAY:             MOUNTAIN, NOT IN TOWN, NIGHT:
+
+            COMMON:                             COMMON:                                 COMMON:
+
+                - Human                             - Human                                 - Ice Atronach
+
+                                                    - Grizzly Bear                          - Grizzly Bear
+
+                                                    - Centaur                               - Barbarian
+
+                                                    - Giant                                 - Zombie
+
+                                                    - Harpy                                 - Skeletal Warrior
+
+                                                    - Spriggan
+
+
+                                                                                        UNCOMMON:
+
+                                                                                            - Frost Daedra
+
+                                                                                            - Ghost
+
+                                                                                            - Ranger
+
+                                                                                            - Spriggan
+
+                                                                                            - Gargoyle
+
+                                                                                            - Werewolf
+
+                                                                                            - Wereboar
+
+
+            RARE:                               RARE:                                   RARE:
+
+                - Werewolf                          - Orc                                   - Wraith
+
+                - Wereboar                          - Orc Sergeant                          - Mummy
+
+                - Grizzly Bear
+
+
+            BOSS:                               BOSS:                                   BOSS:
+
+                - Assassin                          - Lich                                  - Vampire Ancient
+
+
+        MOUNTAIN WOODS, IN TOWN, NIGHT:     MOUNTAIN WOODS, NOT IN TOWN, DAY:       MOUNTAIN WOODS, NOT IN TOWN, NIGHT:
+
+            COMMON:                             COMMON:                                 COMMON:
+
+                - Human                             - Human                                 - Grizzly Bear
+
+                                                    - Grizzly Bear                          - Ranger
+
+                                                    - Centaur                               - Barbarian
+
+                                                    - Giant                                 - Spriggan
+
+                                                    - Harpy                                 - Zombie
+
+                                                    - Spriggan                              - Skeletal Warrior
+
+
+                                                                                        UNCOMMON:
+
+                                                                                            - Ice Atronach
+
+                                                                                            - Ghost
+
+
+            RARE:                               RARE:                                   RARE:
+
+                - Werewolf                          - Orc                                   - Frost Daedra
+
+                - Wereboar                          - Orc Sergeant                          - Wraith
+
+                - Grizzly Bear                                                              - Gargoyle
+
+                                                                                            - Werewolf
+
+                                                                                            - Wereboar
+
+                                                                                            - Mummy
+
+
+            BOSS:                               BOSS:                                   BOSS:
+
+                - Assassin                          - Lich                                  - Ancient Lich
+
+
+        RAINFOREST, IN TOWN, NIGHT:         RAINFOREST, NOT IN TOWN, DAY:           RAINFOREST, NOT IN TOWN, NIGHT:
+
+            COMMON:                             COMMON:                                 COMMON:
+
+                - Human                             - Human                                 - Human
+
+                                                    - Spider                                - Spider
+
+                                                    - Sabertooth Tiger                      - Skeletal Warrior
+
+                                                    - Spriggan                              - Spriggan
+
+                                                    - Nymph                                 - Zombie
+
+                                                    - Orc                                   - Orc
+
+                                                                                            - Rat
+
+
+                                                UNCOMMON:                               UNCOMMON:
+
+                                                    - Daedroth                              - Sabertooth Tiger
+
+                                                    - Orc Sergeant                          - Giant Bat
+
+                                                                                            - Ghost
+
+                                                                                            - Daedroth
+
+
+            RARE:                               RARE:                                   RARE:
+
+                - Werewolf                          - Orc Shaman                            - Mummy
+
+                - Wereboar                          - Daedra Seducer                        - Wraith
+
+                - Spider                                                                    - Werewolf
+
+                - Daedroth                                                                  - Wereboar
+
+                                                                                            - Orc Sergeant
+
+                                                                                            - Orc Shaman
+
+
+            BOSS:                               BOSS:                                   BOSS:
+
+                - Dragonling_Alternate              - Orc Warlord                           - Daedra Lord
+
+
+        SUBTROPICAL, IN TOWN, NIGHT:        SUBTROPICAL, NOT IN TOWN, DAY:          SUBTROPICAL, NOT IN TOWN, NIGHT:
+
+            COMMON:                             COMMON:                                 COMMON:
+
+                - Human                             - Human                                 - Human
+
+                                                    - Spider                                - Spider
+
+                                                    - Sabertooth Tiger                      - Rat
+
+                                                    - Spriggan                              - Skeletal Warrior
+
+                                                    - Nymph                                 - Giant Bat
+
+                                                    - Orc                                   - Zombie
+
+                                                                                            - Orc
+
+
+                                                UNCOMMON:                               UNCOMMON:
+
+                                                    - Rat                                   - Sabertooth Tiger
+
+                                                    - Centaur                               - Spriggan
+
+                                                    - Daedroth                              - Ghost
+
+                                                    - Orc Sergeant
+
+
+            RARE:                               RARE:                                   RARE:
+
+                - Werewolf                          - Orc Shaman                            - Mummy
+
+                - Wereboar                          - Daedra Seducer                        - Daedroth
+
+                - Sabertooth Tiger                                                          - Wraith
+
+                                                                                            - Werewolf
+
+                                                                                            - Wereboar
+
+                                                                                            - Orc Sergeant
+
+                                                                                            - Orc Shaman
+
+
+            BOSS:                               BOSS:                                   BOSS:
+
+                - Assassin                          - Daedra Lord                           - Vampire Ancient
+
+
+        SWAMP, IN TOWN, NIGHT:              SWAMP, NOT IN TOWN, DAY:                SWAMP, NOT IN TOWN, NIGHT:     
+
+            COMMON:                             COMMON:                                 COMMON:
+
+                - Human                             - Human                                 - Human
+
+                                                    - Spider                                - Spider
+
+                                                    - Sabertooth Tiger                      - Skeletal Warrior
+
+                                                    - Spriggan                              - Spriggan
+
+                                                    - Nymph                                 - Zombie
+
+                                                    - Orc                                   - Orc
+
+                                                                                            - Rat
+
+
+                                                UNCOMMON:                               UNCOMMON:
+
+                                                    - Daedroth                              - Sabertooth Tiger
+
+                                                    - Orc Sergeant                          - Giant Bat
+
+                                                                                            - Ghost
+
+                                                                                            - Daedroth
+
+
+            RARE:                               RARE:                                   RARE:
+
+                - Werewolf                          - Orc Shaman                            - Mummy
+
+                - Wereboar                          - Daedra Seducer                        - Wraith
+
+                - Spider                                                                    - Werewolf
+
+                - Daedroth                                                                  - Wereboar
+
+                                                                                            - Orc Sergeant
+
+                                                                                            - Orc Shaman
+
+
+            BOSS:                               BOSS:                                   BOSS:
+
+                - Dragonling_Alternate              - Orc Warlord                           - Daedra Lord
+
+
+        WOODLANDS, IN TOWN, NIGHT:          WOODLANDS, NOT IN TOWN, DAY:            WOODLANDS, NOT IN TOWN, NIGHT:
+
+            COMMON:                             COMMON:                                 COMMON:
+
+                - Human                             - Human                                 - Human
+
+                                                    - Orc                                   - Rat
+
+                                                    - Rat                                   - Giant Bat
+
+                                                    - Spriggan                              - Zombie
+
+                                                    - Giant                                 - Skeletal Warrior
+
+                                                    - Centaur                               - Grizzly Bear
+
+                                                    - Grizzly Bear
+
+
+                                                UNCOMMON:                               UNCOMMON:
+
+                                                    - Spider                                - Orc
+
+                                                                                            - Ghost
+
+                                                                                            - Spriggan
+
+
+            RARE:                               RARE:                                   RARE:
+
+                - Werewolf                          - Orc Sergeant                          - Orc Sergeant
+
+                - Wereboar                                                                  - Werewolf
+
+                - Spriggan                                                                  - Wereboar
+
+                                                                                            - Mummy
+
+                                                                                            - Wraith
+
+                                                                                            - Spider
+
+
+            BOSS:                               BOSS:                                   BOSS:
+
+                - Vampire                           - Dragonling_Alternate                  - Orc Warlord
 
 
     GOLD GENERATION:
 
-        - Add random gold generation formula here (or to ITEM TABLES?)
+        - Add random gold generation formula here
 
 
     HAND-TO-HAND:
 
         - Add glove/boot material H2H buffs here (pull ur table from BFOverrides)
+
+        - Add H2H dmg to glove/boots per landed atk here (10, 15 @ present)
 
 
     HUMAN ENEMY ARMOR:
@@ -979,8 +2418,8 @@ FORMULAS:
 
     HUMAN ENEMY DAMAGE:
 
-        - Add here if you decide to actually add this - values will be very imprecise early on as enemies will use weapons.
-          Is this even going to be helpful? Maybe add average damages every 5 enemy levels or so? That seems more reasonable
+        - Add here, split into 3 groups, 10 levels/group, avg dmg ~8-10 @ lvl 1, ~18 @ lvl 5, ~28 @ lvl 10, ~38 @ lvl 15, ~48 @ lvl 20,
+          ~53 @ lvl 25 (hit skill cap @ 22), ~58 @ lvl 30
 
 
     HUMAN ENEMY LEVELS:
@@ -991,35 +2430,35 @@ FORMULAS:
 
         - Once player is level 7 or higher, every non-boss human enemy has the following chance to be within the stated level range:
 
-            3% Levels 1-5
-            17% Levels 6-8
-            60% Levels 9-12
-            17% Levels 13-15
-            3% Levels 16-20
+            Level 1-5: 3%
+            Level 6-8: 17%
+            Level 9-12: 60%
+            Level 13-15: 17%
+            Level 16-20: 3%
 
 
-        - Further breakdown by level:
+        - Full breakdown by level:
 
-            1/3% Level 1
-            1/3% Level 2
-            1/3% Level 3
-            1% Level 4
-            1% Level 5
-            3% Level 6
-            5% Level 7
-            9% Level 8
-            13% Level 9
-            17% Level 10
-            17% Level 11
-            13% Level 12
-            9% Level 13
-            5% Level 14
-            3% Level 15
-            1% Level 16
-            1% Level 17
-            1/3% Level 18
-            1/3% Level 19
-            1/3% Level 20
+            Level 1: 1/3%
+            Level 2: 1/3%
+            Level 3: 1/3%
+            Level 4: 1%
+            Level 5: 1%
+            Level 6: 3%
+            Level 7: 5%
+            Level 8: 9%
+            Level 9: 13%
+            Level 10: 17%
+            Level 11: 17%
+            Level 12: 13%
+            Level 13: 9%
+            Level 14: 5%
+            Level 15: 3%
+            Level 16: 1%
+            Level 17: 1%
+            Level 18: 1/3%
+            Level 19: 1/3%
+            Level 20: 1/3%
 
 
     HUMAN ENEMY PACIFICATION:
@@ -1029,12 +2468,50 @@ FORMULAS:
 
     INGREDIENT GENERATION
 
-        - Add ingredient generation formula here (or to ITEM TABLES?)
+        - Add ingredient generation formula here
 
 
-    MAGICKA AMOUNTS:
+    INTERIOR ENCOUNTER TABLES:
 
-        - Add enemy level Magicka table here
+Sabertooth Tigers/Grizzly Bears removed from Mine dungeon types, more Giant Bats and Rats.
+
+Human Stronghold - Sorcerers removed, replaced with Mages
+Prison - Mages removed, replaced with Sorcerers
+Desecrated Temple - Barbarians/Harpies added, less Daedra Seducers/Giant Bats
+Natural Cave - Sabertooth Tigers removed, more Rats
+Crypt - Sabertooth Tigers/Grizzly Bears/Spiders removed, more Skeletons/Zombies/Mummies
+Orc Stronghold - more Orc Sergeants/Orc Shamans, less Orcs
+Spider Nest - Ghosts added, less Mummies
+Barbarian Stronghold - Harpies added, slightly less Barbarians
+Cemetery - Added Ghosts (they're rare), less Giant Bats
+Underwater - Added Ghosts & Wraiths (they're very rare), less Lamias and Ice Atronachs, more Skeletons
+Default building - every human enemy, vermin, Assassin boss
+Guildhall - every human enemy, vermin, Alternate Dragonling boss
+Temple - every human enemy, vermin, Orc Warlord boss
+Palace, House 1 - every human enemy, vermin, Daedra Lord boss
+House 2 - every human enemy, vermin, Vampire boss
+House 3 - every human enemy, vermin, Ancient Lich boss
+
+
+Crypt - medium difficulty, undead, Wraith ranged threat, Vampire Ancient boss
+Orc Stronghold - medium, Orcs, Orc Sergeants, vermin, Orc Shaman ranged threat, Orc Warlord boss
+Human Stronghold - hard, lawful humans, vermin, Healer/Sorcerer ranged threat, Assassin boss
+Prison - hard, criminals, vermin, Mage/Spellsword ranged threat, Assassin boss
+Desecrated Temple - hard, Daedra Seducers, Imps, vermin, criminals, low level undead, Mage/Sorcerer ranged threat, Ancient Lich boss
+Mine - medium, vermin, animals, Iron Atronachs/Gargoyles, Lich ranged threat and boss
+Natural Cave - easy, vermin, animals, Spriggans, Rangers, Nymphs, Vampire ranged threat and boss
+Coven - very hard, undead, every Daedra and every spellcasting human as ranged threats, Daedra Lord boss
+Vampire Haunt - impossible, Ghosts/Wraiths as angry spirits of the dead (vampires gotta eat), lots of Vampires as ranged threats, Vampire Ancient boss
+Laboratory - hard, Imps, Gargoyles, all Atronachs, all spellcasters as ranged threats, Orc Warlord boss
+Harpy Nest - easy, vermin, lots of Harpies, Lich ranged threat and boss
+Ruined Castle - hard, vermin, every human enemy, all spellcasters as ranged threat, Assassin boss
+Spider Nest - easy (if you're immune to Poison), low level undead, lots of spiders, Ancient Lich ranged threat and boss
+Giant Stronghold - hard, vermin, lots of Giants, Vampire ranged threat and boss
+Dragon's Den - medium, lots of Dragonlings and their arch-nemesis Knights, Mage ranged threat, Alternate Dragonling boss
+Barbarian Stronghold - medium, vermin, lots of Barbarians, Healer ranged threat, Assassin boss
+Volcanic Cave - very hard, Fire Atronachs, Dragonlings, Daedra Seducers, Fire Daedra/Daedroth ranged threats, Alternate Dragonling/Daedra Lord bosses
+Scorpion Nest - medium (if you're immune to Poison), vermin, lots of Giant Scorpions, Lich ranged threat and boss
+Cemetery - very easy, criminals, vermin, low level undead, Vampire ranged threat and boss
 
 
     MONSTER LEVELS:
@@ -1049,75 +2526,9 @@ FORMULAS:
         - Add Bookseller book gen formula here (or to ITEM TABLES?)
 
 
-    SKILL ADVANCEMENT DIFFICULTY:
-
-        - Add ur tables here, simply calculate how much more difficult both ur settings are than vanilla as vanilla's exact
-          skill calculations are very obtuse and hard to follow IMO
-
-
-    SPELLS:
-
-        - Add all three current spell kits here
-
-
     SPIDER/GIANT SCORPION POISON CHANCES:
 
         - Add Spider/Giant Scorpion poison chance per hit here, list what poisons can be inflicted & how likely that is per hit
-
-
-    VAMPIRISM:
-
-        - Vampire player characters are healed the following amounts when they kill these enemies:
-
-            Rat: 3 HP
-            Imp: 2 HP
-            Giant Bat: 3 HP
-            Grizzly Bear: 75 HP
-            Sabertooth Tiger: 50 HP
-            Spider: 9 HP
-            Orc: 40 HP
-            Centaur: 50 HP
-            Werewolf: 40 HP
-            Nymph: 15 HP
-            Slaughterfish: 5 HP
-            Orc Sergeant: 50 HP
-            Harpy: 15 HP
-            Wereboar: 50 HP
-            Giant: 150 HP
-            Zombie: 1 HP
-            Giant Scorpion: 12 HP
-            Orc Shaman: 45 HP
-            Orc Warlord: 200 HP
-            Daedroth: 100 HP
-            Vampire: 175 HP
-            Daedra Seducer: 150 HP
-            Vampire Ancient: 255 HP
-            Daedra Lord: 255 HP
-            Dragonling: 15 HP
-            Flesh Atronach: 1 HP
-            Dragonling_Alternate: 200 HP
-            Dreugh: 20 HP
-            Lamia: 30 HP
-            Mage: 15 HP
-            Spellsword: 20 HP
-            Battlemage: 25 HP
-            Sorcerer: 15 HP
-            Healer: 15 HP
-            Nightblade: 20 HP
-            Bard: 20 HP
-            Burglar: 20 HP
-            Rogue: 25 HP
-            Acrobat: 15 HP
-            Thief: 20 HP
-            Assassin: 200 HP
-            Monk: 35 HP
-            Archer: 30 HP
-            Ranger: 35 HP
-            Barbarian: 50 HP
-            Warrior: 45 HP
-            Knight: 40 HP
-            Guard: (HALT!) 50 HP
-            Civilian NPC: 10 HP
 
 
     WEAPON/ARMOR MATERIALS:
@@ -1174,20 +2585,27 @@ FORMULAS:
 
 ITEM TABLES:
 
+    - This section contains Bossfall item tables and information.
+
+
+    GEM VALUES:
+
+        - Add ur Gem value table here, remember 2 include Pearl along w/gems at start o' ItemTemplates.txt array
+
+
     MAGIC ITEMS:
 
-        - Add full magic item template list
+        - Add full magic item template list here
 
-        - Add full Soul Gem cost list for every enemy
+        - Add full Soul Gem cost list for every enemy here
 
 
     SHOPS:
 
-    - Reduced overall shop item generation chances, shop quality now has huge impact on what's available. (add here? What, exactly?)
+    - Add 5 sections here, each one is a shop quality tier, each section has subsections for item type (Wpns/armor/gems/etc.),
+      each section contains complete list of items that can be found in that quality tier
 
-    - Fancy clothing and other expensive-looking items are only in high quality shops (add here? What, exactly?)
-
-    - Cuirasses, gauntlets, tower shields, and best-in-slot weapons are not in low quality shops (add here? What, exactly?)
+    - To implement this copy itemtemplates 2 fresh Notepad doc, as u transfer from that delete entry so u know u processed it
 
 
     WEAPONS/ARMOR:          
@@ -1344,3 +2762,51 @@ ITEM TABLES:
             Shortsword: 325 EP
             Wakazashi: 400 EP
 
+
+CREDITS & THANKS:
+
+    - CREDITS:
+
+        - Osorkon:
+
+            Author of the Bossfall .dfmod
+            Vast majority of Bossfall's ideas and all playtesting
+            All documentation
+
+
+        - Interkarma and the rest of the DFWorkshop team:
+
+            - I use some vanilla DFU code in this .dfmod, see https://github.com/Osorkon21/Bossfall to read Bossfall's source code.
+              Every use of vanilla code is clearly marked by comments stating original authorship, please verify authorship if you
+              re-use any code from this .dfmod.
+
+
+    - THANKS:
+
+        - Interkarma and the DFWorkshop team:
+
+            - Bossfall wouldn't exist without their years of hard work on DFU. Interkarma deserves a special thanks.
+
+
+        - Osorkon's Dad:
+
+            - For tech support, patience, explanations, and the books.
+
+
+        - Osorkon's Older Brother:
+
+            - Your initial balance ideas were good and they're still in the mod!
+
+
+LEGAL INFO:
+
+    - Bossfall (and all vanilla DFU code) is licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php).
+
+    - Under the MIT license, the Bossfall .dfmod is provided as-is without any warranty and I can't be held liable for Bossfall
+      not working as intended.
+
+    - You can use Bossfall's work and/or code however you like, but if you do you must include a copy of the MIT license in your
+      work and credit the author who holds the code's copyright. In most cases, that is me (Osorkon).
+
+    - Some of Bossfall's code was written by DFWorkshop. To determine who wrote the code, you can view Bossfall's source code at
+      https://github.com/Osorkon21/Bossfall. I clearly mark all code I didn't write with comments.

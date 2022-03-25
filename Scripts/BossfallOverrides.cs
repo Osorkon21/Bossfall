@@ -36,8 +36,8 @@ namespace BossfallMod.Formulas
 
         /// <summary>
         /// Most of this array is the Enemies field from vanilla's EnemyBasics script. I changed every monster's level, HP,
-        /// damage, and/or armor, SoulPts value, Weight, and MinMetalToHit. I changed the field to be a readonly instance
-        /// field and changed which enemies see Invisible. All comments are mine.
+        /// damage, and/or armor, SoulPts value, Weight, MinMetalToHit, and CorpseTexture method call. I changed the field
+        /// to be a readonly instance field and changed which enemies see Invisible. All comments are mine.
         /// </summary>
         readonly MobileEnemy[] bossfallEnemyStats = new MobileEnemy[]
         {
@@ -2209,11 +2209,13 @@ namespace BossfallMod.Formulas
                 // Non-hostile Guards use vanilla textures. HALT!
                 MaleTexture = 488,
                 FemaleTexture = 488,
+
                 CorpseTexture = EnemyBasics.CorpseTexture(380, 1),
                 HasIdle = true,
 
                 // I gave them RangedAttack1, same as Knights. HALT!
                 HasRangedAttack1 = true,
+
                 HasRangedAttack2 = false,
                 CanOpenDoors = true,
                 MoveSound = (int)SoundClips.None,
@@ -2232,6 +2234,7 @@ namespace BossfallMod.Formulas
                 ChanceForAttack3 = 33,
                 PrimaryAttackAnimFrames3 = new int[] { 5, 5, 3, -1, 2, 1, 0 },
                 RangedAttackAnimFrames = new int[] { 3, 2, 0, 0, 0, -1, 1, 1, 2, 3 },
+
                 Team = MobileTeams.CityWatch,
             },
         };

@@ -94,32 +94,32 @@ namespace BossfallMod.Items
             2, 3, 2, 2, 2, 1, 1, 1, 1, 1
         };
 
-        // This array is mostly vanilla code from LootTables, but I changed it to be a readonly instance method. I also changed
-        // some numbers for Bossfall's custom loot generation.
+        // This array is mostly vanilla code from LootTables, but I changed it to be a readonly instance field. I also changed
+        // some generation chances.
         readonly LootChanceMatrix[] bossfallLootTables = new LootChanceMatrix[]
         {
-            new LootChanceMatrix() {key = "-", MinGold = 0, MaxGold = 0, P1 = 0, P2 = 0, C1 = 0, C2 = 0, C3 = 0, M1 = 0, AM = 0, WP = 0, MI = 0, CL = 0, BK = 0, M2 = 0, RL = 0 },
-            new LootChanceMatrix() {key = "A", MinGold = 1, MaxGold = 10, P1 = 0, P2 = 0, C1 = 0, C2 = 0, C3 = 0, M1 = 0, AM = 5, WP = 5, MI = 2, CL = 4, BK = 0, M2 = 2, RL = 0 },
-            new LootChanceMatrix() {key = "B", MinGold = 0, MaxGold = 0, P1 = 10, P2 = 10, C1 = 0, C2 = 0, C3 = 0, M1 = 0, AM = 0, WP = 0, MI = 0, CL = 0, BK = 0, M2 = 0, RL = 0 },
-            new LootChanceMatrix() {key = "C", MinGold = 1, MaxGold = 20, P1 = 10, P2 = 10, C1 = 5, C2 = 5, C3 = 5, M1 = 5, AM = 5, WP = 25, MI = 3, CL = 0, BK = 2, M2 = 2, RL = 2 },
-            new LootChanceMatrix() {key = "D", MinGold = 1, MaxGold = 4, P1 = 6, P2 = 6, C1 = 6, C2 = 6, C3 = 6, M1 = 6, AM = 0, WP = 0, MI = 0, CL = 0, BK = 0, M2 = 0, RL = 4 },
-            new LootChanceMatrix() {key = "E", MinGold = 1, MaxGold = 80, P1 = 0, P2 = 0, C1 = 0, C2 = 0, C3 = 0, M1 = 0, AM = 10, WP = 10, MI = 3, CL = 4, BK = 2, M2 = 1, RL = 15 },
-            new LootChanceMatrix() {key = "F", MinGold = 1, MaxGold = 30, P1 = 2, P2 = 2, C1 = 5, C2 = 5, C3 = 5, M1 = 2, AM = 50, WP = 50, MI = 1, CL = 0, BK = 0, M2 = 3, RL = 0 },
-            new LootChanceMatrix() {key = "G", MinGold = 1, MaxGold = 15, P1 = 0, P2 = 0, C1 = 0, C2 = 0, C3 = 0, M1 = 0, AM = 50, WP = 50, MI = 1, CL = 5, BK = 0, M2 = 3, RL = 0 },
-            new LootChanceMatrix() {key = "H", MinGold = 1, MaxGold = 10, P1 = 0, P2 = 0, C1 = 0, C2 = 0, C3 = 0, M1 = 0, AM = 0, WP = 100, MI = 1, CL = 2, BK = 0, M2 = 0, RL = 0 },
-            new LootChanceMatrix() {key = "I", MinGold = 0, MaxGold = 0, P1 = 0, P2 = 0, C1 = 0, C2 = 0, C3 = 0, M1 = 0, AM = 0, WP = 0, MI = 2, CL = 0, BK = 0, M2 = 0, RL = 5 },
-            new LootChanceMatrix() {key = "J", MinGold = 1, MaxGold = 150, P1 = 0, P2 = 0, C1 = 0, C2 = 0, C3 = 0, M1 = 0, AM = 5, WP = 5, MI = 3, CL = 0, BK = 0, M2 = 0, RL = 0 },
-            new LootChanceMatrix() {key = "K", MinGold = 1, MaxGold = 10, P1 = 3, P2 = 3, C1 = 3, C2 = 3, C3 = 3, M1 = 3, AM = 5, WP = 5, MI = 3, CL = 0, BK = 5, M2 = 2, RL = 100 },
-            new LootChanceMatrix() {key = "L", MinGold = 1, MaxGold = 20, P1 = 0, P2 = 0, C1 = 3, C2 = 3, C3 = 3, M1 = 3, AM = 50, WP = 50, MI = 1, CL = 75, BK = 0, M2 = 5, RL = 3 },
-            new LootChanceMatrix() {key = "M", MinGold = 1, MaxGold = 15, P1 = 1, P2 = 1, C1 = 1, C2 = 1, C3 = 1, M1 = 2, AM = 10, WP = 10, MI = 1, CL = 15, BK = 2, M2 = 3, RL = 1 },
-            new LootChanceMatrix() {key = "N", MinGold = 1, MaxGold = 80, P1 = 5, P2 = 5, C1 = 5, C2 = 5, C3 = 5, M1 = 5, AM = 5, WP = 5, MI = 1, CL = 20, BK = 5, M2 = 2, RL = 5 },
-            new LootChanceMatrix() {key = "O", MinGold = 1, MaxGold = 20, P1 = 1, P2 = 1, C1 = 1, C2 = 1, C3 = 1, M1 = 1, AM = 10, WP = 15, MI = 2, CL = 0, BK = 0, M2 = 0, RL = 0 },
-            new LootChanceMatrix() {key = "P", MinGold = 1, MaxGold = 20, P1 = 5, P2 = 5, C1 = 5, C2 = 5, C3 = 5, M1 = 5, AM = 5, WP = 10, MI = 2, CL = 0, BK = 10, M2 = 5, RL = 0 },
-            new LootChanceMatrix() {key = "Q", MinGold = 1, MaxGold = 80, P1 = 2, P2 = 2, C1 = 8, C2 = 8, C3 = 8, M1 = 2, AM = 10, WP = 25, MI = 3, CL = 35, BK = 5, M2 = 3, RL = 0 },
-            new LootChanceMatrix() {key = "R", MinGold = 1, MaxGold = 20, P1 = 0, P2 = 0, C1 = 3, C2 = 3, C3 = 3, M1 = 5, AM = 5, WP = 15, MI = 2, CL = 0, BK = 0, M2 = 0, RL = 0 },
-            new LootChanceMatrix() {key = "S", MinGold = 1, MaxGold = 125, P1 = 5, P2 = 5, C1 = 5, C2 = 5, C3 = 5, M1 = 15, AM = 10, WP = 10, MI = 3, CL = 0, BK = 5, M2 = 5, RL = 0 },
-            new LootChanceMatrix() {key = "T", MinGold = 1, MaxGold = 80, P1 = 0, P2 = 0, C1 = 0, C2 = 0, C3 = 0, M1 = 0, AM = 100, WP = 100, MI = 1, CL = 0, BK = 0, M2 = 0, RL = 0},
-            new LootChanceMatrix() {key = "U", MinGold = 1, MaxGold = 30, P1 = 5, P2 = 5, C1 = 5, C2 = 5, C3 = 5, M1 = 10, AM = 10, WP = 10, MI = 2, CL = 0, BK = 2, M2 = 2, RL = 10 },
+            new LootChanceMatrix() {key = "-", MinGold = 0, MaxGold = 0,    P1 = 0,  P2 = 0,  C1 = 0, C2 = 0, C3 = 0, M1 = 0,  AM = 0,   WP = 0,    MI = 0, CL = 0,  BK = 0,  M2 = 0, RL = 0 },
+            new LootChanceMatrix() {key = "A", MinGold = 1, MaxGold = 10,   P1 = 0,  P2 = 0,  C1 = 0, C2 = 0, C3 = 0, M1 = 0,  AM = 5,   WP = 5,    MI = 2, CL = 4,  BK = 0,  M2 = 1, RL = 0 },
+            new LootChanceMatrix() {key = "B", MinGold = 0, MaxGold = 0,    P1 = 10, P2 = 10, C1 = 0, C2 = 0, C3 = 0, M1 = 0,  AM = 0,   WP = 0,    MI = 0, CL = 0,  BK = 0,  M2 = 0, RL = 0 },
+            new LootChanceMatrix() {key = "C", MinGold = 1, MaxGold = 20,   P1 = 10, P2 = 10, C1 = 5, C2 = 5, C3 = 2, M1 = 2,  AM = 5,   WP = 25,   MI = 3, CL = 0,  BK = 2,  M2 = 1, RL = 2 },
+            new LootChanceMatrix() {key = "D", MinGold = 1, MaxGold = 4,    P1 = 6,  P2 = 6,  C1 = 6, C2 = 6, C3 = 3, M1 = 3,  AM = 0,   WP = 0,    MI = 0, CL = 0,  BK = 0,  M2 = 0, RL = 4 },
+            new LootChanceMatrix() {key = "E", MinGold = 1, MaxGold = 80,   P1 = 0,  P2 = 0,  C1 = 0, C2 = 0, C3 = 0, M1 = 0,  AM = 10,  WP = 10,   MI = 3, CL = 4,  BK = 2,  M2 = 1, RL = 15 },
+            new LootChanceMatrix() {key = "F", MinGold = 1, MaxGold = 30,   P1 = 2,  P2 = 2,  C1 = 5, C2 = 5, C3 = 2, M1 = 1,  AM = 50,  WP = 50,   MI = 1, CL = 0,  BK = 0,  M2 = 1, RL = 0 },
+            new LootChanceMatrix() {key = "G", MinGold = 1, MaxGold = 15,   P1 = 0,  P2 = 0,  C1 = 0, C2 = 0, C3 = 0, M1 = 0,  AM = 50,  WP = 50,   MI = 1, CL = 5,  BK = 0,  M2 = 1, RL = 0 },
+            new LootChanceMatrix() {key = "H", MinGold = 1, MaxGold = 10,   P1 = 0,  P2 = 0,  C1 = 0, C2 = 0, C3 = 0, M1 = 0,  AM = 0,   WP = 100,  MI = 1, CL = 2,  BK = 0,  M2 = 0, RL = 0 },
+            new LootChanceMatrix() {key = "I", MinGold = 0, MaxGold = 0,    P1 = 0,  P2 = 0,  C1 = 0, C2 = 0, C3 = 0, M1 = 0,  AM = 0,   WP = 0,    MI = 2, CL = 0,  BK = 0,  M2 = 0, RL = 5 },
+            new LootChanceMatrix() {key = "J", MinGold = 1, MaxGold = 150,  P1 = 0,  P2 = 0,  C1 = 0, C2 = 0, C3 = 0, M1 = 0,  AM = 5,   WP = 5,    MI = 3, CL = 0,  BK = 0,  M2 = 0, RL = 0 },
+            new LootChanceMatrix() {key = "K", MinGold = 1, MaxGold = 10,   P1 = 3,  P2 = 3,  C1 = 3, C2 = 3, C3 = 1, M1 = 1,  AM = 5,   WP = 5,    MI = 3, CL = 0,  BK = 5,  M2 = 1, RL = 100 },
+            new LootChanceMatrix() {key = "L", MinGold = 1, MaxGold = 20,   P1 = 0,  P2 = 0,  C1 = 3, C2 = 3, C3 = 1, M1 = 1,  AM = 50,  WP = 50,   MI = 1, CL = 75, BK = 0,  M2 = 2, RL = 3 },
+            new LootChanceMatrix() {key = "M", MinGold = 1, MaxGold = 15,   P1 = 1,  P2 = 1,  C1 = 1, C2 = 1, C3 = 1, M1 = 1,  AM = 10,  WP = 10,   MI = 1, CL = 15, BK = 2,  M2 = 1, RL = 1 },
+            new LootChanceMatrix() {key = "N", MinGold = 1, MaxGold = 80,   P1 = 5,  P2 = 5,  C1 = 5, C2 = 5, C3 = 2, M1 = 2,  AM = 5,   WP = 5,    MI = 1, CL = 20, BK = 5,  M2 = 1, RL = 5 },
+            new LootChanceMatrix() {key = "O", MinGold = 1, MaxGold = 20,   P1 = 1,  P2 = 1,  C1 = 1, C2 = 1, C3 = 1, M1 = 1,  AM = 10,  WP = 15,   MI = 2, CL = 0,  BK = 0,  M2 = 0, RL = 0 },
+            new LootChanceMatrix() {key = "P", MinGold = 1, MaxGold = 20,   P1 = 5,  P2 = 5,  C1 = 5, C2 = 5, C3 = 2, M1 = 2,  AM = 5,   WP = 10,   MI = 2, CL = 0,  BK = 10, M2 = 2, RL = 0 },
+            new LootChanceMatrix() {key = "Q", MinGold = 1, MaxGold = 80,   P1 = 2,  P2 = 2,  C1 = 8, C2 = 8, C3 = 4, M1 = 1,  AM = 10,  WP = 25,   MI = 3, CL = 35, BK = 5,  M2 = 1, RL = 0 },
+            new LootChanceMatrix() {key = "R", MinGold = 1, MaxGold = 20,   P1 = 0,  P2 = 0,  C1 = 3, C2 = 3, C3 = 1, M1 = 2,  AM = 5,   WP = 15,   MI = 2, CL = 0,  BK = 0,  M2 = 0, RL = 0 },
+            new LootChanceMatrix() {key = "S", MinGold = 1, MaxGold = 125,  P1 = 5,  P2 = 5,  C1 = 5, C2 = 5, C3 = 2, M1 = 7,  AM = 10,  WP = 10,   MI = 3, CL = 0,  BK = 5,  M2 = 2, RL = 0 },
+            new LootChanceMatrix() {key = "T", MinGold = 1, MaxGold = 80,   P1 = 0,  P2 = 0,  C1 = 0, C2 = 0, C3 = 0, M1 = 0,  AM = 100, WP = 100,  MI = 1, CL = 0,  BK = 0,  M2 = 0, RL = 0},
+            new LootChanceMatrix() {key = "U", MinGold = 1, MaxGold = 30,   P1 = 5,  P2 = 5,  C1 = 5, C2 = 5, C3 = 2, M1 = 5,  AM = 10,  WP = 10,   MI = 2, CL = 0,  BK = 2,  M2 = 1, RL = 10 },
         };
 
         #endregion
@@ -258,82 +258,26 @@ namespace BossfallMod.Items
             // I added "UnityEngine." to the below line.
             UnityEngine.Random.InitState(items.GetHashCode());
 
-            // DELETE WHEN IMPLEMENTED
-            // Make gold generated scale w/enemy level rather than player's, don't just use enemyLevelModifier tho as then gold
-            // would be way too ez to get... think of another scaling system
-
-            int playerMod;
-
             // I added this declaration.
-            int roll = Dice100.Roll();
+            int generationModifier;
 
-            // I added this condition tree. It randomly determines how much gold will be generated and ignores player level.
-            if (roll > 80)
+            // I added this if/else.
+            if (enemyLevelModifier != 0)
             {
-                if (roll > 85)
-                {
-                    if (roll > 88)
-                    {
-                        if (roll > 91)
-                        {
-                            if (roll > 94)
-                            {
-                                if (roll > 96)
-                                {
-                                    if (roll > 97)
-                                    {
-                                        if (roll > 98)
-                                        {
-                                            if (roll > 99)
-                                            {
-                                                playerMod = 20;
-                                            }
-                                            else
-                                            {
-                                                playerMod = UnityEngine.Random.Range(16, 19 + 1);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            playerMod = UnityEngine.Random.Range(13, 15 + 1);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        playerMod = UnityEngine.Random.Range(10, 12 + 1);
-                                    }
-                                }
-                                else
-                                {
-                                    playerMod = UnityEngine.Random.Range(6, 9 + 1);
-                                }
-                            }
-                            else
-                            {
-                                playerMod = 5;
-                            }
-                        }
-                        else
-                        {
-                            playerMod = 4;
-                        }
-                    }
-                    else
-                    {
-                        playerMod = 3;
-                    }
-                }
-                else
-                {
-                    playerMod = 2;
-                }
+                // Sets generationModifier if generating enemy loot. Affects gold and ingredient generation. Scales
+                // with enemy's level / 2.
+                generationModifier = (enemyLevelModifier / 100) + UnityEngine.Random.Range(-5, 5 + 1)
+                    + UnityEngine.Random.Range(-5, 5 + 1) + UnityEngine.Random.Range(-5, 5 + 1);
             }
             else
             {
-                playerMod = 1;
+                // Sets generationModifier for loot piles. Affects gold and ingredient generation.
+                generationModifier = UnityEngine.Random.Range(-5, 5 + 1) + UnityEngine.Random.Range(-5, 5 + 1)
+                    + UnityEngine.Random.Range(-5, 5 + 1) + UnityEngine.Random.Range(-5, 5 + 1);
             }
 
-            int goldCount = UnityEngine.Random.Range(matrix.MinGold, matrix.MaxGold + 1) * playerMod;
+            // I replaced "playerMod" with "generationModifier" in the line below.
+            int goldCount = UnityEngine.Random.Range(matrix.MinGold, matrix.MaxGold + 1) * generationModifier;
 
             if (goldCount > 0)
             {
@@ -358,17 +302,17 @@ namespace BossfallMod.Items
                 chance *= 0.5f;
             }
 
-            // I replaced playerEntity.Level with playerMod in the ingredient generation lines below. This causes
-            // ingredients to be generated in much lower quantities than vanilla, this generation does not scale with
-            // player level. If player gets lucky, numerous ingredients will be generated. I reroute all ingredient
-            // generation method calls to the RandomIngredient method contained in this script.
-            RandomIngredient(matrix.C1 * playerMod, ItemGroups.CreatureIngredients1, items);
-            RandomIngredient(matrix.C2 * playerMod, ItemGroups.CreatureIngredients2, items);
-            RandomIngredient(matrix.C3, ItemGroups.CreatureIngredients3, items);
-            RandomIngredient(matrix.P1 * playerMod, ItemGroups.PlantIngredients1, items);
-            RandomIngredient(matrix.P2 * playerMod, ItemGroups.PlantIngredients2, items);
-            RandomIngredient(matrix.M1, ItemGroups.MiscellaneousIngredients1, items);
-            RandomIngredient(matrix.M2, ItemGroups.MiscellaneousIngredients2, items);
+            // I replaced "playerEntity.Level" with "generationModifier" in four lines below and added "generationModifier"
+            // to the remaining three. All ingredient generation now scales with enemy level, if generating loot for an enemy.
+            // If not, ingredients are generally much rarer. I reroute all ingredient generation method calls to the
+            // RandomIngredient method contained in this script.
+            RandomIngredient(matrix.C1 * generationModifier, ItemGroups.CreatureIngredients1, items);
+            RandomIngredient(matrix.C2 * generationModifier, ItemGroups.CreatureIngredients2, items);
+            RandomIngredient(matrix.C3 * generationModifier, ItemGroups.CreatureIngredients3, items);
+            RandomIngredient(matrix.P1 * generationModifier, ItemGroups.PlantIngredients1, items);
+            RandomIngredient(matrix.P2 * generationModifier, ItemGroups.PlantIngredients2, items);
+            RandomIngredient(matrix.M1 * generationModifier, ItemGroups.MiscellaneousIngredients1, items);
+            RandomIngredient(matrix.M2 * generationModifier, ItemGroups.MiscellaneousIngredients2, items);
 
             chance = matrix.MI;
             while (Dice100.SuccessRoll((int)chance))
@@ -967,7 +911,8 @@ namespace BossfallMod.Items
 
             if (variant == 0)
             {
-                int item = UnityEngine.Random.Range((int)Weapons.Broadsword, (int)(Weapons.Longsword) + 1);
+                // I changed "Longsword" to "Katana" in the line below.
+                int item = UnityEngine.Random.Range((int)Weapons.Broadsword, (int)(Weapons.Katana) + 1);
 
                 // I reroute the method call to a method contained in this script and pass enemyLevelModifier on to
                 // FormulaHelper.RandomMaterial method rather than the player's level.
@@ -979,7 +924,8 @@ namespace BossfallMod.Items
                 // I didn't like how often enemies were generated with full suits of armor, so I reduced item generation chances.
                 chance = 30;
 
-                item = UnityEngine.Random.Range((int)Armor.Buckler, (int)(Armor.Round_Shield) + 1);
+                // I changed "Round_Shield" to "Tower_Shield" in the line below.
+                item = UnityEngine.Random.Range((int)Armor.Buckler, (int)(Armor.Tower_Shield) + 1);
                 if (Dice100.SuccessRoll(chance))
                 {
                     // I removed "Items." from the third parameter of the CreateArmor method call. It now reads "Armor"
@@ -992,7 +938,8 @@ namespace BossfallMod.Items
                 }
                 else if (Dice100.SuccessRoll(chance))
                 {
-                    item = UnityEngine.Random.Range((int)Weapons.Dagger, (int)(Weapons.Shortsword) + 1);
+                    // I changed "Shortsword" to "Wakazashi" in the line below.
+                    item = UnityEngine.Random.Range((int)Weapons.Dagger, (int)(Weapons.Wakazashi) + 1);
 
                     // I reroute the method call to a method contained in this script and pass enemyLevelModifier on to
                     // FormulaHelper.RandomMaterial method rather than the player's level.
@@ -1004,7 +951,8 @@ namespace BossfallMod.Items
             }
             else
             {
-                int item = UnityEngine.Random.Range((int)Weapons.Claymore, (int)(Weapons.Battle_Axe) + 1);
+                // I changed "Battle_Axe" to "Long_Bow" in the line below.
+                int item = UnityEngine.Random.Range((int)Weapons.Claymore, (int)(Weapons.Long_Bow) + 1);
 
                 // I reroute the method call to a method contained in this script and pass enemyLevelModifier on to
                 // FormulaHelper.RandomMaterial method rather than the player's level.
