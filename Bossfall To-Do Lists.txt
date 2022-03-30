@@ -15,7 +15,6 @@ Test if ur inventory & trade window (and any other window detections u add) dete
 Test built .dfmod w/DFU 0.13.5 make sure ur mod works w/it and doesn't crash
 Test ur new shields w/D.R.E.A.M. see if they correctly use modded textures (they should work fine)
 Test quest foes in Info mode (make sure "You are too far away" message doesn't pop up & ur custom Level HUD message displays)
-Test all enemies for correct move speeds on Vanilla, Fast, and Very Fast settings?
 Test "World of Daggerfall" mod w/new .dfmod, save outdoors, load outdoors, save inside, load inside w/Bossfall and World of Daggerfall running @ same time make sure nothing breaks
 Test immunity HUD msgs make sure they reset when player kills enemy and don't otherwise
 Test house containers make sure they contain ur custom enchanted holy items (that means all ur house container loot generation works)
@@ -26,7 +25,6 @@ Test skill advancement difficulty on all 3 settings make sure u approve?
 Test potion creation make sure Dispel Magic potion (use console 2 create potions) & potion recipe (from Alchemist shops) get created
 Test item creation w/enemies that use starting equipment w/out mods make sure it works & u approve
 Test item creation w/enemies that use starting equipment w/mods (RPR:I mainly) make sure it works & u approve
-Test powerful enemy rarity on both Powerful Enemies Are setting values make sure u approve?
 Test startup quest make sure it pops on new game start
 
 BOSSFALL v1.3.1 TO-DO:
@@ -34,7 +32,7 @@ BOSSFALL v1.3.1 TO-DO:
 .DFMOD DL FOLDER CONTENTS:
 
 bossfall.dfmod for appropriate OS
-ReadMe in each OS folder, finish up v1.3.1 CHANGELOG, FORMULAS, and ITEM TABLES sections first
+ReadMe in each OS folder, finish up v1.3.1 CHANGELOG, v1.3.1 FORMULAS & TABLES, and v1.3.1 ITEM TABLES sections first
 
 .DFMOD ESSENTIALS:
 
@@ -48,17 +46,21 @@ Add BossfallEnemyDeath event handler 4 vampire/lycan on death stuff in BossfallE
 
 .DFMOD NOTES:
 
-Rebalance all ingredient rarities to roughly match scaling of other item's rarities? If ur motivated 2 do so
+3 things left to finish in ReadMe - FORMULAS & TABLES.INTERIOR ENCOUNTER TABLES, ITEM TABLES.ITEM CHANGES.MAGIC ITEMS, & ITEM TABLES.ITEM CHANGES.SHOP ITEMS, BY STORE QUALITY
+Delete Item Templates To Process file once done processing contents
+Add chance of finding mod items in house containers, use StockShopShelves as starting template, u'll have 2 modify it so it's not guaranteed, use ur List of mod items here
 When u add any code u must now check ReadMe's CHANGELOG and last section of changelog.txt (it contains several already written sections to add once implemented in .dfmod) make sure u add ur new changes, if section already exists make sure CHANGELOG info accurately reflects the thing u just added (and check for existing section/add ur new changes to SUMMARY OF CHANGES, FORMULAS and ITEM TABLES sections if applicable)
 When proofreading ReadMe make sure all "Add... here" sections are gone (once they're completed ofc)
 When proofreading CHANGELOG make sure u actually add the promised sections 2 FORMULAS and ITEM TABLES, check every reference 2 these sections make sure what u promised was added
 Proofread SUMMARY OF CHANGES, CHANGELOG, ITEM TABLES, and FORMULAS sections of ReadMe after finishing them, also make sure u don't repeat urself anywhere in entire ReadMe, do this b4 releasing anything
-Double check all ur item gen methods that handle loot pile, enemy loot table random items, and shop shelf/house container loot gen - make sure mod items are automatically generated when appropriate so u don't need 2 add them manually (I think this is already the case but it never hurts 2 check)
-To implement above line u can get DaggerfallEntityBehaviour from EnemyEntity incoming in parameter of CalculateAttackDamage, then GetComponent<BossfallEnemyMotor>() from DaggerfallEntityBehaviour 2 get access to bools
+Double check all ur item gen methods that handle loot pile, enemy loot table random items, and shop shelf/house container loot gen - make sure mod items are automatically generated when appropriate so u don't need 2 add them manually (I think this is already the case but it never hurts 2 check) - this is NOT true for house containers
 In BFEnemyMotor in spellcast bools include check 4 enemy's current HP if it's full and enemy wants 2 cast Heal return false
 Change Legal Info on NexusMods & 3rd forum post, include blurb about "not all code was written by me, I've marked all code I didn't write, check code for author before using/crediting"
 Read thru all scripts and ReadMe, make sure u remove all unnecessary Debug.Log lines and DWI/DELETE WHEN IMPLEMENTED references (after implementing them ofc) b4 releasing anything
 In ur enemy loot generation methods, for the (up to) 2 random custom items @ the end, use ItemHelper.GetCustomItemsForGroup(ItemGroups.Weapons) or (ItemGroups.Armor) to find custom wpns/armor & if that method returns something add one or two custom items
+If u don't wanna do above line & wanna get more specific in ur "add starting equipment 2 enemies" method in BFItemBuilder (to give each armor piece a chance 2 be a mod item) then u may have to pull item template numbers out of RPR:I and feed those numbers into ItemHelper's GenerateItem method if ItemHelper.GetCustomItemsForGroup(ItemGroups.Armor) returns with RPR:I armor
+I'd really prefer to not do above line as mod template indexes are not set and may change
+Maybe a better solution 4 the above 3 lines is to generate mod wpns/armor one by one (do this the first time ur "add starting equipment 2 enemies" method is called, do it only once) and then check generated items for where they should be equipped (this will guaranteed tell u what location armor piece/wpn goes to). Once u process entire Lists of generated mod items u get from ItemHelper.GetCustomItemsForGroup(ItemGroups.Weapons and ItemGroups.Armor), store the item templates in a permanent container u make so then u know what goes where, only should have 2 process every mod item once
 5189333 is ur Dispel Magic potion key (that uses ur custom Dispel Magic potion recipe)
 If u add BossfallEnemyDeath script remember to add this component to custom enemies in BossfallOnLootSpawned method in Bossfall.cs
 GameManager.Instance.Dungeon.Summary.DungeonType (or whatever) can be called to see what dungeon type ur entering, use that for ur dungeon entrance flavor msgs, make popup HUD msgs last twice as long as normal? (or SETTING: Make actual msg box popup 2 display ur dungeon entrance flavor txt?)
@@ -76,7 +78,7 @@ Update time spent in 2 NexusMods credits spots & 3rd forum post, just put "worke
 Credit "thevm" for the inspiration for these Invis changes
 Give enemies that used to see thru Invis one-time chance to see thru it (checks once per enemy), have it set bool if check succeeds
 Depends on player's Illusion skill, use Lerp to add between 50% chance to see thru Invis @ 1% Illusion skill down to added 0% chance to see thru Invis @ 100% Illusion skill)
-Base chance to see thru Invis increases the more powerful the enemy is (Daedra have like 15-20% chance to see thru it)
+Base chance to see thru Invis increases the more powerful the enemy is (non-boss Daedra have like 15-20% chance to see thru it)
 Add HUD msg to tell player which monster can see thru it & why? ("The Imp is not fooled by your clumsy Illusion spell.")
 
 Base chance to see thru Invis @ 100% player Illusion skill (flesh out rest o' list w/all previous enemies that used 2 see thru Invis):

@@ -698,7 +698,7 @@ namespace BossfallMod.Events
             for (int i = 0; i <= DaggerfallSkills.Count; i++)
                 entity.Skills.SetPermanentSkillValue(i, skillsLevel);
 
-            BossfallItemBuilder.Instance.GenerateItems(mobileEnemy.LootTableKey, items, entity.Level * 50);
+            BossfallItemBuilder.Instance.GenerateItems(mobileEnemy.LootTableKey, items, entity.Level * 50, 0, true);
 
             // I based this section below on a part of the SetEnemyCareer method in EnemyEntity and modified it for Bossfall.
             if (entity.EntityType == EntityTypes.EnemyClass || entity.CareerIndex == (int)MonsterCareers.OrcSergeant

@@ -101,7 +101,7 @@ namespace BossfallMod.Items
             new LootChanceMatrix() {key = "-", MinGold = 0, MaxGold = 0,    P1 = 0,  P2 = 0,  C1 = 0, C2 = 0, C3 = 0, M1 = 0,  AM = 0,   WP = 0,    MI = 0, CL = 0,  BK = 0,  M2 = 0, RL = 0 },
             new LootChanceMatrix() {key = "A", MinGold = 1, MaxGold = 10,   P1 = 0,  P2 = 0,  C1 = 0, C2 = 0, C3 = 0, M1 = 0,  AM = 5,   WP = 5,    MI = 2, CL = 4,  BK = 0,  M2 = 1, RL = 0 },
             new LootChanceMatrix() {key = "B", MinGold = 0, MaxGold = 0,    P1 = 10, P2 = 10, C1 = 0, C2 = 0, C3 = 0, M1 = 0,  AM = 0,   WP = 0,    MI = 0, CL = 0,  BK = 0,  M2 = 0, RL = 0 },
-            new LootChanceMatrix() {key = "C", MinGold = 1, MaxGold = 20,   P1 = 10, P2 = 10, C1 = 5, C2 = 5, C3 = 2, M1 = 2,  AM = 5,   WP = 25,   MI = 3, CL = 0,  BK = 2,  M2 = 1, RL = 2 },
+            new LootChanceMatrix() {key = "C", MinGold = 1, MaxGold = 20,   P1 = 5,  P2 = 5,  C1 = 5, C2 = 5, C3 = 2, M1 = 2,  AM = 5,   WP = 25,   MI = 3, CL = 0,  BK = 2,  M2 = 1, RL = 2 },
             new LootChanceMatrix() {key = "D", MinGold = 1, MaxGold = 4,    P1 = 6,  P2 = 6,  C1 = 6, C2 = 6, C3 = 3, M1 = 3,  AM = 0,   WP = 0,    MI = 0, CL = 0,  BK = 0,  M2 = 0, RL = 4 },
             new LootChanceMatrix() {key = "E", MinGold = 1, MaxGold = 80,   P1 = 0,  P2 = 0,  C1 = 0, C2 = 0, C3 = 0, M1 = 0,  AM = 10,  WP = 10,   MI = 3, CL = 4,  BK = 2,  M2 = 1, RL = 15 },
             new LootChanceMatrix() {key = "F", MinGold = 1, MaxGold = 30,   P1 = 2,  P2 = 2,  C1 = 5, C2 = 5, C3 = 2, M1 = 1,  AM = 50,  WP = 50,   MI = 1, CL = 0,  BK = 0,  M2 = 1, RL = 0 },
@@ -153,15 +153,19 @@ namespace BossfallMod.Items
         /// </summary>
         /// <param name="LootTableKey">The loot table key.</param>
         /// <param name="collection">The item collection being altered.</param>
-        /// <param name="enemyLevelModifier">If spawning loot for an enemy, enemy level * 50. Otherwise, 0.</param>
-        public void GenerateItems(string LootTableKey, ItemCollection collection, int enemyLevelModifier = 0)
+        /// <param name="enemyLevelModifier">Enemy level * 50, if generating enemy loot. Otherwise, 0.</param>
+        /// <param name="locationModifier">Currently unused. I plan on doing more with this later.</param>
+        /// <param name="isEnemy">If generating loot pile items this is false.</param>
+        public void GenerateItems(string LootTableKey, ItemCollection collection, int enemyLevelModifier = 0,
+            int locationModifier = 0, bool isEnemy = true)
         {
             // I reroute the call to a method in this script.
             LootChanceMatrix matrix = GetMatrix(LootTableKey);
 
-            // I reroute method calls to a method in this script so I can easily customize loot generation. I pass on
-            // enemyLevelModifier so loot scales with enemy level rather than the player's.
-            DaggerfallUnityItem[] newitems = GenerateRandomLoot(matrix, GameManager.Instance.PlayerEntity, enemyLevelModifier);
+            // I reroute method calls to a method in this script so I can easily customize loot generation. I added some
+            // parameters at the end for more loot generation options.
+            DaggerfallUnityItem[] newitems
+                = GenerateRandomLoot(matrix, GameManager.Instance.PlayerEntity, enemyLevelModifier, locationModifier, isEnemy);
 
             collection.Import(newitems);
         }
@@ -171,9 +175,9 @@ namespace BossfallMod.Items
         /// </summary>
         /// <param name="items">I changed DaggerfallLoot to ItemCollection to better fit event args.</param>
         /// <param name="locationIndex">Current location.</param>
-        /// <param name="locationModifier">I added this parameter. I plan on varying loot contents/quality by location.</param>
-        /// <param name="isDungeon">I added this parameter. I plan on varying loot contents/quality by location.</param>
-        /// <returns>True if locationIndex yields a valid loot table key, false otherwise.</returns>
+        /// <param name="locationModifier">Currently unused. I plan on doing more with this later.</param>
+        /// <param name="isDungeon">Currently unused. I plan on doing more with this later.</param>
+        /// <returns>True if locationIndex yields a valid loot table key.</returns>
         public bool GenerateLoot(ItemCollection items, int locationIndex, int locationModifier = 0, bool isDungeon = true)
         {
             string[] lootTableKeys = {               // Travel map outdoor location mapped to this lootTableKeys index
@@ -200,10 +204,9 @@ namespace BossfallMod.Items
 
             if (locationIndex < lootTableKeys.Length)
             {
-                // I reroute the method call to a method in this script. I added the (currently unused)
-                // locationModifier parameter at the end as I plan on varying loot pile contents and quality depending
-                // on player's current location. I also replaced "loot.Items" in the second parameter with "items".
-                GenerateItems(lootTableKeys[locationIndex], items, locationModifier);
+                // I reroute the method call to a method in this script. I added some parameters at the end for more
+                // loot generation options. I also replaced "loot.Items" in the second parameter with "items".
+                GenerateItems(lootTableKeys[locationIndex], items, 0, locationModifier, false);
                 char key = lootTableKeys[locationIndex][0];
                 int alphabetIndex = key - 64;
 
@@ -248,9 +251,12 @@ namespace BossfallMod.Items
         /// </summary>
         /// <param name="matrix">Loot chance matrix.</param>
         /// <param name="playerEntity">Player entity.</param>
-        /// <param name="enemyLevelModifier">If spawning loot for an enemy, enemy level * 50. Otherwise, 0.</param>
+        /// <param name="enemyLevelModifier">Enemy level * 50, if generating enemy loot. Otherwise, 0.</param>
+        /// <param name="locationModifier">Currently unused. I plan on doing more with this later.</param>
+        /// <param name="isEnemy">If loot pile items are being generated this is false.</param>
         /// <returns>DaggerfallUnityItem array.</returns>
-        DaggerfallUnityItem[] GenerateRandomLoot(LootChanceMatrix matrix, PlayerEntity playerEntity, int enemyLevelModifier = 0)
+        DaggerfallUnityItem[] GenerateRandomLoot(LootChanceMatrix matrix, PlayerEntity playerEntity, int enemyLevelModifier = 0,
+            int locationModifier = 0, bool isEnemy = true)
         {
             float chance;
             List<DaggerfallUnityItem> items = new List<DaggerfallUnityItem>();
@@ -259,25 +265,24 @@ namespace BossfallMod.Items
             UnityEngine.Random.InitState(items.GetHashCode());
 
             // I added this declaration.
-            int generationModifier;
+            int lootMultiplier;
 
             // I added this if/else.
-            if (enemyLevelModifier != 0)
+            if (isEnemy)
             {
-                // Sets generationModifier if generating enemy loot. Affects gold and ingredient generation. Scales
-                // with enemy's level / 2.
-                generationModifier = (enemyLevelModifier / 100) + UnityEngine.Random.Range(-5, 5 + 1)
+                // Scales with enemy's level / 2.
+                lootMultiplier = ((enemyLevelModifier + locationModifier) / 100) + UnityEngine.Random.Range(-5, 5 + 1)
                     + UnityEngine.Random.Range(-5, 5 + 1) + UnityEngine.Random.Range(-5, 5 + 1);
             }
             else
             {
-                // Sets generationModifier for loot piles. Affects gold and ingredient generation.
-                generationModifier = UnityEngine.Random.Range(-5, 5 + 1) + UnityEngine.Random.Range(-5, 5 + 1)
-                    + UnityEngine.Random.Range(-5, 5 + 1) + UnityEngine.Random.Range(-5, 5 + 1);
+                lootMultiplier = (locationModifier / 100) + UnityEngine.Random.Range(-5, 5 + 1)
+                    + UnityEngine.Random.Range(-5, 5 + 1) + UnityEngine.Random.Range(-5, 5 + 1)
+                    + UnityEngine.Random.Range(-5, 5 + 1);
             }
 
-            // I replaced "playerMod" with "generationModifier" in the line below.
-            int goldCount = UnityEngine.Random.Range(matrix.MinGold, matrix.MaxGold + 1) * generationModifier;
+            // I replaced playerMod with lootMultiplier in the line below.
+            int goldCount = UnityEngine.Random.Range(matrix.MinGold, matrix.MaxGold + 1) * lootMultiplier;
 
             if (goldCount > 0)
             {
@@ -287,8 +292,8 @@ namespace BossfallMod.Items
             chance = matrix.WP;
             while (Dice100.SuccessRoll((int)chance))
             {
-                // I replaced playerEntity.Level with enemyLevelModifier and rerouted the method call.
-                items.Add(CreateRandomWeapon(enemyLevelModifier));
+                // I replaced playerEntity.Level with enemyLevelModifier + locationModifier and rerouted the method call.
+                items.Add(CreateRandomWeapon(enemyLevelModifier + locationModifier));
 
                 chance *= 0.5f;
             }
@@ -296,29 +301,29 @@ namespace BossfallMod.Items
             chance = matrix.AM;
             while (Dice100.SuccessRoll((int)chance))
             {
-                // I replaced playerEntity.Level with enemyLevelModifier and rerouted the method call.
-                items.Add(CreateRandomArmor(enemyLevelModifier, playerEntity.Gender, playerEntity.Race));
+                // I replaced playerEntity.Level with enemyLevelModifier + locationModifier and rerouted the method call.
+                items.Add(CreateRandomArmor(enemyLevelModifier + locationModifier, playerEntity.Gender, playerEntity.Race));
 
                 chance *= 0.5f;
             }
 
-            // I replaced "playerEntity.Level" with "generationModifier" in four lines below and added "generationModifier"
+            // I replaced playerEntity.Level with lootMultiplier in four lines below and added lootMultiplier
             // to the remaining three. All ingredient generation now scales with enemy level, if generating loot for an enemy.
             // If not, ingredients are generally much rarer. I reroute all ingredient generation method calls to the
             // RandomIngredient method contained in this script.
-            RandomIngredient(matrix.C1 * generationModifier, ItemGroups.CreatureIngredients1, items);
-            RandomIngredient(matrix.C2 * generationModifier, ItemGroups.CreatureIngredients2, items);
-            RandomIngredient(matrix.C3 * generationModifier, ItemGroups.CreatureIngredients3, items);
-            RandomIngredient(matrix.P1 * generationModifier, ItemGroups.PlantIngredients1, items);
-            RandomIngredient(matrix.P2 * generationModifier, ItemGroups.PlantIngredients2, items);
-            RandomIngredient(matrix.M1 * generationModifier, ItemGroups.MiscellaneousIngredients1, items);
-            RandomIngredient(matrix.M2 * generationModifier, ItemGroups.MiscellaneousIngredients2, items);
+            RandomIngredient(matrix.C1 * lootMultiplier, ItemGroups.CreatureIngredients1, items);
+            RandomIngredient(matrix.C2 * lootMultiplier, ItemGroups.CreatureIngredients2, items);
+            RandomIngredient(matrix.C3 * lootMultiplier, ItemGroups.CreatureIngredients3, items);
+            RandomIngredient(matrix.P1 * lootMultiplier, ItemGroups.PlantIngredients1, items);
+            RandomIngredient(matrix.P2 * lootMultiplier, ItemGroups.PlantIngredients2, items);
+            RandomIngredient(matrix.M1 * lootMultiplier, ItemGroups.MiscellaneousIngredients1, items);
+            RandomIngredient(matrix.M2 * lootMultiplier, ItemGroups.MiscellaneousIngredients2, items);
 
             chance = matrix.MI;
             while (Dice100.SuccessRoll((int)chance))
             {
-                // I replaced playerEntity.Level with enemyLevelModifier and rerouted the method call.
-                items.Add(CreateRandomMagicItem(enemyLevelModifier, playerEntity.Gender, playerEntity.Race));
+                // I replaced playerEntity.Level with enemyLevelModifier + locationModifier and rerouted the method call.
+                items.Add(CreateRandomMagicItem(enemyLevelModifier + locationModifier, playerEntity.Gender, playerEntity.Race));
 
                 chance *= 0.5f;
             }
@@ -345,6 +350,14 @@ namespace BossfallMod.Items
 
                 chance *= 0.5f;
             }
+
+            // I added this if. Bossfall loot piles are frequently empty, so if they are I add a little gold. I assume players
+            // will think something is broken if they find a bunch of empty loot piles.
+            if (!isEnemy && items.Count == 0)
+            {
+                items.Add(ItemBuilder.CreateGoldPieces(UnityEngine.Random.Range(1, 20 + 1)));
+            }
+
 
             return items.ToArray();
         }
@@ -484,9 +497,9 @@ namespace BossfallMod.Items
         /// <summary>
         /// Vanilla's method from ItemBuilder, changed to be an instance method. Comments precede changes or additions I made.
         /// </summary>
-        /// <param name="enemyLevelModifier">If spawning loot for an enemy, enemy level * 50. Otherwise, 0.</param>
+        /// <param name="materialModifier">Scales with enemy level and (not currently implemented) -> location.</param>
         /// <returns>A random weapon.</returns>
-        public DaggerfallUnityItem CreateRandomWeapon(int enemyLevelModifier)
+        public DaggerfallUnityItem CreateRandomWeapon(int materialModifier)
         {
             ItemHelper itemHelper = DaggerfallUnity.Instance.ItemHelper;
             Array enumArray = itemHelper.GetEnumArray(ItemGroups.Weapons);
@@ -500,8 +513,8 @@ namespace BossfallMod.Items
                 // I added "ItemBuilder." to send it to vanilla's ItemBuilder method.
                 newItem = ItemBuilder.CreateItem(ItemGroups.Weapons, customItemTemplates[groupIndex - enumArray.Length]);
 
-            // I pass on enemyLevelModifier so loot scales with enemy level rather than player's.
-            WeaponMaterialTypes material = FormulaHelper.RandomMaterial(enemyLevelModifier);
+            // I changed the method call's argument to materialModifier.
+            WeaponMaterialTypes material = FormulaHelper.RandomMaterial(materialModifier);
 
             // I reroute the method call to a method contained in this script.
             ApplyWeaponMaterial(newItem, material);
@@ -582,11 +595,11 @@ namespace BossfallMod.Items
         /// <summary>
         /// Vanilla's method from ItemBuilder, changed to be an instance method. Comments precede changes or additions I made.
         /// </summary>
-        /// <param name="enemyLevelModifier">If spawning loot for an enemy, enemy level * 50. Otherwise, 0.</param>
+        /// <param name="materialModifier">Scales with enemy level and (not currently implemented) -> location.</param>
         /// <param name="gender">Gender armor is created for.</param>
         /// <param name="race">Race armor is created for.</param>
         /// <returns>DaggerfallUnityItem</returns>
-        public DaggerfallUnityItem CreateRandomArmor(int enemyLevelModifier, Genders gender, Races race)
+        public DaggerfallUnityItem CreateRandomArmor(int materialModifier, Genders gender, Races race)
         {
             ItemHelper itemHelper = DaggerfallUnity.Instance.ItemHelper;
             Array enumArray = itemHelper.GetEnumArray(ItemGroups.Armor);
@@ -622,9 +635,9 @@ namespace BossfallMod.Items
                 }
             }
 
-            // I pass on enemyLevelModifier so loot scales with enemy level rather than player's. I also reroute the method
+            // I changed the RandomArmorMaterial argument to materialModifier. I also reroute the ApplyArmorSettings
             // call to a method in this script.
-            ApplyArmorSettings(newItem, gender, race, FormulaHelper.RandomArmorMaterial(enemyLevelModifier));
+            ApplyArmorSettings(newItem, gender, race, FormulaHelper.RandomArmorMaterial(materialModifier));
 
             return newItem;
         }
@@ -693,28 +706,28 @@ namespace BossfallMod.Items
         /// <summary>
         /// Vanilla's method from ItemBuilder, changed to be an instance method. Comments precede changes or additions I made.
         /// </summary>
-        /// <param name="enemyLevelModifier">If spawning loot for an enemy, enemy level * 50. Otherwise, 0.</param>
+        /// <param name="materialModifier">Scales with enemy level and (not currently implemented) -> location.</param>
         /// <param name="gender">Player's gender.</param>
         /// <param name="race">Player's race.</param>
         /// <returns>An enchanted item.</returns>
-        public DaggerfallUnityItem CreateRandomMagicItem(int enemyLevelModifier, Genders gender, Races race)
+        public DaggerfallUnityItem CreateRandomMagicItem(int materialModifier, Genders gender, Races race)
         {
-            // I pass on enemyLevelModifier so loot scales with enemy level rather than player's. I also reroute the method
-            // call to a method in this script. I send the "chooseAtRandom" call to a field in this script, which I copied
-            // from vanilla's ItemBuilder script.
-            return CreateRegularMagicItem(chooseAtRandom, enemyLevelModifier, gender, race);
+            // I changed the method call's second argument to materialModifier. I also reroute the method call to a method
+            // in this script. I send the "chooseAtRandom" call to a field in this script, which I copied from vanilla's
+            // ItemBuilder script.
+            return CreateRegularMagicItem(chooseAtRandom, materialModifier, gender, race);
         }
 
         /// <summary>
         /// Vanilla's method from ItemBuilder, changed to be an instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <param name="chosenItem">An integer index of the item to create, or -1 for a random one.</param>
-        /// <param name="enemyLevelModifier">If spawning loot for an enemy, enemy level * 50. Otherwise, 0.</param>
+        /// <param name="materialModifier">Scales with enemy level and (not currently implemented) -> location.</param>
         /// <param name="gender">The gender to create an item for.</param>
         /// <param name="race">The race to create an item for.</param>
         /// <returns>DaggerfallUnityItem</returns>
         /// <exception cref="Exception">When a base item cannot be created.</exception>
-        DaggerfallUnityItem CreateRegularMagicItem(int chosenItem, int enemyLevelModifier, Genders gender, Races race)
+        DaggerfallUnityItem CreateRegularMagicItem(int chosenItem, int materialModifier, Genders gender, Races race)
         {
             byte[] itemGroups0 = { 2, 3, 6, 10, 12, 14, 25 };
             byte[] itemGroups1 = { 2, 3, 6, 12, 25 };
@@ -747,21 +760,21 @@ namespace BossfallMod.Items
 
             if (group == ItemGroups.Weapons)
             {
-                // I pass on enemyLevelModifier so loot scales with enemy level rather than player's. I also reroute the method
-                // call to a method in this script.
-                newItem = CreateRandomWeapon(enemyLevelModifier);
+                // I changed the method call's argument to materialModifier. I also reroute the method call to a method
+                // in this script.
+                newItem = CreateRandomWeapon(materialModifier);
 
                 while (newItem.GroupIndex == 18)
 
-                    // I pass on enemyLevelModifier so loot scales with enemy level rather than player's. I also reroute the method
-                    // call to a method in this script.
-                    newItem = CreateRandomWeapon(enemyLevelModifier);
+                    // I changed the method call's argument to materialModifier. I also reroute the method call to a method
+                    // in this script.
+                    newItem = CreateRandomWeapon(materialModifier);
             }
             else if (group == ItemGroups.Armor)
 
-                // I pass on enemyLevelModifier so loot scales with enemy level rather than player's. I also reroute the method
-                // call to a method in this script.
-                newItem = CreateRandomArmor(enemyLevelModifier, gender, race);
+                // I changed the method call's first argument to materialModifier. I also reroute the method call to a
+                // method in this script.
+                newItem = CreateRandomArmor(materialModifier, gender, race);
 
             else if (group == ItemGroups.MensClothing || group == ItemGroups.WomensClothing)
 
