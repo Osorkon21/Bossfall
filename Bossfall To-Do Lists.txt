@@ -46,17 +46,12 @@ Add BossfallEnemyDeath event handler 4 vampire/lycan on death stuff in BossfallE
 
 .DFMOD NOTES:
 
-3 things left to finish in ReadMe - FORMULAS & TABLES.INTERIOR ENCOUNTER TABLES, ITEM TABLES.ITEM CHANGES.MAGIC ITEMS, & ITEM TABLES.ITEM CHANGES.SHOP ITEMS, BY STORE QUALITY
-Delete Item Templates To Process file once done processing contents
+Remove OP powers from ItemMaker b4 initial release? Not sure about this one, if u do remove all powers u previously removed
 Add chance of finding mod items in house containers, use StockShopShelves as starting template, u'll have 2 modify it so it's not guaranteed, use ur List of mod items here
-When u add any code u must now check ReadMe's CHANGELOG and last section of changelog.txt (it contains several already written sections to add once implemented in .dfmod) make sure u add ur new changes, if section already exists make sure CHANGELOG info accurately reflects the thing u just added (and check for existing section/add ur new changes to SUMMARY OF CHANGES, FORMULAS and ITEM TABLES sections if applicable)
-When proofreading ReadMe make sure all "Add... here" sections are gone (once they're completed ofc)
-When proofreading CHANGELOG make sure u actually add the promised sections 2 FORMULAS and ITEM TABLES, check every reference 2 these sections make sure what u promised was added
-Proofread SUMMARY OF CHANGES, CHANGELOG, ITEM TABLES, and FORMULAS sections of ReadMe after finishing them, also make sure u don't repeat urself anywhere in entire ReadMe, do this b4 releasing anything
 Double check all ur item gen methods that handle loot pile, enemy loot table random items, and shop shelf/house container loot gen - make sure mod items are automatically generated when appropriate so u don't need 2 add them manually (I think this is already the case but it never hurts 2 check) - this is NOT true for house containers
 In BFEnemyMotor in spellcast bools include check 4 enemy's current HP if it's full and enemy wants 2 cast Heal return false
 Change Legal Info on NexusMods & 3rd forum post, include blurb about "not all code was written by me, I've marked all code I didn't write, check code for author before using/crediting"
-Read thru all scripts and ReadMe, make sure u remove all unnecessary Debug.Log lines and DWI/DELETE WHEN IMPLEMENTED references (after implementing them ofc) b4 releasing anything
+Read thru all scripts, make sure u remove all unnecessary Debug.Log lines and DWI/DELETE WHEN IMPLEMENTED references (after implementing them ofc) b4 releasing anything
 In ur enemy loot generation methods, for the (up to) 2 random custom items @ the end, use ItemHelper.GetCustomItemsForGroup(ItemGroups.Weapons) or (ItemGroups.Armor) to find custom wpns/armor & if that method returns something add one or two custom items
 If u don't wanna do above line & wanna get more specific in ur "add starting equipment 2 enemies" method in BFItemBuilder (to give each armor piece a chance 2 be a mod item) then u may have to pull item template numbers out of RPR:I and feed those numbers into ItemHelper's GenerateItem method if ItemHelper.GetCustomItemsForGroup(ItemGroups.Armor) returns with RPR:I armor
 I'd really prefer to not do above line as mod template indexes are not set and may change
@@ -64,6 +59,7 @@ Maybe a better solution 4 the above 3 lines is to generate mod wpns/armor one by
 5189333 is ur Dispel Magic potion key (that uses ur custom Dispel Magic potion recipe)
 If u add BossfallEnemyDeath script remember to add this component to custom enemies in BossfallOnLootSpawned method in Bossfall.cs
 GameManager.Instance.Dungeon.Summary.DungeonType (or whatever) can be called to see what dungeon type ur entering, use that for ur dungeon entrance flavor msgs, make popup HUD msgs last twice as long as normal? (or SETTING: Make actual msg box popup 2 display ur dungeon entrance flavor txt?)
+Make sure ur dungeon popup doesn't happen when player enters or begins new game in a main quest dungeon
 Add skill method override to BossfallOverrides, remember 2 register it w/FormulaOverride, use Bossfall skill difficulty that changes w/Bossfall setting values
 Download latest version of all used mods to make sure latest versions work w/Bossfall .dfmod b4 releasing anything
 Update all FAQ questions (if necessary) for relevance after .dfmod release on NexusMods and 3rd forum post
@@ -103,7 +99,7 @@ Add screenshot of Vampire HUD message (an eye-catching msg) to NexusMods, and to
 Add +10 player HP for Vampire civilian NPC kills, pop up standard Vampire on kill HUD msg, put this check in wherever u end up putting Vampire checks
 
 Vampire players are healed when they kill anything with fresh blood, heal amount depends on entity killed
-Custom HUD messages are displayed when Vampire player kills an entity, replaces "(enemy) just died." msg, I added 45 different msgs
+Custom HUD messages are displayed when Vampire player kills an entity, replaces "(enemy) just died." msg, I added 52 different msgs
 Custom HUD messages are displayed when entity has old blood (Zombies and Flesh Atronachs), I added 14 different msgs
 
 

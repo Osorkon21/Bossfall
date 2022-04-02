@@ -134,7 +134,7 @@ SUMMARY OF CHANGES:
 
     MAGIC ITEMS:
 
-        - All magic items are custom. They have different names, enchantments, and/or uses.
+        - All magic items have been modified. They have different names, enchantments, and/or durabilities.
 
 
     SHOPS:
@@ -462,7 +462,7 @@ v1.3.1 CHANGELOG:
 
         - Once player is at least level 7, Guards are on average around level 15. Their level range is 1-30. HALT!
 
-        - See FORMULAS & TABLES section of the ReadMe for exact Guard level scaling formulas.
+        - See FORMULAS & TABLES section of the ReadMe for exact Guard (HALT!) level scaling formulas.
 
         - Guards carry weapons and armor of any material. HALT!
 
@@ -576,7 +576,7 @@ v1.3.1 CHANGELOG:
 
         - If you're wearing silver boots you must use kick attacks to damage Ghosts/Wraiths/etc.
 
-        - Exact Hand-to-Hand material formula can be found in the FORMULAS & TABLES section of the ReadMe.
+        - Full list of Hand-to-Hand material to-hit bonuses can be found in the FORMULAS & TABLES section of the ReadMe.
 
 
     HUMAN ENEMIES:
@@ -621,7 +621,7 @@ v1.3.1 CHANGELOG:
           Warhammer will last exactly as long as a Steel Long Bow or a Steel Wakazashi. A Steel Staff will last exactly as
           long as a Steel Short Bow or Steel Dagger.
 
-        - For exact item values and durability and Enchantment Point values see the ITEM TABLES section of the ReadMe.
+        - For exact item weights/values and durability and Enchantment Point values see the ITEM TABLES section of the ReadMe.
 
 
     LOOT:
@@ -663,9 +663,9 @@ v1.3.1 CHANGELOG:
 
     MAGIC ITEMS:
 
-        - All non-quest-reward, non-artifact magic items are custom and have different names, enchantments, and/or uses.
+        - All non-quest-reward, non-artifact magic items have different names, enchantments, and/or durabilities.
 
-        - Pointless vanilla item powers (for example, "Item of Venom Spitting") replaced with more useful enchantments.
+        - Pointless vanilla item powers - for example, "Item of Venom Spitting" - replaced with more useful enchantments.
 
         - Regular magic items no longer spawn with the "Absorbs Spells" power. Artifacts still can.
 
@@ -1492,7 +1492,6 @@ v1.3.1 CHANGELOG:
 
             WEAPON EFFECTS:
 
-
                 - Blunt Weapons deal x1 damage and suffer x3 durability damage.
 
                 - Axes deal 1/2 damage and suffer x4 durability damage.
@@ -1664,9 +1663,9 @@ v1.3.1 CHANGELOG:
 
         - Cuirasses, gauntlets, tower shields, and best-in-slot weapons are not in low quality shops.
 
-        - Shops of average quality or better that are not libraries or bookstores will stock far fewer books.
+        - Shops of "Average" quality or better that are not libraries or bookstores will stock far fewer books.
 
-        - Shops below average quality (sturdy shelves, rusty relics) that are not libraries or bookstores will never stock books.
+        - Shops below "Average" quality that are not libraries or bookstores will never stock books.
 
         - Booksellers stock lots more books.
 
@@ -1783,7 +1782,6 @@ v1.3.1 FORMULAS & TABLES:
     ENEMY MOVE SPEEDS:
 
         - For comparison, the player's running speed with 100 Running and 100 SPD is 11.7.
-
 
                                VANILLA:   FAST:   VERY FAST:
 
@@ -1935,94 +1933,143 @@ v1.3.1 FORMULAS & TABLES:
 
             COMMON:                             COMMON:                                 COMMON:
 
-                Human                               Giant Scorpion                          Mummy
-                                                    Dragonling                              Skeletal Warrior
-                                                    Nymph                                   Ghost
-                                                    Fire Atronach                           Ranger
+                Barbarian                           Dragonling                              Ghost
+                Ranger                              Fire Atronach                           Mummy           
+                                                    Giant Scorpion                          Ranger
+                                                    Nymph                                   Skeletal Warrior
                 
                                                 
-                                                UNCOMMON:                               UNCOMMON:
+            UNCOMMON:                           UNCOMMON:                               UNCOMMON:
 
-                                                    Ranger                                  Gargoyle
-                                                    Gargoyle                              
+                Acrobat                             Gargoyle                                Gargoyle
+                Archer                              Ranger
+                Bard
+                Battlemage
+                Burglar
+                Healer
+                Knight
+                Mage
+                Monk
+                Nightblade
+                Rogue
+                Sorcerer
+                Spellsword
+                Thief
+                Warrior
 
 
             RARE:                               RARE:                                   RARE:
 
-                Werewolf                            Daedra Seducer                          Wraith
+                Gargoyle                            Daedra Seducer                          Wraith
                 Wereboar                            Fire Daedra
-                Gargoyle
+                Werewolf
 
 
             BOSS:                               BOSS:                                   BOSSES:
 
-                Vampire                             Dragonling_Alternate                    Lich
-                                                                                            Ancient Lich
+                Vampire                             Dragonling_Alternate                    Ancient Lich
+                                                                                            Lich
 
 
         HAUNTED WOODLANDS, IN TOWN, NIGHT:  HAUNTED WOODLANDS, NOT IN TOWN, DAY:    HAUNTED WOODLANDS, NOT IN TOWN, NIGHT:
 
-            COMMON:                             COMMON:                                 COMMON:
+                                                COMMON:                                 COMMON:
 
-                Human                               Ghost                                   Ghost
-                                                    Wraith                                  Wraith
-                                                    Spriggan                                Werewolf
-                                                                                            Wereboar
+                                                    Ghost                                   Ghost
+                                                    Spriggan                                Wereboar
+                                                    Wraith                                  Werewolf
+                                                                                            Wraith  
 
 
             UNCOMMON:                           UNCOMMON:                               UNCOMMON:
 
-                Ghost                               Werewolf                                Flesh Atronach
-                Wraith                              Wereboar                                Mummy
-                                                    Flesh Atronach                          Skeletal Warrior
-                                                    Mummy                                   Zombie
-                                                    Skeletal Warrior
-                                                    Zombie
+                Acrobat                             Flesh Atronach                          Flesh Atronach
+                Archer                              Mummy                                   Mummy
+                Barbarian                           Skeletal Warrior                        Skeletal Warrior
+                Bard                                Wereboar                                Zombie
+                Battlemage                          Werewolf        
+                Burglar                             Zombie
+                Ghost                 
+                Healer              
+                Knight     
+                Mage  
+                Monk      
+                Nightblade  
+                Ranger           
+                Rogue                 
+                Sorcerer
+                Spellsword
+                Thief  
+                Warrior
+                Wraith
 
 
             RARE:
 
                 Flesh Atronach
-                Werewolf
                 Wereboar
+                Werewolf
 
 
             BOSSES:                             BOSSES:                                 BOSSES:
 
-                Vampire                             Lich                                    Vampire
-                Vampire Ancient                     Ancient Lich                            Lich
+                Vampire                             Ancient Lich                            Ancient Lich
+                Vampire Ancient                     Lich                                    Lich
+                                                                                            Vampire        
                                                                                             Vampire Ancient
-                                                                                            Ancient Lich
 
 
         MOUNTAIN, IN TOWN, NIGHT:           MOUNTAIN, NOT IN TOWN, DAY:             MOUNTAIN, NOT IN TOWN, NIGHT:
 
             COMMON:                             COMMON:                                 COMMON:
 
-                Human                               Human                                   Ice Atronach
-                                                    Grizzly Bear                            Grizzly Bear
-                                                    Centaur                                 Barbarian
-                                                    Giant                                   Zombie
+                Barbarian                           Centaur                                 Barbarian    
+                Ranger                              Giant                                   Grizzly Bear
+                                                    Grizzly Bear                            Ice Atronach
                                                     Harpy                                   Skeletal Warrior
-                                                    Spriggan
+                                                    Spriggan                                Zombie          
+                                                             
 
+            UNCOMMON:                                                                   UNCOMMON:
 
-                                                                                        UNCOMMON:
-
-                                                                                            Frost Daedra
-                                                                                            Ghost
-                                                                                            Ranger
-                                                                                            Spriggan
-                                                                                            Gargoyle
-                                                                                            Werewolf
-                                                                                            Wereboar
+                Acrobat                                                                     Frost Daedra
+                Archer                                                                      Gargoyle      
+                Bard                                                                        Ghost       
+                Battlemage                                                                  Ranger  
+                Burglar                                                                     Spriggan
+                Healer                                                                      Wereboar
+                Knight                                                                      Werewolf
+                Mage           
+                Monk          
+                Nightblade           
+                Rogue   
+                Sorcerer  
+                Spellsword
+                Thief
+                Warrior
 
 
             RARE:                               RARE:                                   RARE:
 
-                Werewolf                            Orc                                     Wraith
-                Wereboar                            Orc Sergeant                            Mummy
-                Grizzly Bear
+                Grizzly Bear                        Acrobat                                 Mummy 
+                Wereboar                            Archer                                  Wraith
+                Werewolf                            Barbarian       
+                                                    Bard     
+                                                    Battlemage       
+                                                    Burglar         
+                                                    Healer      
+                                                    Knight
+                                                    Mage
+                                                    Monk           
+                                                    Nightblade           
+                                                    Orc           
+                                                    Orc Sergeant
+                                                    Ranger
+                                                    Rogue  
+                                                    Sorcerer
+                                                    Spellsword      
+                                                    Thief
+                                                    Warrior     
 
 
             BOSS:                               BOSS:                                   BOSS:
@@ -2034,28 +2081,54 @@ v1.3.1 FORMULAS & TABLES:
 
             COMMON:                             COMMON:                                 COMMON:
 
-                Human                               Human                                   Grizzly Bear
-                                                    Grizzly Bear                            Ranger
-                                                    Centaur                                 Barbarian
-                                                    Giant                                   Spriggan
-                                                    Harpy                                   Zombie
-                                                    Spriggan                                Skeletal Warrior
+                Barbarian                           Centaur                                 Barbarian             
+                Ranger                              Giant                                   Grizzly Bear       
+                                                    Grizzly Bear                            Ranger      
+                                                    Harpy                                   Skeletal Warrior         
+                                                    Spriggan                                Spriggan        
+                                                                                            Zombie          
+                                                             
 
+            UNCOMMON:                                                                   UNCOMMON:
 
-                                                                                        UNCOMMON:
-
-                                                                                            Ice Atronach
-                                                                                            Ghost
+                Acrobat                                                                     Ghost       
+                Archer                                                                      Ice Atronach  
+                Bard                                                                                    
+                Battlemage                                                                          
+                Burglar                                                                             
+                Healer                                                                              
+                Knight                                                                                  
+                Mage           
+                Monk          
+                Nightblade           
+                Rogue   
+                Sorcerer  
+                Spellsword
+                Thief
+                Warrior
 
 
             RARE:                               RARE:                                   RARE:
 
-                Werewolf                            Orc                                     Frost Daedra
-                Wereboar                            Orc Sergeant                            Wraith
-                Grizzly Bear                                                                Gargoyle
-                                                                                            Werewolf
-                                                                                            Wereboar
-                                                                                            Mummy
+                Grizzly Bear                        Acrobat                                 Frost Daedra
+                Wereboar                            Archer                                  Gargoyle        
+                Werewolf                            Barbarian                               Mummy   
+                                                    Bard                                    Wereboar
+                                                    Battlemage                              Werewolf
+                                                    Burglar                                 Wraith
+                                                    Healer      
+                                                    Knight
+                                                    Mage
+                                                    Monk           
+                                                    Nightblade           
+                                                    Orc           
+                                                    Orc Sergeant
+                                                    Ranger
+                                                    Rogue  
+                                                    Sorcerer
+                                                    Spellsword      
+                                                    Thief
+                                                    Warrior     
 
 
             BOSS:                               BOSS:                                   BOSS:
@@ -2067,31 +2140,58 @@ v1.3.1 FORMULAS & TABLES:
 
             COMMON:                             COMMON:                                 COMMON:
 
-                Human                               Human                                   Human
-                                                    Spider                                  Spider
-                                                    Sabertooth Tiger                        Skeletal Warrior
+                Barbarian                           Nymph                                   Orc         
+                Ranger                              Orc                                     Rat                 
+                                                    Sabertooth Tiger                        Skeletal Warrior            
+                                                    Spider                                  Spider          
                                                     Spriggan                                Spriggan
-                                                    Nymph                                   Zombie
-                                                    Orc                                     Orc
-                                                                                            Rat
+                                                                                            Zombie
 
 
-                                                UNCOMMON:                               UNCOMMON:
+            UNCOMMON:                           UNCOMMON:                               UNCOMMON:
 
-                                                    Daedroth                                Sabertooth Tiger
-                                                    Orc Sergeant                            Giant Bat
-                                                                                            Ghost
-                                                                                            Daedroth
+                Acrobat                             Daedroth                                Daedroth                       
+                Archer                              Orc Sergeant                            Ghost           
+                Bard                                                                        Giant Bat
+                Battlemage                                                                  Sabertooth Tiger
+                Burglar   
+                Healer
+                Knight     
+                Mage            
+                Monk            
+                Nightblade              
+                Rogue   
+                Sorcerer
+                Spellsword
+                Thief   
+                Warrior
 
 
             RARE:                               RARE:                                   RARE:
 
-                Werewolf                            Orc Shaman                              Mummy
-                Wereboar                            Daedra Seducer                          Wraith
-                Spider                                                                      Werewolf
-                Daedroth                                                                    Wereboar
-                                                                                            Orc Sergeant
-                                                                                            Orc Shaman
+                Daedroth                            Acrobat                                 Acrobat         
+                Spider                              Archer                                  Archer          
+                Wereboar                            Barbarian                               Barbarian           
+                Werewolf                            Bard                                    Bard            
+                                                    Battlemage                              Battlemage              
+                                                    Burglar                                 Burglar             
+                                                    Daedra Seducer                          Healer  
+                                                    Healer                                  Knight      
+                                                    Knight                                  Mage    
+                                                    Mage                                    Monk
+                                                    Monk                                    Mummy       
+                                                    Nightblade                              Nightblade          
+                                                    Orc Shaman                              Orc Sergeant
+                                                    Ranger                                  Orc Shaman
+                                                    Rogue                                   Ranger
+                                                    Sorcerer                                Rogue       
+                                                    Spellsword                              Sorcerer
+                                                    Thief                                   Spellsword
+                                                    Warrior                                 Thief   
+                                                                                            Warrior
+                                                                                            Wereboar
+                                                                                            Werewolf
+                                                                                            Wraith
 
 
             BOSS:                               BOSS:                                   BOSS:
@@ -2103,32 +2203,59 @@ v1.3.1 FORMULAS & TABLES:
 
             COMMON:                             COMMON:                                 COMMON:
 
-                Human                               Human                                   Human
-                                                    Spider                                  Spider
+                Barbarian                           Nymph                                   Giant Bat       
+                Ranger                              Orc                                     Orc     
                                                     Sabertooth Tiger                        Rat
-                                                    Spriggan                                Skeletal Warrior
-                                                    Nymph                                   Giant Bat
-                                                    Orc                                     Zombie
-                                                                                            Orc
+                                                    Spider                                  Skeletal Warrior
+                                                    Spriggan                                Spider       
+                                                                                            Zombie
 
 
-                                                UNCOMMON:                               UNCOMMON:
+            UNCOMMON:                           UNCOMMON:                               UNCOMMON:
 
-                                                    Rat                                     Sabertooth Tiger
-                                                    Centaur                                 Spriggan
-                                                    Daedroth                                Ghost
-                                                    Orc Sergeant
+                Acrobat                             Centaur                                 Ghost                 
+                Archer                              Daedroth                                Sabertooth Tiger
+                Bard                                Orc Sergeant                            Spriggan
+                Battlemage                          Rat         
+                Burglar     
+                Healer
+                Knight     
+                Mage            
+                Monk            
+                Nightblade              
+                Rogue   
+                Sorcerer
+                Spellsword
+                Thief
+                Warrior
 
 
             RARE:                               RARE:                                   RARE:
 
-                Werewolf                            Orc Shaman                              Mummy
-                Wereboar                            Daedra Seducer                          Daedroth
-                Sabertooth Tiger                                                            Wraith
-                                                                                            Werewolf
+                Sabertooth Tiger                    Acrobat                                 Acrobat
+                Wereboar                            Archer                                  Archer         
+                Werewolf                            Barbarian                               Barbarian
+                                                    Bard                                    Bard         
+                                                    Battlemage                              Battlemage          
+                                                    Burglar                                 Burglar
+                                                    Daedra Seducer                          Daedroth
+                                                    Healer                                  Healer  
+                                                    Knight                                  Knight      
+                                                    Mage                                    Mage    
+                                                    Monk                                    Monk
+                                                    Nightblade                              Mummy       
+                                                    Orc Shaman                              Nightblade          
+                                                    Ranger                                  Orc Sergeant
+                                                    Rogue                                   Orc Shaman
+                                                    Sorcerer                                Ranger
+                                                    Spellsword                              Rogue   
+                                                    Thief                                   Sorcerer
+                                                    Warrior                                 Spellsword
+                                                                                            Thief   
+                                                                                            Warrior
                                                                                             Wereboar
-                                                                                            Orc Sergeant
-                                                                                            Orc Shaman
+                                                                                            Werewolf
+                                                                                            Wraith
 
 
             BOSS:                               BOSS:                                   BOSS:
@@ -2140,31 +2267,58 @@ v1.3.1 FORMULAS & TABLES:
 
             COMMON:                             COMMON:                                 COMMON:
 
-                Human                               Human                                   Human
-                                                    Spider                                  Spider
-                                                    Sabertooth Tiger                        Skeletal Warrior
+                Barbarian                           Nymph                                   Orc         
+                Ranger                              Orc                                     Rat                 
+                                                    Sabertooth Tiger                        Skeletal Warrior            
+                                                    Spider                                  Spider          
                                                     Spriggan                                Spriggan
-                                                    Nymph                                   Zombie
-                                                    Orc                                     Orc
-                                                                                            Rat
+                                                                                            Zombie
 
 
-                                                UNCOMMON:                               UNCOMMON:
+            UNCOMMON:                           UNCOMMON:                               UNCOMMON:
 
-                                                    Daedroth                                Sabertooth Tiger
-                                                    Orc Sergeant                            Giant Bat
-                                                                                            Ghost
-                                                                                            Daedroth
+                Acrobat                             Daedroth                                Daedroth                       
+                Archer                              Orc Sergeant                            Ghost           
+                Bard                                                                        Giant Bat
+                Battlemage                                                                  Sabertooth Tiger
+                Burglar   
+                Healer
+                Knight     
+                Mage            
+                Monk            
+                Nightblade              
+                Rogue   
+                Sorcerer
+                Spellsword
+                Thief   
+                Warrior
 
 
             RARE:                               RARE:                                   RARE:
 
-                Werewolf                            Orc Shaman                              Mummy
-                Wereboar                            Daedra Seducer                          Wraith
-                Spider                                                                      Werewolf
-                Daedroth                                                                    Wereboar
-                                                                                            Orc Sergeant
-                                                                                            Orc Shaman
+                Daedroth                            Acrobat                                 Acrobat         
+                Spider                              Archer                                  Archer          
+                Wereboar                            Barbarian                               Barbarian           
+                Werewolf                            Bard                                    Bard            
+                                                    Battlemage                              Battlemage              
+                                                    Burglar                                 Burglar             
+                                                    Daedra Seducer                          Healer  
+                                                    Healer                                  Knight      
+                                                    Knight                                  Mage    
+                                                    Mage                                    Monk
+                                                    Monk                                    Mummy       
+                                                    Nightblade                              Nightblade          
+                                                    Orc Shaman                              Orc Sergeant
+                                                    Ranger                                  Orc Shaman
+                                                    Rogue                                   Ranger
+                                                    Sorcerer                                Rogue       
+                                                    Spellsword                              Sorcerer
+                                                    Thief                                   Spellsword
+                                                    Warrior                                 Thief   
+                                                                                            Warrior
+                                                                                            Wereboar
+                                                                                            Werewolf
+                                                                                            Wraith
 
 
             BOSS:                               BOSS:                                   BOSS:
@@ -2175,31 +2329,59 @@ v1.3.1 FORMULAS & TABLES:
         WOODLANDS, IN TOWN, NIGHT:          WOODLANDS, NOT IN TOWN, DAY:            WOODLANDS, NOT IN TOWN, NIGHT:
 
             COMMON:                             COMMON:                                 COMMON:
+            
+                Barbarian                           Centaur                                 Giant Bat    
+                Ranger                              Giant                                   Grizzly Bear
+                                                    Grizzly Bear                            Rat       
+                                                    Orc                                     Skeletal Warrior
+                                                    Rat                                     Zombie      
+                                                    Spriggan    
 
-                Human                               Human                                   Human
-                                                    Orc                                     Rat
-                                                    Rat                                     Giant Bat
-                                                    Spriggan                                Zombie
-                                                    Giant                                   Skeletal Warrior
-                                                    Centaur                                 Grizzly Bear
-                                                    Grizzly Bear
 
+            UNCOMMON:                           UNCOMMON:                               UNCOMMON:
 
-                                                UNCOMMON:                               UNCOMMON:
-
-                                                    Spider                                  Orc
-                                                                                            Ghost
-                                                                                            Spriggan
+                Acrobat                             Spider                                  Ghost    
+                Archer                                                                      Orc  
+                Bard                                                                        Spriggan
+                Battlemage        
+                Burglar   
+                Healer
+                Knight      
+                Mage            
+                Monk         
+                Nightblade           
+                Rogue            
+                Sorcerer
+                Spellsword
+                Thief
+                Warrior
 
 
             RARE:                               RARE:                                   RARE:
 
-                Werewolf                            Orc Sergeant                            Orc Sergeant
-                Wereboar                                                                    Werewolf
-                Spriggan                                                                    Wereboar
-                                                                                            Mummy
+                Spriggan                            Acrobat                                 Acrobat             
+                Wereboar                            Archer                                  Archer
+                Werewolf                            Barbarian                               Barbarian
+                                                    Bard                                    Bard      
+                                                    Battlemage                              Battlemage
+                                                    Burglar                                 Burglar
+                                                    Healer                                  Healer  
+                                                    Knight                                  Knight      
+                                                    Mage                                    Mage    
+                                                    Monk                                    Monk     
+                                                    Nightblade                              Mummy
+                                                    Orc Sergeant                            Nightblade
+                                                    Ranger                                  Orc Sergeant
+                                                    Rogue                                   Ranger      
+                                                    Sorcerer                                Rogue
+                                                    Spellsword                              Sorcerer    
+                                                    Thief                                   Spellsword
+                                                    Warrior                                 Spider
+                                                                                            Thief
+                                                                                            Warrior
+                                                                                            Wereboar
+                                                                                            Werewolf
                                                                                             Wraith
-                                                                                            Spider
 
 
             BOSS:                               BOSS:                                   BOSS:
@@ -2210,7 +2392,6 @@ v1.3.1 FORMULAS & TABLES:
     HAND-TO-HAND:
 
         - Punch attacks are buffed by equipped glove material, kick attacks are buffed by equipped boot material.
-
 
         MATERIAL TO-HIT BUFFS:
 
@@ -2254,7 +2435,6 @@ v1.3.1 FORMULAS & TABLES:
           usually use weapons. Around level 6 enemies switch to Hand-to-Hand and their damage output becomes more consistent.
 
         - At level 22 and higher damage scales up more slowly. Enemies hit a Hand-to-Hand skill cap at level 22.
-
 
         Level 1:  10                            Level 11: 30                            Level 21: 50
         Level 2:  12                            Level 12: 32                            Level 22: 51
@@ -2321,54 +2501,348 @@ v1.3.1 FORMULAS & TABLES:
 
     INTERIOR ENCOUNTER TABLES:
 
-        - Add processed tables here
+        BARBARIAN STRONGHOLD:               LABORATORY:                             VAMPIRE HAUNT:                
 
-Sabertooth Tigers/Grizzly Bears removed from Mine dungeon types, more Giant Bats and Rats
+            COMMON:                             COMMON:                                 COMMON:
 
-Human Stronghold - Sorcerers removed, replaced with Mages
-Prison - Mages removed, replaced with Sorcerers
-Desecrated Temple - Barbarians/Harpies added, less Daedra Seducers/Giant Bats
-Natural Cave - Sabertooth Tigers removed, more Rats
-Crypt - Sabertooth Tigers/Grizzly Bears/Spiders removed, more Skeletons/Zombies/Mummies
-Orc Stronghold - more Orc Sergeants/Orc Shamans, less Orcs
-Spider Nest - Ghosts added, less Mummies
-Barbarian Stronghold - Harpies added, slightly less Barbarians
-Cemetery - Added Ghosts (they're rare), less Giant Bats
-Underwater - Added Ghosts & Wraiths (they're very rare), less Lamias and Ice Atronachs, more Skeletons
-Default building - every human enemy, vermin, Assassin boss
-Guildhall - every human enemy, vermin, Alternate Dragonling boss
-Temple - every human enemy, vermin, Orc Warlord boss
-Palace, House 1 - every human enemy, vermin, Daedra Lord boss
-House 2 - every human enemy, vermin, Vampire boss
-House 3 - every human enemy, vermin, Ancient Lich boss
+                Barbarian                           Fire Atronach                           Ghost      
+                Giant Bat                           Flesh Atronach                          Vampire                 
+                Rat                                 Gargoyle                                Wraith 
+                                                    Ice Atronach 
+                                                    Imp         
+                                                    Iron Atronach
+                
+                                                
+            UNCOMMON:                           UNCOMMON:                                        
+                
+                Harpy                               Battlemage                                                          
+                Healer                              Healer
+                                                    Mage      
+                                                    Nightblade         
+                                                    Sorcerer  
+                                                    Spellsword
 
 
-Crypt - medium difficulty, undead, Wraith ranged threat, Vampire Ancient boss
-Orc Stronghold - medium, Orcs, Orc Sergeants, vermin, Orc Shaman ranged threat, Orc Warlord boss
-Human Stronghold - hard, lawful humans, vermin, Healer/Sorcerer ranged threat, Assassin boss
-Prison - hard, criminals, vermin, Mage/Spellsword ranged threat, Assassin boss
-Desecrated Temple - hard, Daedra Seducers, Imps, vermin, criminals, low level undead, Mage/Sorcerer ranged threat, Ancient Lich boss
-Mine - medium, vermin, animals, Iron Atronachs/Gargoyles, Lich ranged threat and boss
-Natural Cave - easy, vermin, animals, Spriggans, Rangers, Nymphs, Vampire ranged threat and boss
-Coven - very hard, undead, every Daedra and every spellcasting human as ranged threats, Daedra Lord boss
-Vampire Haunt - impossible, Ghosts/Wraiths as angry spirits of the dead (vampires gotta eat), lots of Vampires as ranged threats, Vampire Ancient boss
-Laboratory - hard, Imps, Gargoyles, all Atronachs, all spellcasters as ranged threats, Orc Warlord boss
-Harpy Nest - easy, vermin, lots of Harpies, Lich ranged threat and boss
-Ruined Castle - hard, vermin, every human enemy, all spellcasters as ranged threat, Assassin boss
-Spider Nest - easy (if you're immune to Poison), low level undead, lots of spiders, Ancient Lich ranged threat and boss
-Giant Stronghold - hard, vermin, lots of Giants, Vampire ranged threat and boss
-Dragon's Den - medium, lots of Dragonlings and their arch-nemesis Knights, Mage ranged threat, Alternate Dragonling boss
-Barbarian Stronghold - medium, vermin, lots of Barbarians, Healer ranged threat, Assassin boss
-Volcanic Cave - very hard, Fire Atronachs, Dragonlings, Daedra Seducers, Fire Daedra/Daedroth ranged threats, Alternate Dragonling/Daedra Lord bosses
-Scorpion Nest - medium (if you're immune to Poison), vermin, lots of Giant Scorpions, Lich ranged threat and boss
-Cemetery - very easy, criminals, vermin, low level undead, Vampire ranged threat and boss
+            BOSS:                               BOSS:                                   BOSS:
+
+                Assassin                            Orc Warlord                             Vampire Ancient
+
+
+        CEMETERY:                           MINE:                                   VOLCANIC CAVES:             
+
+            COMMON:                             COMMON:                                 COMMON:
+
+                Burglar                             Giant Bat                               Dragonling   
+                Giant Bat                           Rat                                     Fire Atronach
+                Rat                                 Spider                                  Fire Daedra
+                Rogue                                                                       
+                Thief  
+                Zombie
+
+
+            UNCOMMON:                           UNCOMMON:                               UNCOMMON:
+
+                Acrobat                             Gargoyle                                Daedra Seducer
+                Bard                                Iron Atronach                           Daedroth
+                Skeletal Warrior
+
+
+            RARE:                                                                            
+
+                Ghost                                                                               
+                Mummy                                           
+
+
+            BOSS:                               BOSS:                                   BOSSES:
+
+                Vampire                             Lich                                    Daedra Lord
+                                                                                            Dragonling_Alternate
+
+
+        COVEN:                              NATURAL CAVE:                           DEFAULT BUILDING:            
+
+            COMMON:                             COMMON:                                 COMMON:
+
+                Daedra Seducer                      Giant Bat                               Rat
+                Daedroth                            Grizzly Bear                                                        
+                Fire Daedra                         Rat                                             
+                Frost Daedra                        Spider                                          
+                Zombie
+                                                
+                                                                                                  
+            UNCOMMON:                           UNCOMMON:                               UNCOMMON:
+                                                                                                      
+                Battlemage                          Nymph                                   Acrobat          
+                Ghost                               Ranger                                  Archer       
+                Healer                              Spriggan                                Barbarian
+                Mage                                                                        Bard       
+                Mummy                                                                       Battlemage       
+                Nightblade                                                                  Burglar     
+                Skeletal Warrior                                                            Giant Bat       
+                Sorcerer                                                                    Healer       
+                Spellsword                                                                  Knight        
+                Wraith                                                                      Mage
+                                                                                            Monk           
+                                                                                            Nightblade         
+                                                                                            Ranger           
+                                                                                            Rogue  
+                                                                                            Sorcerer
+                                                                                            Spellsword
+                                                                                            Thief
+                                                                                            Warrior
+
+
+            BOSS:                               BOSS:                                   BOSS:
+
+                Daedra Lord                         Vampire                                 Assassin
+
+
+        CRYPT:                              ORC STRONGHOLD:                         GUILDHALL:                                  
+
+            COMMON:                             COMMON:                                 COMMON:
+
+                Ghost                               Orc                                     Rat
+                Giant Bat                           Orc Sergeant
+                Mummy                               Orc Shaman
+                Rat
+                Skeletal Warrior                                                                    
+                Zombie                                                                                                
+                                                                                                    
+                                                                                                                                              
+            UNCOMMON:                           UNCOMMON:                               UNCOMMON:
+
+                Wraith                              Giant Bat                               Acrobat
+                                                    Rat                                     Archer
+                                                                                            Barbarian
+                                                                                            Bard
+                                                                                            Battlemage
+                                                                                            Burglar
+                                                                                            Giant Bat
+                                                                                            Healer
+                                                                                            Knight
+                                                                                            Mage
+                                                                                            Monk
+                                                                                            Nightblade
+                                                                                            Ranger
+                                                                                            Rogue
+                                                                                            Sorcerer
+                                                                                            Spellsword
+                                                                                            Thief
+                                                                                            Warrior
+
+
+            BOSS:                               BOSS:                                   BOSS:
+
+                Vampire Ancient                     Orc Warlord                             Dragonling_Alternate
+
+
+        DESECRATED TEMPLE:                  PRISON:                                 HOUSE 1:                            
+
+            COMMON:                             COMMON:                                 COMMON:
+
+                Imp                                 Acrobat                                 Rat
+                Mage                                Burglar           
+                Rat                                 Giant Bat         
+                Sorcerer                            Nightblade           
+                                                    Rat    
+                                                    Rogue  
+                                                    Sorcerer
+                                                    Spellsword
+                                                    Thief    
+                
+                                                                                                                                             
+            UNCOMMON:                           UNCOMMON:                               UNCOMMON:
+
+                Barbarian                           Spider                                  Acrobat
+                Daedra Seducer                                                              Archer
+                Giant Bat                                                                   Barbarian
+                Harpy                                                                       Bard
+                Monk                                                                        Battlemage
+                Mummy                                                                       Burglar
+                Nightblade                                                                  Giant Bat
+                Rogue                                                                       Healer
+                Skeletal Warrior                                                            Knight
+                Zombie                                                                      Mage
+                                                                                            Monk
+                                                                                            Nightblade
+                                                                                            Ranger
+                                                                                            Rogue
+                                                                                            Sorcerer
+                                                                                            Spellsword
+                                                                                            Thief
+                                                                                            Warrior
+                                                                                          
+
+            BOSS:                               BOSS:                                   BOSS:
+
+                Ancient Lich                        Assassin                                Daedra Lord
+
+
+        DRAGON'S DEN:                       RUINED CASTLE:                          HOUSE 2:                       
+
+            COMMON:                             COMMON:                                 COMMON:
+
+                Dragonling                          Giant Bat                               Rat
+                Knight                              Rat
+
+                                                                                                                                                                                        
+            UNCOMMON:                           UNCOMMON:                               UNCOMMON:
+
+                Mage                                Acrobat                                 Acrobat
+                                                    Archer                                  Archer
+                                                    Bard                                    Barbarian
+                                                    Battlemage                              Bard
+                                                    Burglar                                 Battlemage
+                                                    Healer                                  Burglar
+                                                    Knight                                  Giant Bat
+                                                    Mage                                    Healer
+                                                    Monk                                    Knight
+                                                    Nightblade                              Mage
+                                                    Rogue                                   Monk
+                                                    Sorcerer                                Nightblade
+                                                    Spellsword                              Ranger
+                                                    Spider                                  Rogue
+                                                    Thief                                   Sorcerer
+                                                    Warrior                                 Spellsword
+                                                                                            Thief
+                                                                                            Warrior
+
+
+            BOSS:                               BOSS:                                   BOSS:
+
+                Dragonling_Alternate                Assassin                                Vampire         
+
+
+        GIANT STRONGHOLD:                   SCORPION NEST:                          HOUSE 3:                                    
+
+            COMMON:                             COMMON:                                 COMMON:
+
+                Gargoyle                            Giant Bat                               Rat
+                Giant                               Giant Scorpion
+                Giant Bat
+                Rat
+
+                               
+                                                UNCOMMON:                               UNCOMMON:
+
+                                                    Rat                                     Acrobat
+                                                                                            Archer
+                                                                                            Barbarian
+                                                                                            Bard
+                                                                                            Battlemage
+                                                                                            Burglar
+                                                                                            Giant Bat
+                                                                                            Healer
+                                                                                            Knight
+                                                                                            Mage
+                                                                                            Monk
+                                                                                            Nightblade
+                                                                                            Ranger
+                                                                                            Rogue
+                                                                                            Sorcerer
+                                                                                            Spellsword
+                                                                                            Thief
+                                                                                            Warrior
+                                                                                          
+
+            BOSS:                               BOSS:                                   BOSS:
+
+                Vampire                             Lich                                    Ancient Lich
+
+
+        HARPY NEST:                         SPIDER NEST:                            PALACE:                                 
+
+            COMMON:                             COMMON:                                 COMMON:
+
+                Giant Bat                           Skeletal Warrior                        Rat
+                Harpy                               Spider                                            
+                Rat                                 Zombie
+                Spider
+
+
+                                                UNCOMMON:                               UNCOMMON:
+
+                                                    Ghost                                   Acrobat
+                                                    Mummy                                   Archer
+                                                                                            Barbarian
+                                                                                            Bard
+                                                                                            Battlemage
+                                                                                            Burglar
+                                                                                            Giant Bat
+                                                                                            Healer
+                                                                                            Knight
+                                                                                            Mage
+                                                                                            Monk
+                                                                                            Nightblade
+                                                                                            Ranger
+                                                                                            Rogue
+                                                                                            Sorcerer
+                                                                                            Spellsword
+                                                                                            Thief
+                                                                                            Warrior
+                                                                                            
+
+            BOSS:                               BOSS:                                   BOSS:
+
+                Lich                                Ancient Lich                            Daedra Lord
+
+
+        HUMAN STRONGHOLD:                   UNDERWATER:                             TEMPLE:                                    
+
+            COMMON:                             COMMON:                                 COMMON:
+
+                Archer                              Dreugh                                  Rat
+                Bard                                Slaughterfish
+                Battlemage
+                Giant Bat
+                Healer
+                Knight
+                Mage
+                Monk
+                Rat
+                Warrior                                                                                                 
+                
+                                                
+                                                UNCOMMON:                               UNCOMMON:
+
+                                                    Skeletal Warrior                        Acrobat
+                                                                                            Archer
+                                                                                            Barbarian
+                                                                                            Bard
+                                                                                            Battlemage
+                                                                                            Burglar
+                                                                                            Giant Bat
+                                                                                            Healer
+                                                                                            Knight
+                                                                                            Mage
+                                                                                            Monk
+                                                                                            Nightblade
+                                                                                            Ranger
+                                                                                            Rogue
+                                                                                            Sorcerer
+                                                                                            Spellsword
+                                                                                            Thief
+                                                                                            Warrior
+                                                                                          
+
+                                                RARE:                                   
+
+                                                    Ghost
+                                                    Ice Atronach
+                                                    Lamia
+                                                    Wraith
+                                                    Zombie
+                                                                                
+                                                
+            BOSS:                               BOSS:                                   BOSS:
+
+                Assassin                            Ancient Lich                            Orc Warlord
 
 
     ITEM GENERATION:
 
         - This section contains all item generation formulas I added or modified, and any vanilla data or formulas necessary
           to understand my changes. It is not an exhaustive reference for all vanilla item generation formulas.
-
 
         ENEMY EQUIPMENT:
 
@@ -2635,7 +3109,6 @@ Cemetery - very easy, criminals, vermin, low level undead, Vampire ranged threat
 
             - This covers most loot generation formulas for enemies and loot piles. Enemy equipment generation is covered elsewhere.
 
-
             ARMOR GENERATION:
 
                 CHANCE = AM value from LOOT CHANCES
@@ -2787,53 +3260,52 @@ Cemetery - very easy, criminals, vermin, low level undead, Vampire ranged threat
                 Plate:   10%
 
 
-                STANDARD PLATE AND WEAPON MATERIAL CHANCES:
+            STANDARD PLATE AND WEAPON MATERIAL CHANCES:
 
-                    Iron: 328/1025     32.0%
-                    Steel: 654/1025    63.8%
-                    Silver: 8/1025      0.8%
-                    Elven: 12/1025      1.2%
-                    Dwarven: 8/1025     0.8%
-                    Mithril: 5/1025     0.5%
-                    Adamantium: 4/1025  0.4%
-                    Ebony: 3/1025       0.3%
-                    Orcish: 2/1025      0.2%
-                    Daedric: 1/1025     0.1%
-
-
-                - For each enemy level above 15, decrement lowest material tier by 50, increment Daedric by 50. For example, enemy
-                  level 17 material generation chances are:
-
-                    Iron: 228/1025     22.2%
-                    Steel: 654/1025    63.8%
-                    Silver: 8/1025      0.8%
-                    Elven: 12/1025      1.2%
-                    Dwarven: 8/1025     0.8%
-                    Mithril: 5/1025     0.5%
-                    Adamantium: 4/1025  0.4%
-                    Ebony: 3/1025       0.3%
-                    Orcish: 2/1025      0.2%
-                    Daedric: 101/1025   9.9%
+                Iron: 328/1025     32.0%
+                Steel: 654/1025    63.8%
+                Silver: 8/1025      0.8%
+                Elven: 12/1025      1.2%
+                Dwarven: 8/1025     0.8%
+                Mithril: 5/1025     0.5%
+                Adamantium: 4/1025  0.4%
+                Ebony: 3/1025       0.3%
+                Orcish: 2/1025      0.2%
+                Daedric: 1/1025     0.1%
 
 
-                - The material generation chance cap is as follows at enemy level 30:
+            - For each enemy level above 15, decrement lowest material tier by 50, increment Daedric by 50. For example, enemy
+              level 17 material generation chances are:
 
-                    Iron: 0/1025        0.0%
-                    Steel: 232/1025    22.6%
-                    Silver: 8/1025      0.8%
-                    Elven: 12/1025      1.2%
-                    Dwarven: 8/1025     0.8%
-                    Mithril: 5/1025     0.5%
-                    Adamantium: 4/1025  0.4%
-                    Ebony: 3/1025       0.3%
-                    Orcish: 2/1025      0.2%
-                    Daedric: 751/1025  73.3%
+                Iron: 228/1025     22.2%
+                Steel: 654/1025    63.8%
+                Silver: 8/1025      0.8%
+                Elven: 12/1025      1.2%
+                Dwarven: 8/1025     0.8%
+                Mithril: 5/1025     0.5%
+                Adamantium: 4/1025  0.4%
+                Ebony: 3/1025       0.3%
+                Orcish: 2/1025      0.2%
+                Daedric: 101/1025   9.9%
+
+
+            - The material generation chance cap is as follows at enemy level 30:
+
+                Iron: 0/1025        0.0%
+                Steel: 232/1025    22.6%
+                Silver: 8/1025      0.8%
+                Elven: 12/1025      1.2%
+                Dwarven: 8/1025     0.8%
+                Mithril: 5/1025     0.5%
+                Adamantium: 4/1025  0.4%
+                Ebony: 3/1025       0.3%
+                Orcish: 2/1025      0.2%
+                Daedric: 751/1025  73.3%
 
 
         SHOP ITEM GENERATION:
 
             - Materials for armor and weapons are generated using STANDARD PLATE AND WEAPON MATERIAL CHANCES in MATERIAL CHANCES.
-
 
             GENERAL STORE & PAWN SHOP BOOK GENERATION:
 
@@ -2881,7 +3353,6 @@ Cemetery - very easy, criminals, vermin, low level undead, Vampire ranged threat
         - When enemy is spawned, a random number within the enemy's LEVEL RANGE is selected. Rats and Imps are more likely to be
           level 1 than any other possible level, and Daedra Seducers are more likely to be level 20 than any other possible level.
 
-
         LEVEL RANGE:
 
             Rat:              1-3                       Wereboar:             10-14
@@ -2911,7 +3382,6 @@ Cemetery - very easy, criminals, vermin, low level undead, Vampire ranged threat
 
         - Each hit has a 10% total chance to inflict a vanilla poison. Only one poison may be inflicted per attack.
 
-
         0.9% CHANCE PER HIT FOR EACH OF THE FOLLOWING:                  0.1% CHANCE PER HIT, THIS PIERCES POISON IMMUNITY:
 
             Aegrotat                                                        Drothweed
@@ -2929,7 +3399,7 @@ Cemetery - very easy, criminals, vermin, low level undead, Vampire ranged threat
 
 v1.3.1 ITEM TABLES:
 
-    ITEM CHANGES:
+    ITEM CHANGES, SUMMARY:
 
         ITEMS NOT SOLD IN STORES:
 
@@ -2953,23 +3423,94 @@ v1.3.1 ITEM TABLES:
                 Name                  V     W                               Name                  V     W
 
                 Aegrotat            5500   0.0025                           Finger                     0.02
-                Indulcet             500   0.0025                           Telescope            300   1.0
-                Quaesto Vil         2500   0.0025                           Totem                      2.5
+                Indulcet             500   0.0025                           Totem                      2.5
+                Quaesto Vil         2500   0.0025                           
                 Sursum               800   0.0025
 
 
         MAGIC ITEMS:
 
-            - Add full magic item template list here
+            REGULAR MAGIC ITEMS:
 
-            - Add full Soul Gem cost list for every enemy here
+                LEGEND:
+
+                %it: Replaced with actual item name (Longsword, Cuirass, etc.)
+                D: Modified Durability
+                E: Modified Enchantment and Enchantment Type
+
+
+                MODIFIED VANILLA MAGIC ITEMS:
+
+                    Name                        D                   Name                        D
+
+                    %it of Far Silence         500                  %it of Undeniable Access   500
+                    %it of Featherweight       500                  %it of Venom Antidote      500
+                    %it of Force Bolts         500                  %it of Water-walking      1000
+                    %it of Friendship         1000                  %it of Wizard's Fire       500
+                    %it of Good Luck          1000                  %it, the Protector         500
+                    %it of Life Stealing      2500                  Blazing %it of Fireballs   500
+                    %it of Lightning           500                  Frosty %it of Ice Storms   500
+                    %it of Nimbleness         1000                  Healing %it                500
+                    %it of Oblivion           1200                  Leaping %it                500
+                    %it of Shocking            500                  Never Tiring %it           500
+                    %it of the Orc Lord       1000                  Shining %it                500
+                    %it of the Sealed Door     500                  Torgo's %it               1000
+                    %it of the Wise           1000                  Unrestrainable %it         500
+                    %it of Toxic Clouds        500
+
+
+                NEW MAGIC ITEMS:
+
+                    Name                        D      E
+
+                    %it of Arcane Ward         500     Spell Resistance  Cast When Used
+                    %it of Domestication       500     Tame              Cast When Used
+                    %it of Pyromania           500     Fire Storm        Cast When Used
+                    %it of Rebounding          500     Shalidor's Mirror Cast When Used
+                    %it of Teleportation       500     Recall            Cast When Used
+                    Beguiling %it              500     Charm Mortal      Cast When Used
+                    Calming %it                500     Calm Humanoid     Cast When Used
+                    Medusa's %it               500     Medusa's Gaze     Cast When Used
+                    Spirit Soothing %it        500     Quiet Undead      Cast When Used
+
+
+            SOUL GEMS:
+
+                LEGEND:
+
+                C: Modified Cost
+                EP: Modified Enchantment Points
+
+
+                Name                       C          EP                    Name                       C          EP
+
+                Ancient Lich           2,250,000   -22,500                  Iron Atronach             80,000
+                Centaur                   53,000                            Lamia                     60,000
+                Daedra Lord            2,250,000   -22,500                  Lich                     750,000    -7,500
+                Daedra Seducer           200,000                            Mummy                     60,000
+                Daedroth                 150,000    -1,000                  Nymph                     60,000
+                Dragonling                50,000                            Orc                       51,000
+                Dragonling_Alternate   1,500,000   -15,000                  Orc Sergeant              51,000
+                Dreugh                    60,000                            Orc Shaman                53,000
+                Fire Atronach             80,000                            Orc Warlord            1,500,000   -15,000
+                Fire Daedra              100,000                            Rat                       50,000
+                Flesh Atronach            60,000                            Sabertooth Tiger          50,000
+                Frost Daedra             100,000                            Skeletal Warrior          50,000
+                Gargoyle                  53,000                            Slaughterfish             50,000
+                Ghost                     80,000                            Spider                    50,000
+                Giant                     53,000                            Spriggan                  51,000
+                Giant Bat                 50,000                            Vampire                  750,000    -7,500
+                Giant Scorpion            50,000                            Vampire Ancient        2,250,000   -22,500
+                Grizzly Bear              50,000                            Wereboar                  51,000
+                Harpy                     53,000                            Werewolf                  51,000
+                Ice Atronach              80,000                            Wraith                    80,000
+                Imp                       51,000                            Zombie                    50,000
 
 
         SHOP ITEMS, BY STORE QUALITY:
 
             - If an item is listed in a store quality tier, it is also possible to find it in all shops of a higher quality tier,
               and not possible to find it in any shops of a lower quality tier.
-
 
             LEGEND:
 
@@ -2984,279 +3525,222 @@ v1.3.1 ITEM TABLES:
                 EP: Modified Base Enchantment Points
 
 
-            RUSTY RELICS:
+            RUSTY RELICS:                                                   AVERAGE (CONT'D):
 
-                ARMOR:
+                ARMOR:                                                          GEMS:
 
-                    Name                      V        W       EP
+                    Name                      V        W       EP                   Name                      V        W       EP
 
-                    Boots                                     200
+                    Boots                                     200                   Jade                     500      0.01
                     Buckler                                   400 
                     Helm                                      250
+                                                                                INGREDIENTS:
+
+                CLOTHING:                                                           Name                      V        W       EP
+
+                    Name                      V        W       EP                   Bamboo                    55
+                                                                                    Basilisk's Eye            50
+                    Armbands                          0.02                          Black Rose                35      0.02
+                    Boots                     35      0.3                           Brass                     54      0.01
+                    Brassiere                  8      0.05                          Cactus                    75
+                    Breeches                  25      0.25                          Copper                    80      0.01
+                    Casual Cloak              60                                    Ectoplasm                 65      0.0025
+                    Casual Dress              50      0.4                           Fig                       40      0.1
+                    Casual Pants              25      0.25                          Giant Scorpion Stinger    75
+                    Challenger Straps                 0.05                          Giant's Blood             65      0.0025
+                    Champion Straps                   0.05                          Ginkgo Leaves             45      0.0025
+                    Loincloth                  8      0.04                          Mummy Wrappings           80      0.05
+                    Long Shirt                36      0.25                          Pearl                   1500      0.0025
+                    Long Skirt                35      0.2                           Red Rose                  35      0.02
+                    Peasant Blouse            35      0.12                          Silver                   100      0.01
+                    Sandals                   10      0.03                          Wereboar's Tusk           85      0.5
+                    Sash                              0.04                          Werewolf's Blood          90      0.0025
+                    Shoes                     20      0.2                           White Rose                35      0.02
+                    Short Shirt               18      0.12                          Yellow Rose               35      0.02
+                    Short Skirt               25      0.1
+                    Short Tunic               25      0.12
+                    Straps                            0.04                      JEWELRY:
+                    Toga                      12      0.2
+                                                                                    Name                      V        W       EP
+
+                GEMS:                                                               Amulet                   450      0.03
+
+                    Name                      V        W       EP
+                                                                                MISCELLANEOUS:
+                    Amber                    250      0.01
+                    Malachite                150      0.01                          Name                      V        W       EP
+
+                                                                                    Map                     5000      0.02 
+                INGREDIENTS:
+
+                    Name                      V        W       EP               RELIGIOUS ITEMS:
+
+                    Green Berries                     0.03                          Name                      V        W       EP
+                    Green Leaves                      0.04
+                    Iron                      10      0.02                          Bell                      80      0.1
+                    Lodestone                  4     10.0                           Religious Item                    1.0
+                    Medium Tooth               7      0.03
+                    Nectar                     8      0.1
+                    Orc's Blood                5      0.0025                    WEAPONS:
+                    Pine Branch                       0.75
+                    Rain Water                 2      0.1                           Name                      V        W       EP
+                    Red Berries                       0.03
+                    Red Flowers                       0.03                          Claymore                                  550
+                    Root Bulb                         0.05                          Flail                                     500
+                    Root Tendrils                     0.1                           Longsword                                 450
+                    Small Tooth                3      0.01                          Shortsword                                325
+                    Snake Venom                8      0.1
+                    Spider's Venom            10      0.1
+                    Twigs                             0.05                  BETTER APPOINTED:
+                    Yellow Berries                    0.03
+                    Yellow Flowers                    0.02                      ARMOR:
+
+                                                                                    Name                      V        W       EP
+                JEWELRY:
+                                                                                    Gauntlets                                 125
+                    Name                      V        W       EP                   Tower Shield                             2500
+
+                    Bracer                    45      0.05
+                    Cloth Amulet                      0.02                      CLOTHING:
+                    Mark                              0.03
+                                                                                    Name                      V        W       EP
+
+                LIGHT SOURCES:                                                      Eodoric                  140      0.08
+                                                                                    Evening Gown             250      0.75
+                    Name                      V        W       EP                   Fancy Armbands            75      0.03
+                                                                                    Formal Brassiere         120      0.08
+                    Candle                            0.05                          Formal Tunic             175      0.25
+                    Lantern                  200      0.5                           Kimono                   165      0.2
+                    Oil                       25      0.1                           Vest                     200      0.07
+                    Torch                      5      0.25                          Wrap                     155      0.1
+
+
+                MISCELLANEOUS:                                                  GEMS:
+
+                    Name                      V        W       EP                   Name                      V        W       EP
+
+                    Bandage                           0.03                          Ruby                    2500      0.0025
+                    Book                              0.5                           Sapphire                3750      0.0025
+                    Parchment                  2      0.02
+                    Potion Recipe                     0.02
+                                                                                INGREDIENTS:
+
+                RELIGIOUS ITEMS:                                                    Name                      V        W       EP
+
+                    Name                      V        W       EP                   Aloe                     100      0.5
+                                                                                    Fairy Dragon's Scales    200
+                    Prayer Beads                      0.03                          Gold                     200      0.03
+                                                                                    Gorgon Snake             160
+                                                                                    Mercury                  300      0.01
+                TRANSPORTATION:                                                     Pure Water               140      0.1
+                                                                                    Sulphur                  250      0.01
+                    Name                      V        W       EP                   Troll's Blood            135      0.0025
+                                                                                    Wraith Essence           155      0.0025
+                    Horse                   5000
+                    Small Cart              3000
+                                                                                JEWELRY:
+
+                WEAPONS:                                                            Name                      V        W       EP
+
+                    Name                      V        W       EP                   Bracelet                 900      0.2
+                                                                                    Ring                     750      0.0025
+                    Arrow                             0.05                          Torc                    1050      0.08
+                    Battle Axe                               1250
+                    Broadsword                                350
+                    Dagger                                    175               MISCELLANEOUS:
+                    Short Bow                                 750
+                    Staff                                    4000                   Name                      V        W       EP
+
+                                                                                    Painting               10000      2.0
+            STURDY SHELVES:
+
+                ARMOR:                                                          RELIGIOUS ITEMS:
+
+                    Name                      V        W       EP                   Name                      V        W       EP
+
+                    Greaves                                   250                   Holy Candle              300      0.05
+                    Left Pauldron                             200                   Holy Water               200
+                    Right Pauldron                            200                   Rare Symbol              140      0.05
+                    Round Shield                              900                   Scarab                            0.05
+                                                                                    Talisman                          0.25
+
+                CLOTHING:
+                                                                                WEAPONS:
+                    Name                      V        W       EP
+                                                                                    Name                      V        W       EP
+                    Plain Robes              100      1.5
+                    Strapless Dress           90      0.3                           Dai-Katana                                600
+                                                                                    Katana                                    500
+                                                                                    Long Bow                                 1500
+                GEMS:                                                               Wakazashi                                 400
+                                                                                    War Axe                                  2500
+                    Name                      V        W       EP                   Warhammer                                 600
+
+                    Turquoise                425      0.01
+                                                                            INCENSE BURNING:
+
+                INGREDIENTS:                                                    CLOTHING:
+
+                    Name                      V        W       EP                   Name                      V        W       EP
+
+                    Big Tooth                 15      0.05                          Formal Eodoric           300      0.2
+                    Black Poppy               15      0.02                          Khajiit Suit             350      0.25
+                    Clover                    15      0.0025                        Priest Robes             450      2.0
+                    Ghoul's Tongue            20      0.1                           Priestess Robes          450      2.0
+                    Golden Poppy              15      0.02
+                    Gryphon's Feather         15      0.0025
+                    Ichor                     12      0.1                       GEMS:
+                    Ivory                    375      0.05 
+                    Lead                      24      0.05                          Name                      V        W       EP
+                    Nymph Hair                35      0.0025
+                    Palm                      20                                    Diamond                 5000      0.0025
+                    Red Poppy                 15      0.02                          Emerald                 4250      0.0025
+                    Small Scorpion Stinger    30      0.0025
+                    Tin                       18      0.01
+                    White Poppy               15      0.02                      INGREDIENTS:
+
+                                                                                    Name                      V        W       EP
+                RELIGIOUS ITEMS:
+                                                                                    Daedra's Heart           750      0.5
+                    Name                      V        W       EP                   Dragon's Scales          550
+                                                                                    Elixir Vitae            1000      0.1
+                    Common Symbol                     0.07                          Holy Relic               500      0.05
+                    Icon                                                            Lich Dust                400      0.0025
+                                                                                    Platinum                 800      0.01
+                                                                                    Saint's Hair             300      0.0025
+                WEAPONS:                                                            Unicorn Horn             350
+
+                    Name                      V        W       EP
+                                                                                JEWELRY:
+                    Mace                                      400
+                    Saber                                     400                   Name                      V        W       EP
+                    Tanto                                     250
+                                                                                    Wand                    1800      0.02   2500
+
+            AVERAGE:
+                                                                                RELIGIOUS ITEMS:
+                ARMOR:
+                                                                                    Name                      V        W       EP
+                    Name                      V        W       EP
+                                                                                    Holy Dagger                       0.25
+                    Cuirass                                  1250                   Holy Tome                         1.5
+                    Kite Shield                              1500                   Small Statue             350     10.0
 
 
                 CLOTHING:
 
                     Name                      V        W       EP
 
-                    Armbands                          0.02
-                    Boots                     35      0.3
-                    Brassiere                  8      0.05
-                    Breeches                  25      0.25 (check if weight is actually different from vanilla)
-                    Casual Cloak              60      1.0 (check if weight is actually different from vanilla)
-                    Casual Dress              50      0.4
-                    Casual Pants              25      0.25 (check if weight is actually different from vanilla)
-                    Challenger Straps                 0.05
-                    Champion Straps                   0.05
-                    Loincloth                  8      0.04
-                    Long Shirt                36      0.25 (check if weight is actually different from vanilla)
-                    Long Skirt                35      0.2
-                    Peasant Blouse            35      0.12
-                    Sandals                   10      0.03
-                    Sash                              0.04
-                    Shoes                     20      0.2
-                    Short Shirt               18      0.12
-                    Short Skirt               25      0.1
-                    Short Tunic               25      0.12
-                    Straps                            0.04
-                    Toga                      12      0.2
+                    Anticlere Surcoat        115      0.75
+                    Day Gown                 150      0.6
+                    Dwynnen Surcoat          110      0.75
+                    Formal Cloak             180      2.0
+                    Open Tunic                65      0.12
+                    Reversible Tunic          60      0.25
+                    Tall Boots                70      0.75
+                    Tights                    85      0.07
 
-
-                GEMS:
-
-                    Name                      V        W       EP
-
-                    Amber                    250      0.01
-                    Malachite                150      0.01
-
-
-                INGREDIENTS:
-
-                    Name                      V        W       EP
-
-                    Green Berries                     0.03
-                    Green Leaves                      0.04
-                    Iron                      10      0.02 (check value)
-                    Lodestone                  4     10.0  (check value)
-                    Medium Tooth               7      0.03
-                    Nectar                     8      0.1
-                    Orc's Blood                5      0.0025
-                    Pine Branch                       0.75 (check if this is actually different from vanilla)
-                    Rain Water                 2      0.1
-                    Red Berries                       0.03
-                    Red Flowers                       0.03
-                    Root Bulb                         0.05
-                    Root Tendrils                     0.1
-                    Small Tooth                3      0.01
-                    Snake Venom                8      0.1
-                    Spider's Venom            10      0.1 (check value)
-                    Twigs                             0.05
-                    Yellow Berries                    0.03
-                    Yellow Flowers                    0.02
-
-
-                JEWELRY:
-
-                    Name                      V        W       EP
-
-                    Bracer                    45      0.05 (check if value is actually different from vanilla)
-                    Cloth Amulet                      0.02
-                    Mark                              0.03
-
-
-                LIGHT SOURCES:
-
-                    Name                      V        W       EP
-
-                    Candle                            0.05
-                    Lantern                  200      0.5
-                    Oil                       25      0.1 (check if value is actually different from vanilla)
-                    Torch                      5      0.25 (check if weight is actually different from vanilla, check value too)
-
-
-                MISCELLANEOUS:
-
-                    Name                      V        W       EP
-
-                    Bandage                    2      0.03 (check value)
-                    Book                              0.5
-                    Parchment                  2      0.02
-                    Potion Recipe                     0.02
-
-
-                RELIGIOUS ITEMS:
-
-                    Name                      V        W       EP
-
-                    Prayer Beads               4      0.03
-
-
-                TRANSPORTATION:
-
-                    Name                      V        W       EP
-
-                    Horse                   5000
-                    Small Cart              3000
-
-
-                WEAPONS:
-
-                    Name                      V        W       EP
-
-                    Arrow                             0.05
-                    Battle Axe                               1250
-                    Broadsword                                350 (check this)
-                    Dagger                                    175 (check this)
-                    Short Bow                                 750
-                    Staff                                    4000
-
-
-                                  V        R       W       EP
-
-        GEMS
-
-        Ruby:                   2500      14     0.0025
-        Emerald:                4250      18     0.0025
-        Sapphire:               3750      14     0.0025
-        Diamond:                5000      18     0.0025
-        Jade:                    500       8     0.01
-        Turquoise:               425       4     0.01
-
-        INGREDIENTS
-
-        Clover:                   15       4     0.0025
-        Red Rose:                 35       8     0.02
-        Yellow Rose:              35       8     0.02
-        Black Rose:               35       8     0.02
-        White Rose:               35       8     0.02
-        Red Poppy:                15       4     0.02
-        Black Poppy:              15       4     0.02
-        Golden Poppy:             15       4     0.02
-        White Poppy:              15       4     0.02
-        Ginkgo Leaves:            45       8     0.0025
-        Bamboo:                   55       8     0.5
-        Palm:                     20       4     0.5
-        Aloe:                    100      14     0.5
-        Fig:                      40       8     0.1
-        Cactus:                   75       8     0.5
-        Werewolf's Blood:         90       8     0.0025
-        Wereboar's Tusk:          85       8     0.5
-        Fairy Dragon's Scales:   200      14     2.0
-        Nymph Hair:               35       4     0.0025
-        Unicorn Horn:            350      18     1.5
-        Wraith Essence:          155      14     0.0025
-        Ectoplasm:                65       8     0.0025
-        Ghoul's Tongue:           20       4     0.1
-        Troll's Blood:           135      14     0.0025
-        Gorgon Snake:            160      14     0.5
-        Lich Dust:               400      18     0.0025
-        Dragon's Scales:         550      18     3.0
-        Giant Scorpion Stinger:   75       8     1.5
-        Small Scorpion Stinger:   30       4     0.0025
-        Mummy Wrappings:          80       8     0.05
-        Giant's Blood:            65       8     0.0025
-        Basilisk's Eye:           50       8     0.25
-        Gryphon's Feather:        15       4     0.0025
-        Daedra's Heart:          750      18     0.5
-        Saint's Hair:            300      18     0.0025
-        Holy Relic:              500      18     0.05
-        Big Tooth:                15       4     0.05
-        Pure Water:              140      14     0.1
-        Elixir Vitae:           1000      18     0.1
-        Ichor:                    12       4     0.1
-        Mercury:                 300      14     0.01
-        Tin:                      18       4     0.01
-        Brass:                    54       8     0.01
-        Sulphur:                 250      14     0.01
-        Lead:                     24       4     0.05
-        Copper:                   80       8     0.01
-        Silver:                  100       8     0.01
-        Gold:                    200      14     0.03
-        Platinum:                800      18     0.01
-        Ivory:                   375       4     0.05 
-        Pearl:                  1500       8     0.0025
-
-        ARMOR
-
-        Cuirass:                           8              1250  
-        Gauntlets:                        14               125 
-        Greaves:                           4               250
-        Left Pauldron:                     4               200
-        Right Pauldron:                    4               200
-        Round Shield:                      4               900
-        Kite Shield:                       8              1500
-        Tower Shield:                     14              2500
-
-        WEAPONS
-
-        Tanto:                             4               250
-        Shortsword:                        8               325
-        Wakazashi:                        14               400
-        Saber:                             4               400
-        Longsword:                         8               450
-        Katana:                           14               500
-        Claymore:                          8               550
-        Dai-Katana:                       14               600
-        Mace:                              4               400
-        Flail:                             8               500
-        Warhammer:                        14               600
-        War Axe:                          14              2500
-        Long Bow:                         14              1500
-
-        JEWELRY
-
-        Amulet:                  450       8     0.03
-        Ring:                    750      14     0.0025
-        Bracelet:                900      14     0.2
-        Torc:                   1050      14     0.08
-        Wand:                   1800      18     0.02     2500
-
-        CLOTHING
-
-        Kimono:                  165      14     0.2
-        Fancy Armbands:           75      14     0.03
-        Eodoric:                 140      14     0.08
-        Tall Boots:               70       8     0.75
-        Formal Cloak:            180       8     2.0
-        Khajiit Suit:            350      18     0.25
-        Dwynnen Surcoat:         110       8     0.75
-        Formal Tunic:            175      14     0.25
-        Reversible Tunic:         60       8     0.25
-        Plain Robes:             100       4     1.5
-        Priest Robes:            450      18     2.0
-        Open Tunic:               65       8     0.12
-        Wrap:                    155      14     0.1
-        Anticlere Surcoat:       115       8     0.75
-        Vest:                    200      14     0.07
-        Formal Brassiere:        120      14     0.08
-        Formal Eodoric:          300      18     0.2
-        Evening Gown:            250      14     0.75
-        Day Gown:                150       8     0.6
-        Strapless Dress:          90       4     0.3
-        Priestess Robes:         450      18     2.0
-        Tights:                   85       8     0.07
-
-        MISCELLANEOUS
-
-        Painting:              10000      14     2.0
-        Map:                    5000       8     0.02 
-
-        RELIGIOUS ITEMS
-
-        Rare Symbol:             140      14     0.05
-        Common Symbol:            15       4     0.07
-        Bell:                     80       8     0.1
-        Holy Water:              200      14     0.5
-        Talisman:                120      14     0.25
-        Religious Item:          100       8     1.0
-        Small Statue:            350      18    10.0
-        Icon:                     50       4     1.0
-        Scarab:                  100      14     0.05
-        Holy Candle:             300      14     0.05
-        Holy Dagger:            2500      18     0.25
-        Holy Tome:              2500      18     1.5
-
-
+ 
     WEAPONS & ARMOR:          
 
         DURABILITY:

@@ -2300,8 +2300,11 @@ namespace BossfallMod.Formulas
             "You drain the %s of blood.", "You sup on the %s's vital fluids.", "You eagerly drink the %s's blood.",
             "Hearty %s blood!", "This %s's blood fortifies you.", "The %s's blood fills your belly.",
             "You consume the %s's blood. You want more.", "You exsanguinate the %s.", "You delight in the %s's blood.",
-            "You revel in %s blood.", "You desire more %s blood.", "You'd love more %s blood.",
-            "%s blood quenches your thirst. For now.", "You don't waste a drop of the %s's blood."
+            "You revel in the %s's blood.", "You desire more %s blood.", "You'd love more %s blood.",
+            "%s blood quenches your thirst. For now.", "You don't waste a drop of the %s's blood.",
+            "You dine on %s blood.", "%s blood! A sumptuous meal.", "Your fangs cry out for more %s blood.",
+            "You dream of more %s blood...", "A river of %s blood would be luscious...", "You bathe your fangs in %s blood.",
+            "You want more %s blood. More. MORE. MOREMOREMORE"
         };
 
         /// <summary>
