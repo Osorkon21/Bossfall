@@ -31,6 +31,7 @@ namespace BossfallMod.Utility
     {
         #region Fields
 
+        // The following three lines are vanilla code from PlayerActivate.
         Camera mainCamera;
         int playerLayerMask = 0;
         bool castPending = false;
@@ -52,7 +53,7 @@ namespace BossfallMod.Utility
         #region Unity
 
         /// <summary>
-        /// I changed vanilla's method name from "Start" to "Awake".
+        /// The first two assignments in this method are vanilla's code from PlayerActivate's Start method.
         /// </summary>
         void Awake()
         {
@@ -75,6 +76,9 @@ namespace BossfallMod.Utility
             text = (TextLabel)fieldInfo1.GetValue(dfHUD);
         }
 
+        /// <summary>
+        /// Most of this method is code from PlayerActivate's Update method. Comments precede changes or additions I made.
+        /// </summary>
         void Update()
         {
             if (mainCamera == null)
@@ -169,24 +173,35 @@ namespace BossfallMod.Utility
                     QuestResourceBehaviour questResourceBehaviour;
                     if (QuestResourceBehaviourCheck(hit, out questResourceBehaviour) && !(questResourceBehaviour.TargetResource is Person))
                     {
-                        // This displays a custom HUD message if the Display Enemy Level setting is on.
+                        // I added this entire conditional.
                         if (activate.CurrentMode == PlayerActivateModes.Info && Bossfall.Instance.DisplayEnemyLevel)
                         {
                             if (!touchCastPending)
                             {
-                                DaggerfallEntityBehaviour mobileEnemyBehaviour;
-                                if (MobileEnemyCheck(hit, out mobileEnemyBehaviour))
+                                if (MobileEnemyCheck(hit, out DaggerfallEntityBehaviour mobileEnemyBehaviour))
                                 {
-                                    // If distance from player is greater than vanilla's RayDistance, activate
-                                    // enemy immediately. If not, I add an extra step before messages are displayed.
-                                    if (hit.distance > 3072 * MeshReader.GlobalScale)
+                                    // I don't want my code executing for non-EnemyEntity NPCs.
+                                    if (mobileEnemyBehaviour.Entity is EnemyEntity)
                                     {
-                                        ActivateMobileEnemy(mobileEnemyBehaviour);
-                                    }
-                                    else
-                                    {
-                                        storedEntity = mobileEnemyBehaviour;
-                                        clearMidScreenText = true;
+                                        // If distance from player is greater than vanilla's RayDistance, activate
+                                        // enemy immediately, as there will be no vanilla messages to overwrite.
+                                        if (hit.distance > 3072 * MeshReader.GlobalScale)
+                                        {
+                                            ActivateMobileEnemy(mobileEnemyBehaviour);
+                                        }
+                                        // This overwrites vanilla's MidScreenText with my own.
+                                        else if (hit.distance > PlayerActivate.DefaultActivationDistance
+                                            && hit.distance <= 3072 * MeshReader.GlobalScale)
+                                        {
+                                            storedEntity = mobileEnemyBehaviour;
+                                            clearMidScreenText = true;
+                                        }
+                                        // This overwrites vanilla's standard "You see an enemy" PopupText with my own. 
+                                        else
+                                        {
+                                            storedEntityTwo = mobileEnemyBehaviour;
+                                            clearPopupText = true;
+                                        }
                                     }
                                 }
                             }
@@ -216,22 +231,28 @@ namespace BossfallMod.Utility
                         }
                     }
 
-                    // I added the DisplayEnemyLevel condition.
-                    if (!touchCastPending && Bossfall.Instance.DisplayEnemyLevel)
+                    // I added the DisplayEnemyLevel and Steal mode conditions.
+                    if (!touchCastPending && Bossfall.Instance.DisplayEnemyLevel
+                        && activate.CurrentMode != PlayerActivateModes.Steal)
                     {
-                        DaggerfallEntityBehaviour mobileEnemyBehaviour;
-                        if (MobileEnemyCheck(hit, out mobileEnemyBehaviour))
+                        // I inlined the DaggerfallEntityBehaviour declaration.
+                        if (MobileEnemyCheck(hit, out DaggerfallEntityBehaviour mobileEnemyBehaviour))
                         {
-                            // If distance from player is greater than vanilla's RayDistance, activate
-                            // enemy immediately. If not, I add an extra step before messages are displayed.
-                            if (hit.distance > 3072 * MeshReader.GlobalScale)
+                            // I don't want my code executing for non-EnemyEntity NPCs.
+                            if (mobileEnemyBehaviour.Entity is EnemyEntity)
                             {
-                                ActivateMobileEnemy(mobileEnemyBehaviour);
-                            }
-                            else
-                            {
-                                storedEntityTwo = mobileEnemyBehaviour;
-                                clearPopupText = true;
+                                // If distance from player is greater than vanilla's RayDistance, activate
+                                // enemy immediately. If not, I add an extra step before messages are displayed.
+                                if (hit.distance > 3072 * MeshReader.GlobalScale)
+                                {
+                                    ActivateMobileEnemy(mobileEnemyBehaviour);
+                                }
+                                // This overwrites vanilla's standard "You see an enemy" PopupText with my own.
+                                else
+                                {
+                                    storedEntityTwo = mobileEnemyBehaviour;
+                                    clearPopupText = true;
+                                }
                             }
                         }
                     }
@@ -305,6 +326,10 @@ namespace BossfallMod.Utility
                         // I changed vanilla's PopupMessage call to an AddHUDText call.
                         DaggerfallUI.AddHUDText(message);
                     }
+                    break;
+
+                // I added the two following lines.
+                default:
                     break;
             }
         }

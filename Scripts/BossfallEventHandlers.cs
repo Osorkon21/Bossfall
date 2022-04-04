@@ -306,6 +306,84 @@ namespace BossfallMod.Events
         }
 
         /// <summary>
+        /// This method is based on a method of the same name from vanilla's EnemyEntity, modified for Bossfall. Comments
+        /// indicate changes or additions I made.
+        /// </summary>
+        void SetEnemySpells(byte[] spellList, EnemyEntity enemyEntity)
+        {
+            // I added this declaration and event subscriptions.
+            EntityEffectManager manager = enemyEntity.EntityBehaviour.GetComponent<EntityEffectManager>();
+            manager.OnNewReadySpell += BossfallOnNewReadySpell;
+            manager.OnCastReadySpell += BossfallOnCastReadySpell;
+
+            // This deletes enemy's vanilla spellbook.
+            for (int i = enemyEntity.SpellbookCount() - 1; i >= 0; i--)
+                enemyEntity.DeleteSpell(i);
+
+            // I set MaxMagicka based on enemy's level. Each spell - regardless of type - costs enemy 40 Magicka.
+            if (enemyEntity.Level > 0 && enemyEntity.Level < 8)
+            {
+                enemyEntity.MaxMagicka = 80;
+            }
+            else if (enemyEntity.Level >= 8 && enemyEntity.Level < 13)
+            {
+                enemyEntity.MaxMagicka = 120;
+            }
+            else if (enemyEntity.Level >= 13 && enemyEntity.Level < 16)
+            {
+                enemyEntity.MaxMagicka = 160;
+            }
+            else if (enemyEntity.Level >= 16 && enemyEntity.Level < 18)
+            {
+                enemyEntity.MaxMagicka = 200;
+            }
+            else if (enemyEntity.Level >= 18 && enemyEntity.Level < 20)
+            {
+                enemyEntity.MaxMagicka = 240;
+            }
+            else if (enemyEntity.Level == 20)
+            {
+                enemyEntity.MaxMagicka = 320;
+            }
+            else if (enemyEntity.Level >= 21 && enemyEntity.Level < 26)
+            {
+                // Enough for 30 spells.
+                enemyEntity.MaxMagicka = 1200;
+            }
+            else if (enemyEntity.Level >= 26)
+            {
+                // Infinite spells.
+                enemyEntity.MaxMagicka = 1000000;
+            }
+
+            // This line is from the SetEnemySpells method in EnemyEntity, modified for Bossfall.
+            enemyEntity.CurrentMagicka = enemyEntity.MaxMagicka;
+
+            // This foreach is from the SetEnemySpells method in EnemyEntity, modified for Bossfall.
+            foreach (byte spellID in spellList)
+            {
+                // I inlined the "SpellRecord.SpellRecordData" declaration.
+                GameManager.Instance.EntityEffectBroker.GetClassicSpellRecord(spellID, out SpellRecord.SpellRecordData spellData);
+
+                if (spellData.index == -1)
+                {
+                    Debug.LogError("Failed to locate enemy spell in standard spells list.");
+                    continue;
+                }
+
+                // I inlined the "EffectBundleSettings" declaration.
+                if (!GameManager.Instance.EntityEffectBroker.ClassicSpellRecordDataToEffectBundleSettings(spellData, BundleTypes.Spell, out EffectBundleSettings bundle))
+                {
+                    Debug.LogError("Failed to create effect bundle for enemy spell: " + spellData.spellName);
+                    continue;
+                }
+
+                // I added "enemyEntity." to the line below.
+                enemyEntity.AddSpell(bundle);
+            }
+        }
+
+        /// <summary>
         /// This method is based on vanilla DFU's UpdateDifficulty method from the CreateCharCustomClass script. It replaces
         /// vanilla's custom class difficulty calculations with my own. Comments indicate changes or additions I made.
         /// </summary>
@@ -364,13 +442,14 @@ namespace BossfallMod.Events
         #region Event Handlers
 
         /// <summary>
-        /// Modifies canned class starting HP and HP/level. Adds components to PlayerObject.
+        /// Sets up new characters.
         /// </summary>
         public void BossfallOnStartGame(object sender, EventArgs args)
         {
             StartGameBehaviour startGameBehaviour = sender as StartGameBehaviour;
+            PlayerEntity player = GameManager.Instance.PlayerEntity;
 
-            if (!startGameBehaviour.CharacterDocument.isCustom)
+            if (startGameBehaviour != null && !startGameBehaviour.CharacterDocument.isCustom)
             {
                 if (startGameBehaviour.CharacterDocument.career.Name != "Barbarian")
                 {
@@ -380,6 +459,36 @@ namespace BossfallMod.Events
                     GameManager.Instance.PlayerEntity.SetHealth(45);
                     startGameBehaviour.CharacterDocument.maxHealth = 45;
                     startGameBehaviour.CharacterDocument.currentHealth = 45;
+                }
+            }
+
+            if (player != null)
+            {
+                List<DFCareer.Skills> miscSkills = player.GetMiscSkills();
+                List<DaggerfallUnityItem> weapons = player.Items.SearchItems(ItemGroups.Weapons);
+
+                for (int i = 0; i < miscSkills.Count; i++)
+                    player.Skills.SetPermanentSkillValue(miscSkills[i],
+                        (short)(player.Skills.GetPermanentSkillValue(miscSkills[i]) - 2));
+
+                if (weapons.Count > 0)
+                {
+                    for (int i = weapons.Count - 1; i >= 0; i--)
+                    {
+                        DaggerfallUnityItem weapon = weapons[i];
+
+                        if (weapon.IsOfTemplate(ItemGroups.Weapons, (int)Weapons.Arrow))
+                            continue;
+
+                        if (weapon.nativeMaterialValue == (int)WeaponMaterialTypes.Iron)
+                        {
+                            DaggerfallUnityItem newWeapon
+                                = BossfallItemBuilder.Instance.CreateWeapon((Weapons)weapon.TemplateIndex, WeaponMaterialTypes.Steel);
+
+                            player.Items.RemoveItem(weapon);
+                            player.Items.AddItem(newWeapon, ItemCollection.AddPosition.Front);
+                        }
+                    }
                 }
             }
 
@@ -485,7 +594,7 @@ namespace BossfallMod.Events
         }
 
         /// <summary>
-        /// Sets up enemies using Bossfall rules. This method uses some code from vanilla's EnemyEntity script.
+        /// Sets up enemies using Bossfall rules. This method uses code from EnemyEntity, comments indicate authorship.
         /// </summary>
         public void BossfallOnEnemyLootSpawned(object sender, EnemyLootSpawnedEventArgs args)
         {
@@ -762,79 +871,6 @@ namespace BossfallMod.Events
                 ulong key = dfEnemy.LoadID;
 
                 AllRestoredEnemies.Add(key, entityBehaviour);
-            }
-        }
-
-        /// <summary>
-        /// This method is based on a method of the same name from vanilla's EnemyEntity, modified for Bossfall. Comments
-        /// indicate changes or additions I made.
-        /// </summary>
-        void SetEnemySpells(byte[] spellList, EnemyEntity enemyEntity)
-        {
-            // This deletes enemy's vanilla spellbook.
-            for (int i = enemyEntity.SpellbookCount() - 1; i >= 0; i--)
-                enemyEntity.DeleteSpell(i);
-
-            // I set MaxMagicka based on enemy's level. Each spell - regardless of type - costs enemy 40 Magicka.
-            if (enemyEntity.Level > 0 && enemyEntity.Level < 8)
-            {
-                enemyEntity.MaxMagicka = 80;
-            }
-            else if (enemyEntity.Level >= 8 && enemyEntity.Level < 13)
-            {
-                enemyEntity.MaxMagicka = 120;
-            }
-            else if (enemyEntity.Level >= 13 && enemyEntity.Level < 16)
-            {
-                enemyEntity.MaxMagicka = 160;
-            }
-            else if (enemyEntity.Level >= 16 && enemyEntity.Level < 18)
-            {
-                enemyEntity.MaxMagicka = 200;
-            }
-            else if (enemyEntity.Level >= 18 && enemyEntity.Level < 20)
-            {
-                enemyEntity.MaxMagicka = 240;
-            }
-            else if (enemyEntity.Level == 20)
-            {
-                enemyEntity.MaxMagicka = 320;
-            }
-            else if (enemyEntity.Level >= 21 && enemyEntity.Level < 26)
-            {
-                // Enough for 30 spells.
-                enemyEntity.MaxMagicka = 1200;
-            }
-            else if (enemyEntity.Level >= 26)
-            {
-                // Infinite spells.
-                enemyEntity.MaxMagicka = 1000000;
-            }
-
-            // This line is from the SetEnemySpells method in EnemyEntity, modified for Bossfall.
-            enemyEntity.CurrentMagicka = enemyEntity.MaxMagicka;
-
-            // This foreach is from the SetEnemySpells method in EnemyEntity, modified for Bossfall.
-            foreach (byte spellID in spellList)
-            {
-                // I inlined the "SpellRecord.SpellRecordData" declaration.
-                GameManager.Instance.EntityEffectBroker.GetClassicSpellRecord(spellID, out SpellRecord.SpellRecordData spellData);
-
-                if (spellData.index == -1)
-                {
-                    Debug.LogError("Failed to locate enemy spell in standard spells list.");
-                    continue;
-                }
-
-                // I inlined the "EffectBundleSettings" declaration.
-                if (!GameManager.Instance.EntityEffectBroker.ClassicSpellRecordDataToEffectBundleSettings(spellData, BundleTypes.Spell, out EffectBundleSettings bundle))
-                {
-                    Debug.LogError("Failed to create effect bundle for enemy spell: " + spellData.spellName);
-                    continue;
-                }
-
-                // I added "enemyEntity." to the line below.
-                enemyEntity.AddSpell(bundle);
             }
         }
 
@@ -1683,6 +1719,20 @@ namespace BossfallMod.Events
 
                 specialAdvantageWindowSetupComplete = false;
             }
+        }
+
+        void BossfallOnNewReadySpell(EntityEffectBundle spell)
+        {
+            BossfallEnemyMotor motor = spell.CasterEntityBehaviour.GetComponent<BossfallEnemyMotor>();
+
+            motor.EnemyMagickaBeforeCastingSpell = spell.CasterEntityBehaviour.Entity.CurrentMagicka;
+        }
+
+        void BossfallOnCastReadySpell(EntityEffectBundle spell)
+        {
+            BossfallEnemyMotor motor = spell.CasterEntityBehaviour.GetComponent<BossfallEnemyMotor>();
+
+            spell.CasterEntityBehaviour.Entity.CurrentMagicka = motor.EnemyMagickaBeforeCastingSpell - 40;
         }
 
         #endregion

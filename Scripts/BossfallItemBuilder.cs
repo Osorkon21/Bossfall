@@ -270,12 +270,14 @@ namespace BossfallMod.Items
             // I added this if/else.
             if (isEnemy)
             {
-                // Scales with enemy's level / 2.
+                // Scales with enemy's level / 2 - locationModifier is currently unused and always 0. I plan on doing
+                // more with it in a later version.
                 lootMultiplier = ((enemyLevelModifier + locationModifier) / 100) + UnityEngine.Random.Range(-5, 5 + 1)
                     + UnityEngine.Random.Range(-5, 5 + 1) + UnityEngine.Random.Range(-5, 5 + 1);
             }
             else
             {
+                // locationModifier is currently unused and always 0. I plan on doing more with it in a later version.
                 lootMultiplier = (locationModifier / 100) + UnityEngine.Random.Range(-5, 5 + 1)
                     + UnityEngine.Random.Range(-5, 5 + 1) + UnityEngine.Random.Range(-5, 5 + 1)
                     + UnityEngine.Random.Range(-5, 5 + 1);
@@ -351,7 +353,7 @@ namespace BossfallMod.Items
                 chance *= 0.5f;
             }
 
-            // I added this if. Bossfall loot piles are frequently empty, so if they are I add a little gold. I assume players
+            // I added this. In v1.3.1 loot piles are frequently empty, so if they are I add a little gold. I assume players
             // will think something is broken if they find a bunch of empty loot piles.
             if (!isEnemy && items.Count == 0)
             {
@@ -387,7 +389,7 @@ namespace BossfallMod.Items
             int groupIndex = UnityEngine.Random.Range(0, enumArray.Length);
             DaggerfallUnityItem newItem = new DaggerfallUnityItem(ItemGroups.ReligiousItems, groupIndex);
 
-            // If specific Holy items are created, hand off to the new functions I added to
+            // If specific Holy items are created, hand off to the new methods I added to
             // put custom enchantments on the item.
             if (newItem.IsOfTemplate(ItemGroups.ReligiousItems, (int)ReligiousItems.Holy_water))
                 return CreateHolyWater();
@@ -400,7 +402,7 @@ namespace BossfallMod.Items
         }
 
         /// <summary>
-        /// This new function creates Holy Water that casts Holy Word on use.
+        /// This new method creates Holy Water that casts Holy Word on use.
         /// </summary>
         /// <returns>Enchanted Holy Water.</returns>
         public DaggerfallUnityItem CreateHolyWater()
@@ -413,7 +415,7 @@ namespace BossfallMod.Items
         }
 
         /// <summary>
-        /// This new function creates a Holy Dagger that casts Holy Word on use.
+        /// This new method creates a Holy Dagger that casts Holy Word on use.
         /// </summary>
         /// <returns>Enchanted Holy Dagger.</returns>
         public DaggerfallUnityItem CreateHolyDagger()
@@ -426,7 +428,7 @@ namespace BossfallMod.Items
         }
 
         /// <summary>
-        /// This new function creates a Holy Tome that casts Banish Daedra on use.
+        /// This new method creates a Holy Tome that casts Banish Daedra on use.
         /// </summary>
         /// <returns>Enchanted Holy Tome.</returns>
         public DaggerfallUnityItem CreateHolyTome()
@@ -480,7 +482,7 @@ namespace BossfallMod.Items
 
             if (weapon == Weapons.Arrow)
             {   
-                // I changed the maximum value from 20 to 30. Arrows now spawned with this function
+                // I changed the maximum value from 20 to 30. Arrows now spawned with this method
                 // generate in stacks of up to 30.
                 newItem.stackCount = UnityEngine.Random.Range(1, 30 + 1);
 
@@ -891,14 +893,6 @@ namespace BossfallMod.Items
 
             return Mathf.Round(matQuarterKgs) / 4;
         }
-
-        // DELETE AFTER IMPLEMENTATION
-        // Make custom classes start w/Steel Longsword rather than Iron
-
-        // DELETE AFTER IMPLEMENTATION
-        // Make AssignEnemyStartingEquipment check for existence of modded wpns/armor, if present give 'em chance to have either
-        // a vanilla weapon or armor piece or a modded weapon or armor piece (only give 'em one or the other, not both). Use notes
-        // for guidance
 
         /// <summary>
         /// Vanilla's method from ItemHelper. Comments precede changes or additions I made.

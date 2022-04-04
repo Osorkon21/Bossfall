@@ -2252,6 +2252,7 @@ namespace BossfallMod.Formulas
             -500, -500,
 
             -1000, // Modified Daedroth value
+
             -7500, // Modified Vampire value
 
             -1500,

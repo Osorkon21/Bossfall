@@ -106,6 +106,11 @@ namespace BossfallMod.EnemyAI
         #region Properties
 
         /// <summary>
+        /// Used to make each enemy spell cost a flat 40 Magicka, regardless of actual spell cost.
+        /// </summary>
+        public int EnemyMagickaBeforeCastingSpell { get; set; }
+
+        /// <summary>
         /// This is used to display a custom enemy weakness/resistance/immunity HUD message.
         /// </summary>
         public bool ShownMsg { get; set; }
@@ -444,6 +449,7 @@ namespace BossfallMod.EnemyAI
             }
             else
             {
+                // This is vanilla's moveSpeed formula.
                 moveSpeed = (entity.Stats.LiveSpeed + PlayerSpeedChanger.dfWalkBase) * MeshReader.GlobalScale;
             }
 
@@ -790,6 +796,11 @@ namespace BossfallMod.EnemyAI
             EffectBundleSettings selectedSpellSettings = rangeSpells[UnityEngine.Random.Range(0, count)];
             selectedSpell = new EntityEffectBundle(selectedSpellSettings, entityBehaviour);
 
+            // I added this conditional. It prevents enemy from casting Heal if enemy is at full health.
+            if (selectedSpell.Settings.StandardSpellIndex == 0x40 && entity.CurrentHealth == entity.MaxHealth)
+                return false;
+
+
             // I reroute the method call to a method in this script.
             if (EffectsAlreadyOnTarget(selectedSpell))
                 return false;
@@ -828,6 +839,10 @@ namespace BossfallMod.EnemyAI
             EffectBundleSettings selectedSpellSettings = rangeSpells[UnityEngine.Random.Range(0, count)];
             selectedSpell = new EntityEffectBundle(selectedSpellSettings, entityBehaviour);
 
+            // I added this conditional. It prevents enemy from casting Heal if enemy is at full health.
+            if (selectedSpell.Settings.StandardSpellIndex == 0x40 && entity.CurrentHealth == entity.MaxHealth)
+                return false;
+
             // I reroute the method call to a method in this script.
             if (EffectsAlreadyOnTarget(selectedSpell))
                 return false;
@@ -842,7 +857,8 @@ namespace BossfallMod.EnemyAI
 
         bool EffectsAlreadyOnTarget(EntityEffectBundle spell)
         {
-            if (senses.Target)
+            // I added "spell.Settings.TargetType != TargetTypes.CasterOnly" to the following line. 
+            if (senses.Target && spell.Settings.TargetType != TargetTypes.CasterOnly)
             {
                 EntityEffectManager targetEffectManager = senses.Target.GetComponent<EntityEffectManager>();
                 LiveEffectBundle[] bundles = targetEffectManager.EffectBundles;
@@ -856,6 +872,37 @@ namespace BossfallMod.EnemyAI
                         for (int k = 0; k < bundles[j].liveEffects.Count && !foundEffect; k++)
                         {
                             if (bundles[j].liveEffects[k].GetType() == effectTemplate.GetType())
+                                foundEffect = true;
+                        }
+                    }
+
+                    if (!foundEffect)
+                        return false;
+                }
+            }
+            // I added this else if. It prevents enemies from re-casting Caster Only spells unnecessarily. Most of the code
+            // within this block is vanilla's from the preceding if block. Comments precede changes or additions I made.
+            else if (spell.Settings.TargetType == TargetTypes.CasterOnly)
+            {
+                // If enemy wants to cast Heal (0x40) again while still under the effects of a previous Heal spell,
+                // I don't want to stop them. If they're trying to cast Heal, this code can only be reached if
+                // enemy isn't at full health.
+                if (spell.Settings.StandardSpellIndex == 0x40)
+                    return false;
+
+                for (int i = 0; i < spell.Settings.Effects.Length; i++)
+                {
+                    bool foundEffect = false;
+                    IEntityEffect effectTemplate = GameManager.Instance.EntityEffectBroker.GetEffectTemplate(spell.Settings.Effects[i].Key);
+
+                    // I replaced "bundles" with "entityEffectManager.EffectBundles" in the following line.
+                    for (int j = 0; j < entityEffectManager.EffectBundles.Length && !foundEffect; j++)
+                    {
+                        // I replaced "bundles" with "entityEffectManager.EffectBundles" in the following line.
+                        for (int k = 0; k < entityEffectManager.EffectBundles[j].liveEffects.Count && !foundEffect; k++)
+                        {
+                            // I replaced "bundles" with "entityEffectManager.EffectBundles" in the following line.
+                            if (entityEffectManager.EffectBundles[j].liveEffects[k].GetType() == effectTemplate.GetType())
                                 foundEffect = true;
                         }
                     }

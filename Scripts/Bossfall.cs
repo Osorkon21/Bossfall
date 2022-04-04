@@ -121,6 +121,8 @@ namespace BossfallMod
 
         #endregion
 
+        #region Unity
+
         void Start()
         {
             Type type = SaveLoadManager.StateManager.GetType();
@@ -133,14 +135,7 @@ namespace BossfallMod
             fieldInfo.SetValue(null, BossfallOverrides.Instance.EnchantmentPointsByEnemyID);
         }
 
-            // DELETE WHEN IMPLEMENTED
-
-            // Add ItemGroups.Armor to static Dictionary storeBuysItemType in DaggerfallTradeWindow
-            // Erase old List entry first, should end up looking like:
-            // { DFLocation.BuildingTypes.GeneralStore, new List<ItemGroups>()
-            // { ItemGroups.Armor, ItemGroups.Books, ItemGroups.MensClothing, ItemGroups.WomensClothing, ItemGroups.Transportation, ItemGroups.Jewellery, ItemGroups.Weapons, ItemGroups.UselessItems2 } }
-            // w/Reflection - this will make General Stores buy armor, but don't make 'em sell Armor. Follow v1.4 to-do "shops"
-            // section 4 guidance
+        #endregion
 
         #region IHasModSaveData
 

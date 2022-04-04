@@ -90,7 +90,7 @@ SUMMARY OF CHANGES:
 
     CHARACTER CREATION:
 
-        - Custom classes by default gain 20 HP per level. Only applies to new characters.
+        - Most new characters gain 20 HP per level by default and they all start with Steel weapons rather than Iron.
 
 
     COMBAT:
@@ -430,6 +430,8 @@ v1.3.1 CHANGELOG:
 
         - All custom classes start with default HP/lvl of 20, default skill advancement difficulty unchanged.
 
+        - All Iron weapons are converted to Steel when starting a new character.
+
         - Going below default HP/lvl of 20 drops difficulty dagger twice as much as vanilla per point.
 
         - Rebalanced special advantage/disadvantage costs, this rebalance is slightly different than v1.3's values.
@@ -539,16 +541,24 @@ v1.3.1 CHANGELOG:
 
         - Full enemy spell kits can be found in the FORMULAS & TABLES section of the ReadMe.
 
+        - Magicka costs for enemy spells no longer vary based on player spell skill level.
+
         - Spellcaster Magicka scales with their level. They will cast 2 spells at level 1, this scales up to 8 at level 20.
+          Vampires and Liches will cast 30 spells, Daedra Lords and Ancient Liches have infinite Magicka.
 
         - The exact Magicka/level scale can be found in the FORMULAS & TABLES section of the ReadMe.
 
         - Enemies cast Caster Only spells at range. They cast Shalidor's Mirror, Spell Resistance, and Heal.
 
+        - Enemies no longer re-cast most Caster Only spells if they are currently affected by them. The only exception to this rule
+          is Heal - enemies can re-cast Heal if they are still under the effects of a previous Heal spell and are not at full HP.
+
+        - Enemies will not cast Heal if they're already at full HP. In vanilla they would do so.
+
         - Enemies cast any type of spell within appropriate ranges. In vanilla enemies wouldn't cast certain types of spells
           depending on the Enhanced Combat AI setting in use.
 
-        - I didn't add Hand of Decay as enemies spam you with it in melee range.
+        - I didn't add Hand of Decay to enemy spell kits as enemies can spam you with it in melee range.
 
 
     GAMEPLAY:
@@ -1673,6 +1683,8 @@ v1.3.1 CHANGELOG:
 
 
     SKILLS:
+
+        - Miscellaneous Skill starting levels are 1 to 4 rather than vanilla's 3 to 6. This only applies to new characters.
 
         - Etiquette and Streetwise are exercised when encountering human enemies even if you don't pacify them. This now matches
           behavior of other language skills.
