@@ -12,12 +12,10 @@ Note: This file is a combination of changes made in previous versions and planne
 BOSSFALL v1.3.1 TESTING:
 
 Test if ur inventory & trade window (and any other window detections u add) detection in BossfallOnWindowChange detects D.R.E.A.M. (and any other mods that u think might need 2 be checked) versions of these windows (I think it should? Unless it's registering a custom UI window instance... then ur in trouble)
-Test built .dfmod w/DFU 0.13.5 make sure ur mod works w/it and doesn't crash
-Test ur new shields w/D.R.E.A.M. see if they correctly use modded textures (they should work fine)
+Test built .dfmod w/newest version of DFU (w/ & w/o newest versions of all ur mods) make sure ur mod works w/it and doesn't crash
+Test ur new shields w/latest version of D.R.E.A.M. see if they correctly use modded textures (they should work fine)
 Test "World of Daggerfall" mod w/new .dfmod, save outdoors, load outdoors, save inside, load inside w/Bossfall and World of Daggerfall running @ same time make sure nothing breaks
-Test vampire/lycan on enemy death stuff make sure u approve
 Test dungeon entrance flavor msgs w/a few dungeons make sure u approve
-Test skill advancement difficulty on all 3 settings make sure u approve?
 Test potion creation make sure Dispel Magic potion (use console 2 create potions) & potion recipe (from Alchemist shops) get created
 Test item creation w/enemies that use starting equipment w/out mods make sure it works & u approve
 Test item creation w/enemies that use starting equipment w/mods (RPR:I mainly) make sure it works & u approve
@@ -25,7 +23,6 @@ Test startup quest make sure it pops on new game start
 
 
 BOSSFALL v1.3.1 TO-DO:
-
 
 .DFMOD DL FOLDER CONTENTS:
 
@@ -35,10 +32,9 @@ ReadMe in each OS folder, add to each folder once all changes are completed and 
 
 .DFMOD ESSENTIALS:
 
-Additional wpn swing fatigue cost in new BossfallPlayerEntity (think of better name if possible) script's Update method (22 extra Fat/swing IIRC, I want it to be the same as vanilla BF, which is 33? Verify all these numbers 2 make sure ofc)
+Change swingWeaponFatigueLoss int field in WeaponManager to 24 using Reflection (use GameManager.Instance.WeaponManager for instance), do this in Bossfall.cs, dbl check actual value in previous Bossfall WeaponManager script
 Add Potion/Potion Recipe of Dispel Magic (make it a custom potion effect that doesn't erase player's Teleport anchor(s))
 Bossfall startup quest (u will need 2 add a Bossfall-QuestList or whatever as a new file, see base game's QuestList file for template)
-Add BossfallEnemyDeath event handler 4 vampire/lycan on death stuff in BossfallEnemyMotor 2 make it instanced by enemy? See how u did it in v1.3 for guidance
 Everything below this up to BOSSFALL v1.4 TO-DO needs to be added b4 initial release
 
 
@@ -51,14 +47,6 @@ Add ItemGroups.Armor to static Dictionary storeBuysItemType in DaggerfallTradeWi
 
 Do above 5 lines w/Reflection - this will make General Stores buy armor, but don't make 'em sell Armor
 
-Go thru all scripts that contain vanilla code make sure it's all clearly marked, follow BFPlayerActivate as template
-
-SCRIPTS CLEARED:
-
-BossfallPlayerActivate
-
-If u subscribe enemies 2 OnNewReadySpell and/or OnCastReadySpell remember 2 unsubscribe them from these events in ur OnEnemyDeath event handler
-Only spellcasting enemies are subscribed 2 the above 2 events, only unsubscribe spellcasting enemies from these events in ur OnEnemyDeath event handler
 Remove OP powers from ItemMaker b4 initial release? Not sure about this one, if u do remove all powers u previously removed
 Remove OP powers from SpellMaker b4 initial release? Not sure about this one, if u do remove all spell powers u previously removed
 Add chance of finding mod items in house containers, use StockShopShelves as starting template, u'll have 2 modify it so it's not guaranteed, use ur List of mod items here
@@ -66,11 +54,8 @@ Double check all ur item gen methods that handle loot pile, enemy loot table ran
 Change Legal Info on NexusMods & 3rd forum post, include blurb about "not all code was written by me, I've marked all code I didn't write, check code for author before using/crediting"
 To generate mod wpns/armor one by one (do this the first time ur "add starting equipment 2 enemies" method is called, do it only once) and then check generated items for where they should be equipped (this will guaranteed tell u what location armor piece/wpn goes to). Once u process entire Lists of generated mod items u get from ItemHelper.GetCustomItemsForGroup(ItemGroups.Weapons and ItemGroups.Armor), store the item templates in a permanent container u make so then u know what goes where, only should have 2 process every mod item once
 5189333 is ur Dispel Magic potion key (that uses ur custom Dispel Magic potion recipe)
-If u add BossfallEnemyDeath script remember to add this component to custom enemies in BossfallOnLootSpawned method in Bossfall.cs
 GameManager.Instance.Dungeon.Summary.DungeonType (or whatever) can be called to see what dungeon type ur entering, use that for ur dungeon entrance flavor msgs, make popup HUD msgs last twice as long as normal? (or SETTING: Make actual msg box popup 2 display ur dungeon entrance flavor txt?)
 Make sure ur dungeon popup doesn't happen when player enters or begins new game in a main quest dungeon
-Add skill method override to BossfallOverrides, remember 2 register it w/FormulaOverride, use Bossfall skill difficulty that changes w/Bossfall setting values
-Download latest version of all used mods to make sure latest versions work w/Bossfall .dfmod b4 releasing anything
 Update all FAQ questions (if necessary) for relevance after .dfmod release on NexusMods and 3rd forum post
 Add "why doesn't Disable AI work" FAQ question to NexusMods & 3rd forum post
 Write Bossfall .dfmod
@@ -89,42 +74,11 @@ Update time spent in 2 NexusMods credits spots & 3rd forum post, just put "worke
         - You can find a new Dispel Magic potion and potion recipe.
 
 
-    SKILLS:
-
-        - By default, most skills are very difficult to level. Language skills are much easier to level.
-
-        - The "Skill Advancement Difficulty" setting determines how fast you gain skill levels.
-
-
-    VAMPIRISM:
-
-        - If you are a Vampire, you will be healed varying amounts when you kill enemies with fresh blood.
-
-
 .DFMOD CHANGELOG: section, add following sections to CHANGELOG once corresponding feature is actually added to .dfmod
 
     COMBAT:
 
-        - Attack fatigue cost tripled.
-
-
-        SKILL ADVANCEMENT DIFFICULTY: (add 2 SETTINGS section, after ENEMY MOVE SPEED and before BOSS PROX WARNING)
-
-            - Switch between vanilla skill advancement difficulty and two harder options.
-
-            - "Hard" is rebalance I did for Bossfall v1.3, "Extremely Hard" is v1.2.1 difficulty, in my opinion suitable for only
-              the most patient adventurers.
-
-    SKILLS:
-
-        - All weapon and spell skills and some acrobatic and combat skills are by default extremely hard to level. Change this
-          with the "Skill Advancement Difficulty" setting.
-
-        - Language skills, however, are much easier to level. This includes Etiquette and Streetwise.
-
-        - Most stealthy/thieving skill difficulties unchanged.
-
-        - For precise skill difficulties by setting, see FORMULAS & TABLES section of the ReadMe.
+        - Attack fatigue cost increased to 24. Vanilla attacks cost 11 fatigue.
 
 
     POTIONS:
@@ -137,70 +91,13 @@ Update time spent in 2 NexusMods credits spots & 3rd forum post, just put "worke
 
     FALLING DAMAGE:
 
-        - add ur fall dmg formula here
+        - add ur fall dmg formula here? Only if u add fall damage changes in v1.3.1
 
 
     SKILL ADVANCEMENT DIFFICULTY:
 
         - Add ur tables here, simply calculate how much more difficult both ur settings are than vanilla as vanilla's exact
-          skill calculations are very obtuse and hard to follow IMO, don't include any vanilla formulas
-
-
-    VAMPIRISM:
-
-        - Vampire player characters are healed the following amounts when they kill these enemies:
-
-        - Split this up into alphabetized? scaling by HP? 2 or 3 rows, add here
-
-            Rat: 3 HP
-            Imp: 2 HP
-            Giant Bat: 3 HP
-            Grizzly Bear: 75 HP
-            Sabertooth Tiger: 50 HP
-            Spider: 9 HP
-            Orc: 40 HP
-            Centaur: 50 HP
-            Werewolf: 40 HP
-            Nymph: 15 HP
-            Slaughterfish: 5 HP
-            Orc Sergeant: 50 HP
-            Harpy: 15 HP
-            Wereboar: 50 HP
-            Giant: 150 HP
-            Zombie: 1 HP
-            Giant Scorpion: 12 HP
-            Orc Shaman: 45 HP
-            Orc Warlord: 200 HP
-            Daedroth: 100 HP
-            Vampire: 175 HP
-            Daedra Seducer: 150 HP
-            Vampire Ancient: 255 HP
-            Daedra Lord: 255 HP
-            Dragonling: 15 HP
-            Flesh Atronach: 1 HP
-            Dragonling_Alternate: 200 HP
-            Dreugh: 20 HP
-            Lamia: 30 HP
-            Mage: 15 HP
-            Spellsword: 20 HP
-            Battlemage: 25 HP
-            Sorcerer: 15 HP
-            Healer: 15 HP
-            Nightblade: 20 HP
-            Bard: 20 HP
-            Burglar: 20 HP
-            Rogue: 25 HP
-            Acrobat: 15 HP
-            Thief: 20 HP
-            Assassin: 200 HP
-            Monk: 35 HP
-            Archer: 30 HP
-            Ranger: 35 HP
-            Barbarian: 50 HP
-            Warrior: 45 HP
-            Knight: 40 HP
-            Guard: (HALT!) 50 HP
-            Civilian NPC: 10 HP
+          skill calculations are very obtuse and hard to follow IMO
 
 
 END OF .DFMOD ReadMe SECTIONS
@@ -222,10 +119,10 @@ General stores buy armor
 .DFMOD INVISIBILITY:
 
 Credit "thevm" for the inspiration for these Invis changes
-Give enemies that used to see thru Invis one-time chance to see thru it (checks once per enemy), have it set bool if check succeeds
+Give enemies that used to see thru Invis one-time chance to see thru it (checks once per enemy), have it set ur CanDetectInvisible bool if check succeeds
 Depends on player's Illusion skill, use Lerp to add between 50% chance to see thru Invis @ 1% Illusion skill down to added 0% chance to see thru Invis @ 100% Illusion skill)
 Base chance to see thru Invis increases the more powerful the enemy is (non-boss Daedra have like 15-20% chance to see thru it)
-Add HUD msg to tell player which monster can see thru it & why? ("The Imp is not fooled by your clumsy Illusion spell.")
+Add HUD msg to tell player which monster can see thru it & why ("The Imp is not fooled by your clumsy Illusion spell.")
 
 Base chance to see thru Invis @ 100% player Illusion skill (flesh out rest o' list w/all previous enemies that used 2 see thru Invis):
 
@@ -235,25 +132,7 @@ Imp 0
 .DFMOD ITEMS:
 
 Nerf glove/boot H2H durability damage slightly (2 for gloves, 3 for boots), credit "thevm" for feedback that led 2 change
-
-
-.DFMOD LYCANTHROPY:
-
-Custom HUD messages display when player with Lycanthropy kills innocents (townspeople and Guards), I added 38 different messages
-If player with Lycanthropy kills a Guard "Guard just died." message is replaced w/custom HUD message
-
-
-.DFMOD VAMPIRISM:
-
-Make heal happen only if player kills enemy, include distance check from GitHub Bossfall branch so player only heals in melee range
-Figure something out that only fires when player kills an enemy and use that
-Display random msg from current Vampire msg array if VampireHealAmount array element > 1, call string.Replace(%s) method, put %s in all msgs 2 indicate where to put enemy name
-Add screenshot of Vampire HUD message (an eye-catching msg) to NexusMods, and to forum post somewhere from post 1-3
-Add +10 player HP for Vampire civilian NPC kills, pop up standard Vampire on kill HUD msg, put this check in wherever u end up putting Vampire checks
-
-Vampire players are healed when they kill anything with fresh blood, heal amount depends on entity killed
-Custom HUD messages are displayed when Vampire player kills an entity, replaces "(enemy) just died." msg, I added 52 different msgs
-Custom HUD messages are displayed when entity has old blood (Zombies and Flesh Atronachs), I added 14 different msgs
+Also change durability values in FORMULAS & TABLES.HAND-TO-HAND section as needed as they will have changed
 
 
 BOSSFALL v1.4 TO-DO:
@@ -903,7 +782,7 @@ Coven: 0.25 lM, lots o' religious items, books, magic items, higher chance o' Da
 
 LYCANTHROPY:
 
-TO ADD: Transforming into werewolf/wereboar no longer restores player to maximum health
+TO ADD: Transforming into werewolf/wereboar and/or back to normal no longer restores player to maximum health on each shapeshift
 
 MAGIC ITEMS:
 

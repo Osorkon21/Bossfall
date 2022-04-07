@@ -34,6 +34,8 @@ namespace BossfallMod.Formulas
     {
         #region Fields
 
+        int skillIndex;
+
         /// <summary>
         /// Most of this array is the Enemies field from vanilla's EnemyBasics script. I changed every monster's level, HP,
         /// damage, and/or armor, SoulPts value, Weight, MinMetalToHit, and CorpseTexture method call. I changed the field
@@ -2277,7 +2279,7 @@ namespace BossfallMod.Formulas
         /// <summary>
         /// Covers enemy IDs 0-146. Player heals when they kill an enemy.
         /// </summary>
-        readonly byte[] bossfallVampireHealAmounts = new byte[]
+        readonly int[] bossfallVampireHealAmounts = new int[]
         {
             3, 2, 0, 3, 75, 50, 9, 40, 50, 40, 15, 5, 50, 15, 50, 0, 150, 1, 0, 0, 12, 45, 0, 0, 200, 0, 0, 100, 175, 150, 255,
             255, 0, 0, 15, 0, 0, 1, 0, 0, 200, 20, 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -2296,7 +2298,7 @@ namespace BossfallMod.Formulas
             "This %s's blood is now yours.", "%s blood mends your wounds.", "%s blood sates your hunger. For now.",
             "You feel the heady rush of %s blood!", "You crave more %s blood.", "Such powerful %s blood!",
             "%s blood is marvelous. You want more.", "The %s succumbs to your fangs.", "You gulp down the %s's blood.",
-            "%s's blood cannot assuage your hunger.", "The %s's blood gushes into your mouth.", "You lust for more %s blood.",
+            "%s blood cannot assuage your hunger.", "The %s's blood gushes into your mouth.", "You lust for more %s blood.",
             "You rob the %s of blood.", "This %s's blood is delicious.", "You imbibe the %s's powerful blood!",
             "You drain the %s of blood.", "You sup on the %s's vital fluids.", "You eagerly drink the %s's blood.",
             "Hearty %s blood!", "This %s's blood fortifies you.", "The %s's blood fills your belly.",
@@ -2369,7 +2371,7 @@ namespace BossfallMod.Formulas
         /// <summary>
         /// Covers enemy IDs from 0-38 (Rat to IceAtronach).
         /// </summary> 
-        readonly byte[] bossfallMonsterSpecialHandling = new byte[]
+        readonly int[] bossfallMonsterSpecialHandling = new int[]
         {
             0, 0, 1, 0, 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 13, 3, 0, 2, 5, 6, 4, 0, 7, 5, 0, 0, 11, 0, 12, 0, 12, 0, 12, 12, 0, 9,
             8, 2, 10
@@ -2383,22 +2385,42 @@ namespace BossfallMod.Formulas
             327, 654, 8, 12, 8, 5, 4, 3, 2, 1
         };
 
+        /// <summary>
+        /// Covers DFCareer.Skills 0-34, which is every skill.
+        /// </summary>
+        readonly int[] extremelyHardSkillAdvancementMultipliers = new int[]
+        {
+            16, 1, 1, 20, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 9, 2, 12, 2, 20, 3, 24, 34, 8, 8, 8, 8, 8, 8, 12, 12, 12, 12, 12, 12, 35
+        };
+
+        /// <summary>
+        /// Covers DFCareer.Skills 0-34, which is every skill.
+        /// </summary>
+        readonly int[] hardSkillAdvancementMultipliers = new int[]
+        {
+            5, 1, 1, 5, 2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 2, 4, 1, 5, 1, 8, 34, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 16
+        };
+
+        /// <summary>
+        /// Covers DFCareer.Skills 0-34, which is every skill.
+        /// </summary>
+        readonly int[] vanillaSkillAdvancementMultipliers = new int[]
+        {
+            12, 1, 1, 5, 15, 15, 15, 15, 15, 15, 15, 15, 15, 2, 1, 2, 2, 1, 2, 1, 4, 34, 1, 2, 1, 1, 2, 1, 2, 2, 2, 2, 2, 1, 8
+        };
+
         #endregion
 
         #region Properties
 
         public static BossfallOverrides Instance { get { return Bossfall.Instance.GetComponent<BossfallOverrides>(); } }
-
         public MobileEnemy[] BossfallEnemyStats { get { return bossfallEnemyStats; } }
         public short[] EnchantmentPointsByEnemyID { get { return enchantmentPointsByEnemyID; } }
         public int[] BossfallAlternateRandomTreasureIconIndices { get { return bossfallAlternateRandomTreasureIconIndices; } }
-
-        public byte[] BossfallVampireHealAmounts { get { return bossfallVampireHealAmounts; } }
+        public int[] BossfallVampireHealAmounts { get { return bossfallVampireHealAmounts; } }
         public string[] BossfallVampireHUDMessages { get { return bossfallVampireHUDMessages; } }
         public string[] BossfallOldBloodHUDMessages { get { return bossfallOldBloodHUDMessages; } }
-
         public string[] BossfallInnocentHUDMessages { get { return bossfallInnocentHUDMessages; } }
-
         public float[] FastMoveSpeeds { get { return fastMoveSpeeds; } }
         public float[] VeryFastMoveSpeeds { get { return veryFastMoveSpeeds; } }
 
@@ -2410,6 +2432,8 @@ namespace BossfallMod.Formulas
         {
             FormulaHelper.RegisterOverride<Func<int, int>>(mod, "DamageModifier", DamageModifier);
             FormulaHelper.RegisterOverride<Func<PlayerEntity, int, int>>(mod, "CalculateClimbingChance", CalculateClimbingChance);
+            FormulaHelper.RegisterOverride<Func<int, int, float, int, int>>
+                (mod, "CalculateSkillUsesForAdvancement", CalculateSkillUsesForAdvancement);
             FormulaHelper.RegisterOverride<Func<Weapons, int>>(mod, "CalculateWeaponMinDamage", CalculateWeaponMinDamage);
             FormulaHelper.RegisterOverride<Func<DaggerfallEntity, DaggerfallEntity, bool, int, DaggerfallUnityItem, int>>
                 (mod, "CalculateAttackDamage", CalculateAttackDamage);
@@ -2544,7 +2568,45 @@ namespace BossfallMod.Formulas
         }
 
         /// <summary>
-        /// Formula is vanilla's, but I changed it to be an instance method and set all minimum damages to 1.
+        /// This method is based on a method of the same name from FormulaHelper, changed to be an instance method.
+        /// Comments indicate copied vanilla code.
+        /// </summary>
+        /// <param name="skillValue">Vanilla's skill level parameter.</param>
+        /// <param name="unused">Unused in this method.</param>
+        /// <param name="careerAdvancementMultiplier">Vanilla's player Career Advancement Multiplier parameter.</param>
+        /// <param name="level">Vanilla's player level parameter.</param>
+        /// <returns>Skill uses needed for advancement.</returns>
+        public int CalculateSkillUsesForAdvancement(int skillValue, int unused, float careerAdvancementMultiplier, int level)
+        {
+            int bossfallSkillAdvancementMultiplier;
+
+            if (Bossfall.Instance.SkillAdvancementDifficulty == 2)
+            {
+                bossfallSkillAdvancementMultiplier = extremelyHardSkillAdvancementMultipliers[skillIndex];
+            }
+            else if (Bossfall.Instance.SkillAdvancementDifficulty == 1)
+            {
+                bossfallSkillAdvancementMultiplier = hardSkillAdvancementMultipliers[skillIndex];
+            }
+            else
+            {
+                bossfallSkillAdvancementMultiplier = vanillaSkillAdvancementMultipliers[skillIndex];
+            }
+
+            // This method will be called 35 times every time PlayerEntity's RaiseSkills method checks if skills can advance.
+            if (++skillIndex == 35)
+                skillIndex = 0;
+
+            // The below line is vanilla code from FormulaHelper's method of the same name.
+            double levelMod = Math.Pow(1.04, level);
+
+            // The below line is mostly vanilla code from FormulaHelper's method of the same name, but I replaced
+            // "skillAdvancementMultiplier" with "bossfallSkillAdvancementMultiplier".
+            return (int)Math.Floor((skillValue * bossfallSkillAdvancementMultiplier * careerAdvancementMultiplier * levelMod * 2 / 5) + 1);
+        }
+
+        /// <summary>
+        /// Method is vanilla's, but I changed it to be an instance method and set all minimum damages to 1.
         /// </summary>
         /// <param name="weapon">Weapon type.</param>
         /// <returns>1 for every weapon.</returns>

@@ -22,7 +22,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
-namespace BossfallMod.Utility
+namespace BossfallMod.Player
 {
     /// <summary>
     /// Custom player activations.
@@ -36,15 +36,15 @@ namespace BossfallMod.Utility
         int playerLayerMask = 0;
         bool castPending = false;
 
-        // I doubled vanilla's RayDistance.
+        // This is vanilla's code from PlayerActivate, but I doubled vanilla's RayDistance.
         const float RayDistance = 6144 * MeshReader.GlobalScale;
 
         // I added these following 7 declarations.
         PlayerActivate activate;
         bool clearPopupText;
         bool clearMidScreenText;
-        LinkedList<TextLabel> list;
-        TextLabel text;
+        LinkedList<TextLabel> listOfHUDMessages;
+        TextLabel midscreenHUDText;
         DaggerfallEntityBehaviour storedEntity;
         DaggerfallEntityBehaviour storedEntityTwo;
 
@@ -72,23 +72,22 @@ namespace BossfallMod.Utility
             FieldInfo fieldInfo = type.GetField("textRows", BindingFlags.NonPublic | BindingFlags.Instance);
             FieldInfo fieldInfo1 = type1.GetField("midScreenTextLabel", BindingFlags.NonPublic | BindingFlags.Instance);
 
-            list = (LinkedList<TextLabel>)fieldInfo.GetValue(dfHUDText);
-            text = (TextLabel)fieldInfo1.GetValue(dfHUD);
+            listOfHUDMessages = (LinkedList<TextLabel>)fieldInfo.GetValue(dfHUDText);
+            midscreenHUDText = (TextLabel)fieldInfo1.GetValue(dfHUD);
         }
 
         /// <summary>
-        /// Most of this method is code from PlayerActivate's Update method. Comments precede changes or additions I made.
+        /// Most of this method is code from PlayerActivate's Update method. Comments indicate changes or additions I made.
         /// </summary>
         void Update()
         {
             if (mainCamera == null)
                 return;
 
-            // If clearMidScreenText is true I check for PlayerActivate midScreenTextLabel's presence every
-            // frame. Once I find it, I delete it and add a custom HUD message.
-            if (clearMidScreenText && !string.IsNullOrEmpty(text.Text))
+            // I added this conditional. It replaces vanilla midscreen HUD messages with my own.
+            if (clearMidScreenText && !string.IsNullOrEmpty(midscreenHUDText.Text))
             {
-                text.Text = string.Empty;
+                midscreenHUDText.Text = string.Empty;
 
                 ActivateMobileEnemy(storedEntity);
 
@@ -96,11 +95,10 @@ namespace BossfallMod.Utility
                 clearMidScreenText = false;
             }
 
-            // If clearPopupText is true I check for popupText every frame. Once I find it I delete the most recent
-            // message and add a custom HUD message.
-            if (clearPopupText && list.Count > 0)
+            // I added this conditional. It replaces vanilla HUD messages with my own.
+            if (clearPopupText && listOfHUDMessages.Count > 0)
             {
-                list.RemoveLast();
+                listOfHUDMessages.RemoveLast();
 
                 ActivateMobileEnemy(storedEntityTwo);
 
@@ -265,7 +263,7 @@ namespace BossfallMod.Utility
         #region Activation Methods
 
         /// <summary>
-        /// This method is entirely vanilla's, from PlayerActivate.
+        /// This method is vanilla code from a method of the same name from PlayerActivate.
         /// </summary>
         void ActivateBuilding(
         StaticBuilding building,
@@ -335,7 +333,7 @@ namespace BossfallMod.Utility
         }
 
         /// <summary>
-        /// This method is entirely vanilla's, from PlayerActivate.
+        /// This method is vanilla code from a method of the same name from PlayerActivate.
         /// </summary>
         bool QuestResourceBehaviourCheck(RaycastHit hitInfo, out QuestResourceBehaviour questResourceBehaviour)
         {
@@ -345,7 +343,7 @@ namespace BossfallMod.Utility
         }
 
         /// <summary>
-        /// This method is entirely vanilla's, from PlayerActivate.
+        /// This method is vanilla code from a method of the same name from PlayerActivate.
         /// </summary>
         bool MobileEnemyCheck(RaycastHit hitInfo, out DaggerfallEntityBehaviour mobileEnemy)
         {

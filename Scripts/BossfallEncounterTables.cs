@@ -25,8 +25,8 @@ namespace BossfallMod.Utility
         #region Fields
 
         /// <summary>
-        /// The EncounterTables array's skeleton is from vanilla DFU's RandomEncounters script, but I rewrote all the Enemies
-        /// arrays. I also changed the array to be a private readonly instance field.
+        /// This array is vanilla's EncounterTables field in the RandomEncounters script, but I rewrote all the Enemies
+        /// arrays. I also changed the array to be a private readonly instance field. All comments are mine.
         /// </summary>
         readonly RandomEncounterTable[] EncounterTables = new RandomEncounterTable[]
         {
@@ -6746,7 +6746,7 @@ namespace BossfallMod.Utility
         #region Public Methods
 
         /// <summary>
-        /// Most of this random enemy selection method is from vanilla's RandomEncounters script, changed to be an
+        /// Most of this method is vanilla code from a method of the same name in RandomEncounters, but I changed it to be an
         /// instance method. Comments precede changes or additions I made.
         /// </summary>
         /// <param name="chooseUnderWaterEnemy">True if spawning enemy underwater.</param>
@@ -6899,7 +6899,7 @@ namespace BossfallMod.Utility
                 }
             }
 
-            // I erased most of what vanilla's method has here but I kept this necessary declaration.
+            // I erased most of what vanilla's method had here but I kept this necessary declaration.
             RandomEncounterTable encounterTable = EncounterTables[encounterTableIndex];
 
             // If the "Powerful Enemies Are" setting is "More Common" randomly pick an enemy from the first 100

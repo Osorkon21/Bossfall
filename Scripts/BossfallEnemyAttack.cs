@@ -19,19 +19,18 @@ namespace BossfallMod.EnemyAI
     /// <summary>
     /// Bossfall enemy AI.
     /// </summary>
-    [RequireComponent(typeof(BossfallEnemySenses))]
-    [RequireComponent(typeof(EnemySenses))]
     public class BossfallEnemyAttack : MonoBehaviour
     {
         #region Fields
 
-        // I reduced the minRangedDistance by 60 and doubled the maxRangedDistance.
+        // Code is vanilla's from EnemyAttack, but I reduced the minRangedDistance by 60 and doubled the maxRangedDistance.
         public const float minRangedDistance = 180 * MeshReader.GlobalScale;
         public const float maxRangedDistance = 4096 * MeshReader.GlobalScale;
 
         // I added the following line.
         EnemyAttack attack;
 
+        // This section of fields is vanilla code from EnemyAttack.
         EnemySenses senses;
         EnemySounds sounds;
         MobileUnit mobile;
@@ -41,6 +40,10 @@ namespace BossfallMod.EnemyAI
 
         #region Unity
 
+        /// <summary>
+        /// This method is mostly vanilla code from a method of the same name in EnemyAttack. Comments indicate changes or
+        /// additions I made.
+        /// </summary>
         void Start()
         {
             // I added the following line.
@@ -52,6 +55,10 @@ namespace BossfallMod.EnemyAI
             entityBehaviour = GetComponent<DaggerfallEntityBehaviour>();
         }
 
+        /// <summary>
+        /// This method is mostly vanilla code from a method of the same name in EnemyAttack. Comments indicate changes or
+        /// additions I made.
+        /// </summary>
         void FixedUpdate()
         {
             const int speedFloor = 8;
@@ -96,6 +103,10 @@ namespace BossfallMod.EnemyAI
 
         #region Public Methods
 
+        /// <summary>
+        /// This method is mostly vanilla code from a method of the same name in EnemyAttack. Comments indicate changes or
+        /// additions I made.
+        /// </summary>
         public void ResetMeleeTimer()
         {
             // I increased the range up and down by 500 and removed MeleeTimer variation by player level. Enemies
@@ -121,6 +132,10 @@ namespace BossfallMod.EnemyAI
 
         #region Private Methods
 
+        /// <summary>
+        /// This method is mostly vanilla code from a method of the same name in EnemyAttack. Comments indicate changes or
+        /// additions I made.
+        /// </summary>
         private bool MeleeAnimation()
         {
             if (senses.TargetInSight && senses.TargetIsWithinYawAngle(22.5f, senses.LastKnownTargetPos))

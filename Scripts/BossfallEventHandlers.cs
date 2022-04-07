@@ -10,7 +10,9 @@
 //
 
 using BossfallMod.EnemyAI;
+using BossfallMod.Formulas;
 using BossfallMod.Items;
+using BossfallMod.Player;
 using BossfallMod.Utility;
 using DaggerfallConnect;
 using DaggerfallConnect.FallExe;
@@ -59,9 +61,11 @@ namespace BossfallMod.Events
         DaggerfallListPickerWindow secondaryPicker;
         TextLabel[] advantageLabels;
 
+        LinkedList<TextLabel> listOfHUDMessages;
+
         bool customClassWindowSetupComplete;
         bool specialAdvantageWindowSetupComplete;
-        bool bossfallPlayerActivateAdded;
+        bool bossfallPlayerComponentsAdded;
 
         // This array is based on vanilla's FrostDaedraSpells field from the EnemyEntity script, but I added Frostbite.
         readonly byte[] BossfallFrostDaedraSpells = new byte[]
@@ -82,6 +86,7 @@ namespace BossfallMod.Events
         };
 
         // This Dictionary is based on vanilla DFU's difficultyDict from the CreateCharSpecialAdvantageWindow script.
+        // Comments indicate changes I made.
         readonly Dictionary <string, int> bossfallDifficultyDict = new Dictionary<string, int>
         {
             { HardStrings.acuteHearing, 1 },
@@ -224,6 +229,18 @@ namespace BossfallMod.Events
 
         #endregion
 
+        #region Unity
+
+        void Start()
+        {
+            PopupText dfHUDText = DaggerfallUI.Instance.DaggerfallHUD.PopupText;
+            Type type = dfHUDText.GetType();
+            FieldInfo fieldInfo = type.GetField("textRows", BindingFlags.NonPublic | BindingFlags.Instance);
+            listOfHUDMessages = (LinkedList<TextLabel>)fieldInfo.GetValue(dfHUDText);
+        }
+
+        #endregion
+
         #region Coroutines
 
         /// <summary>
@@ -296,7 +313,7 @@ namespace BossfallMod.Events
         #region Private Methods
 
         /// <summary>
-        /// This method is vanilla's, pulled from PlayerActivate.
+        /// This method is vanilla code from a method of the same name from PlayerActivate.
         /// </summary>
         bool MobileEnemyCheck(RaycastHit hitInfo, out DaggerfallEntityBehaviour mobileEnemy)
         {
@@ -311,10 +328,15 @@ namespace BossfallMod.Events
         /// </summary>
         void SetEnemySpells(byte[] spellList, EnemyEntity enemyEntity)
         {
-            // I added this declaration and event subscriptions.
+            // I added this declaration.
             EntityEffectManager manager = enemyEntity.EntityBehaviour.GetComponent<EntityEffectManager>();
-            manager.OnNewReadySpell += BossfallOnNewReadySpell;
-            manager.OnCastReadySpell += BossfallOnCastReadySpell;
+
+            // I added this conditional.
+            if (manager != null)
+            {
+                manager.OnNewReadySpell += BossfallOnNewReadySpell;
+                manager.OnCastReadySpell += BossfallOnCastReadySpell;
+            }
 
             // This deletes enemy's vanilla spellbook.
             for (int i = enemyEntity.SpellbookCount() - 1; i >= 0; i--)
@@ -494,10 +516,11 @@ namespace BossfallMod.Events
 
             if (GameManager.Instance.PlayerObject != null)
             {
-                if (!bossfallPlayerActivateAdded)
+                if (!bossfallPlayerComponentsAdded)
                 {
                     GameManager.Instance.PlayerObject.AddComponent<BossfallPlayerActivate>();
-                    bossfallPlayerActivateAdded = true;
+                    GameManager.Instance.PlayerObject.AddComponent<BossfallPlayerEntity>();
+                    bossfallPlayerComponentsAdded = true;
                 }
             }
         }
@@ -509,10 +532,11 @@ namespace BossfallMod.Events
         {
             if (GameManager.Instance.PlayerObject != null)
             {
-                if (!bossfallPlayerActivateAdded)
+                if (!bossfallPlayerComponentsAdded)
                 {
                     GameManager.Instance.PlayerObject.AddComponent<BossfallPlayerActivate>();
-                    bossfallPlayerActivateAdded = true;
+                    GameManager.Instance.PlayerObject.AddComponent<BossfallPlayerEntity>();
+                    bossfallPlayerComponentsAdded = true;
                 }
 
                 PlayerEnterExit.OnRespawnerComplete -= BossfallOnRespawnerComplete;
@@ -1654,6 +1678,109 @@ namespace BossfallMod.Events
             }
         }
 
+        /// <summary>
+        /// Unsubscribes enemies from Bossfall events, handles healing and/or messages if player has Vampirism or Lycanthropy.
+        /// </summary>
+        /// <param name="sender">An instance of EnemyDeath.</param>
+        /// <param name="args">Null.</param>
+        public void BossfallOnEnemyDeath(object sender, EventArgs args)
+        {
+            EnemyDeath enemyDeath = sender as EnemyDeath;
+            EntityEffectManager manager = enemyDeath.GetComponent<EntityEffectManager>();
+
+            if (manager)
+            {
+                manager.OnNewReadySpell -= BossfallOnNewReadySpell;
+                manager.OnCastReadySpell -= BossfallOnCastReadySpell;
+            }
+
+            if (GameManager.Instance.PlayerEffectManager.HasVampirism())
+            {
+                DaggerfallEntityBehaviour entityBehaviour = enemyDeath.GetComponent<DaggerfallEntityBehaviour>();
+
+                if (entityBehaviour)
+                {
+                    EnemyEntity enemy = entityBehaviour.Entity as EnemyEntity;
+                    int healAmount = BossfallOverrides.Instance.BossfallVampireHealAmounts[enemy.MobileEnemy.ID];
+
+                    if (healAmount != 0)
+                    {
+                        EnemySenses senses = enemyDeath.GetComponent<EnemySenses>();
+
+                        // A DistanceToPlayer of 3f is slightly more than melee weapon reach.
+                        if (senses && senses.DistanceToPlayer < 3f)
+                        {
+                            PlayerEntity player = GameManager.Instance.PlayerEntity;
+
+                            if (player != null)
+                            {
+                                player.IncreaseHealth(healAmount);
+                                listOfHUDMessages.RemoveLast();
+
+                                if (healAmount != 1)
+                                {
+                                    int selection = UnityEngine.Random.Range(0, BossfallOverrides.Instance.BossfallVampireHUDMessages.Length);
+                                    string freshBloodMessage = BossfallOverrides.Instance.BossfallVampireHUDMessages[selection];
+                                    freshBloodMessage = freshBloodMessage.Replace("%s", TextManager.Instance.GetLocalizedEnemyName(enemy.MobileEnemy.ID));
+                                    DaggerfallUI.AddHUDText(freshBloodMessage, 1.5f);
+                                }
+                                else
+                                {
+                                    int selection = UnityEngine.Random.Range(0, BossfallOverrides.Instance.BossfallOldBloodHUDMessages.Length);
+                                    string oldBloodMessage = BossfallOverrides.Instance.BossfallOldBloodHUDMessages[selection];
+                                    oldBloodMessage = oldBloodMessage.Replace("%s", TextManager.Instance.GetLocalizedEnemyName(enemy.MobileEnemy.ID));
+                                    DaggerfallUI.AddHUDText(oldBloodMessage, 1.5f);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else if (GameManager.Instance.PlayerEffectManager.HasLycanthropy())
+            {
+                DaggerfallEntityBehaviour entityBehaviour = enemyDeath.GetComponent<DaggerfallEntityBehaviour>();
+
+                if (entityBehaviour)
+                {
+                    EnemyEntity enemy = entityBehaviour.Entity as EnemyEntity;
+
+                    // Guards are Innocents.
+                    if (enemy.MobileEnemy.ID == 146)
+                    {
+                        listOfHUDMessages.RemoveLast();
+
+                        int selection = UnityEngine.Random.Range(0, BossfallOverrides.Instance.BossfallInnocentHUDMessages.Length);
+                        string innocentMessage = BossfallOverrides.Instance.BossfallInnocentHUDMessages[selection];
+                        DaggerfallUI.AddHUDText(innocentMessage, 1.5f);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Subscribes civilians to events.
+        /// </summary>
+        /// <param name="civilian">The civilian NPC.</param>
+        public void BossfallOnMobileNPCEnable(PopulationManager.PoolItem civilian)
+        {
+            DaggerfallEntityBehaviour civilianBehaviour = civilian.npc.GetComponent<DaggerfallEntityBehaviour>();
+
+            if (civilianBehaviour)
+                civilianBehaviour.Entity.OnDeath += BossfallOnDeath;
+        }
+
+        /// <summary>
+        /// Unsubscribes civilians from events.
+        /// </summary>
+        /// <param name="civilian">The civilian NPC.</param>
+        public void BossfallOnMobileNPCDisable(PopulationManager.PoolItem civilian)
+        {
+            DaggerfallEntityBehaviour civilianBehaviour = civilian.npc.GetComponent<DaggerfallEntityBehaviour>();
+
+            if (civilianBehaviour)
+                civilianBehaviour.Entity.OnDeath -= BossfallOnDeath;
+        }
+
         void BossfallCustomClassWindow_HitPointsUpButton_OnMouseClick(BaseScreenComponent sender, Vector2 pos)
         {
             BossfallUpdateDifficulty();
@@ -1733,6 +1860,47 @@ namespace BossfallMod.Events
             BossfallEnemyMotor motor = spell.CasterEntityBehaviour.GetComponent<BossfallEnemyMotor>();
 
             spell.CasterEntityBehaviour.Entity.CurrentMagicka = motor.EnemyMagickaBeforeCastingSpell - 40;
+        }
+
+        /// <summary>
+        /// Handles player with Vampirism or Lycanthropy killing civilian NPCs.
+        /// </summary>
+        /// <param name="civilian">The civilian NPC.</param>
+        void BossfallOnDeath(DaggerfallEntity civilian)
+        {
+            civilian.OnDeath -= BossfallOnDeath;
+
+            if (GameManager.Instance.PlayerEffectManager.HasVampirism())
+            {
+                DaggerfallEntityBehaviour civilianBehaviour = civilian.EntityBehaviour;
+
+                if (civilianBehaviour)
+                {
+                    MobilePersonMotor civilianMotor = civilianBehaviour.GetComponent<MobilePersonMotor>();
+
+                    // A DistanceToPlayer of 3f is slightly more than melee weapon reach.
+                    if (civilianMotor && civilianMotor.DistanceToPlayer < 3f)
+                    {
+                        PlayerEntity player = GameManager.Instance.PlayerEntity;
+
+                        if (player != null)
+                        {
+                            player.IncreaseHealth(10);
+
+                            int selection = UnityEngine.Random.Range(0, BossfallOverrides.Instance.BossfallVampireHUDMessages.Length);
+                            string civilianMessage = BossfallOverrides.Instance.BossfallVampireHUDMessages[selection];
+                            civilianMessage = civilianMessage.Replace("%s", "Civilian");
+                            DaggerfallUI.AddHUDText(civilianMessage, 1.5f);
+                        }
+                    }
+                }
+            }
+            else if (GameManager.Instance.PlayerEffectManager.HasLycanthropy())
+            {
+                int selection = UnityEngine.Random.Range(0, BossfallOverrides.Instance.BossfallInnocentHUDMessages.Length);
+                string innocentMessage = BossfallOverrides.Instance.BossfallInnocentHUDMessages[selection];
+                DaggerfallUI.AddHUDText(innocentMessage, 1.5f);
+            }
         }
 
         #endregion

@@ -64,6 +64,7 @@ MOD COMPATIBILITY:
         Unleveled Mobs and Quests
         Roleplay & Realism
         Better Default Classes
+        Lousy Lycans?           (untested)
         Shield Module?          (untested)
         Combat Overhaul Alpha?  (untested)
         Dodge Mod?              (untested)
@@ -145,6 +146,18 @@ SUMMARY OF CHANGES:
           armor and fancy or expensive-looking items are not in low quality shops.
 
 
+    SKILLS:
+
+        - By default, most skills are very difficult to level. Language skills are much easier to level.
+
+        - The "Skill Advancement Difficulty" setting determines how fast you gain skill levels.
+
+
+    VAMPIRISM:
+
+        - Vampire players are healed varying amounts when they kill anything with fresh blood.
+
+
 PROJECT HISTORY:
 
     Bossfall's origin can be traced back to early 2021, when I was on a mission to beat every single game that I currently owned.
@@ -170,7 +183,7 @@ PROJECT HISTORY:
 
     After beating the main quest in vanilla DFU without any mods, I began another playthrough using all the cool mods I wanted. As
     I played, I found myself thinking "what would I change if I could?" I began writing detailed lists of mod ideas that I was unable
-    to do anything with, as I had no idea how to implement them. I gradually did more research on what I needed to being modding,
+    to do anything with, as I had no idea how to implement them. I gradually did more research on what I needed to begin modding,
     but it was a frustratingly slow learning process.
 
     After reading through the codebase trying to decipher the mysteries of C#, I finally started changing vanilla's code in
@@ -434,9 +447,7 @@ v1.3.1 CHANGELOG:
 
         - Going below default HP/lvl of 20 drops difficulty dagger twice as much as vanilla per point.
 
-        - Rebalanced special advantage/disadvantage costs, this rebalance is slightly different than v1.3's values.
-
-        - Compared to vanilla most advantages are cheaper, most disadvantages drop difficulty dagger much more.
+        - Most special advantages are cheaper, most special disadvantages drop difficulty dagger much more.
 
         - All canned classes except for Barbarians start with 45 HP and gain 20 HP/lvl, Barbarian starting HP and HP/lvl unchanged.
 
@@ -563,11 +574,13 @@ v1.3.1 CHANGELOG:
 
     GAMEPLAY:
 
+        - If the Display Enemy Level setting is on, non-quest enemy identification range in Grab, Talk, and Info mode is doubled.
+
         - Climbing nerfed, success depends almost entirely on your skill level. Luck now influences your Climbing check success.
 
         - With 50 Luck you get no Climbing skill check bonus, with 1 Luck you get a 5% penalty, with 100 Luck you get a 5% bonus.
 
-        - Building identification range in "Info" mode doubled.
+        - Building identification range in Info mode doubled.
 
 
     HAND-TO-HAND:
@@ -665,6 +678,9 @@ v1.3.1 CHANGELOG:
 
 
     LYCANTHROPY:
+
+        - When player with Lycanthropy kills a civilian or Guard, one of 38 innocent-death-related messages is displayed.
+          This message replaces the "City Watch just died." message.
 
         - If player is in wereform equipped gloves/boots aren't damaged when player attacks and they don't give to-hit bonuses.
 
@@ -1616,7 +1632,8 @@ v1.3.1 CHANGELOG:
 
     QUESTING:
 
-        - Activating quest enemies in Info mode will display their level and name at greatly increased distances.
+        - If the Display Enemy Level setting is on, activating quest enemies in Info mode will display their level and name at
+          greatly increased distances. The activation limit is twice as far as vanilla's standard enemy activation distance.
 
 
     SETTINGS:
@@ -1630,14 +1647,15 @@ v1.3.1 CHANGELOG:
 
             - Determines how often powerful enemies spawn, also tweaks other enemy rarities.
 
-            - "More Common" is Bossfall v1.2.1 spawn frequency, "Less Common" is rebalance I did for v1.3.
-
 
         ENEMY MOVE SPEED:
 
             - Switch between vanilla enemy movespeed and two faster options.
 
-            - "Very Fast" is Bossfall v1.2.1 speeds, "Fast" is rebalance I did for v1.3.
+
+        SKILL ADVANCEMENT DIFFICULTY:
+
+            - Switch between vanilla skill advancement difficulty and two harder options.
 
 
         BOSS PROXIMITY WARNING:
@@ -1684,12 +1702,37 @@ v1.3.1 CHANGELOG:
 
     SKILLS:
 
+        - Most skills are by default extremely hard to level. Change this with the "Skill Advancement Difficulty" setting.
+
+        - Monster language skills are much easier to level.
+
         - Miscellaneous Skill starting levels are 1 to 4 rather than vanilla's 3 to 6. This only applies to new characters.
 
         - Etiquette and Streetwise are exercised when encountering human enemies even if you don't pacify them. This now matches
           behavior of other language skills.
 
         - Reduced skill tallies from 3 to 1 for successful language skill pacifications.
+
+        - The Running skill will correctly increase at player's maximum possible level of 32, at a Running skill of 99, with
+          a Career Advancement Difficulty of 3.0, and with "VeryLow" player Reflexes - in vanilla it would not do so.
+
+        - For precise skill difficulties by setting, see the FORMULAS & TABLES section of the ReadMe.
+
+
+    VAMPIRISM:
+
+        - Vampire players are healed when they kill anything with fresh blood. Difficult or large entities heal player much more.
+
+        - Technically speaking, Vampire players will heal when they're within a short distance of a dying entity, they do not
+          have to actually kill them. This is to prevent players from healing from long-range bow and spell kills, and also
+          because I couldn't figure out how to tell what is killing entities.
+
+        - One of 52 fresh blood messages display when player heals more than 1 HP, this replaces the "(enemy) just died." message.
+
+        - One of 14 old blood messages display when player is healed 1 HP. This only happens with Zombies and Flesh Atronachs,
+          as they don't have fresh blood. This replaces the "(enemy) just died." message.
+
+        - Exact heal amounts per entity can be found in the FORMULAS & TABLES section of the ReadMe.
 
 
 v1.3.1 FORMULAS & TABLES:
@@ -1752,31 +1795,31 @@ v1.3.1 FORMULAS & TABLES:
 
             SPECIAL ADVANTAGE COSTS:                                SPECIAL DISADVANTAGE COSTS:
 
-                Acute Hearing:              1                           Critical Weakness, each:        -14
-                Adrenaline Rush:            1                           Damage In Holy Places:          -7 
-                Athleticism:                2                           Damage In Sunlight:             -28
-                Bonus To Hit Animals:       3                           Lowered Magicka in Daylight:    -10
-                Bonus To Hit Daedra:        3                           No Magicka in Daylight:         -21
-                Bonus To Hit Humanoids:     3                           Forbidden Chain Armor:          -14
-                Bonus To Hit Undead:        3                           Forbidden Leather Armor:        -7
-                Expertise, each:            2                           Forbidden Plate Armor:          -28
-                Immunity, each:             28                          Forbidden Adamantium:           -8
-                INT In Spell Points:        2                           Forbidden Daedric:              -28
-                x1.5 INT In Spell Points:   5                           Forbidden Dwarven:              -4
-                x1.75 INT In Spell Points:  6                           Forbidden Ebony:                -10
-                x2 INT In Spell Points:     7                           Forbidden Elven:                -2
-                x3 INT In Spell Points:     10                          Forbidden Iron:                 -14
-                Rapid Healing, General:     4                           Forbidden Mithril:              -6
-                Rapid Healing, Darkness:    3                           Forbidden Orcish:               -12
-                Rapid Healing, Light:       2                           Forbidden Silver:               -28
-                Regenerate HP, General:     6                           Forbidden Steel:                -42
-                Regenerate HP, Darkness:    5                           Forbidden Shield, each:         -3
-                Regenerate HP, Light:       3                           Forbidden Weaponry, each:       -7
-                Regenerate HP, Water:       1                           Inability to Regen Magicka:     -28
-                Resistance, each:           14                          Lowered Magicka in Darkness:    -14
-                Spell Absorption, General:  400                         No Magicka in Darkness:         -28
-                Spell Absorption, Darkness: 400                         Low Tolerance, each:            -7
-                Spell Absorption, Light:    400                         Phobia, each:                   -7
+                Acute Hearing:                1                         Forbidden Elven:                - 2
+                Adrenaline Rush:              1                         Forbidden Shield, Each:         - 3 
+                Regenerate HP, Water:         1                         Forbidden Dwarven:              - 4
+                Athleticism:                  2                         Forbidden Mithril:              - 6
+                Expertise, Each:              2                         Damage, Holy Places:            - 7
+                Rapid Healing, Light:         2                         Forbidden Leather Armor:        - 7
+                x1 INT In Spell Points:       2                         Forbidden Weapon, Each:         - 7
+                Bonus To Hit, Animals:        3                         Low Tolerance, Each:            - 7
+                Bonus To Hit, Daedra:         3                         Phobia, Each:                   - 7
+                Bonus To Hit, Humanoids:      3                         Forbidden Adamantium:           - 8
+                Bonus To Hit, Undead:         3                         Forbidden Ebony:                -10
+                Rapid Healing, Darkness:      3                         Lowered Magicka, Daylight:      -10
+                Regenerate HP, Light:         3                         Forbidden Orcish:               -12
+                Rapid Healing, General:       4                         Critical Weakness, Each:        -14
+                Regenerate HP, Darkness:      5                         Forbidden Chain Armor:          -14
+                x1.5 INT In Spell Points:     5                         Forbidden Iron:                 -14
+                Regenerate HP, General:       6                         Lowered Magicka, Darkness:      -14
+                x1.75 INT In Spell Points:    6                         No Magicka, Daylight:           -21 
+                x2 INT In Spell Points:       7                         Damage, Sunlight:               -28
+                x3 INT In Spell Points:      10                         Forbidden Daedric:              -28
+                Resistance, Each:            14                         Forbidden Plate Armor:          -28
+                Immunity, Each:              28                         Forbidden Silver:               -28
+                Spell Absorption, Darkness: 400                         Inability To Regen Magicka:     -28
+                Spell Absorption, General:  400                         No Magicka, Darkness:           -28
+                Spell Absorption, Light:    400                         Forbidden Steel:                -42
 
 
     ENEMY ATTACK SPEED:
@@ -1797,67 +1840,67 @@ v1.3.1 FORMULAS & TABLES:
 
                                VANILLA:   FAST:   VERY FAST:
 
-                         Rat:   4.875     6.5         7
-                         Imp:   5.5       5.5         6
-                    Spriggan:   4.75      3           3
-                   Giant Bat:   5.5       8           8.5
-                Grizzly Bear:   5.5       6.75        7.5
-            Sabertooth Tiger:   5.5       7.25        8
-                      Spider:   5.5       8           9
-                         Orc:   5         5           5
-                     Centaur:   5.5       7           7.5
-                    Werewolf:   5.875     8           9
-                       Nymph:   5.5       4.5         4.5
-               Slaughterfish:   5.5       4.5         4.5
-                Orc Sergeant:   5         5.75        5.75
-                       Harpy:   5.5       7.5         8
-                    Wereboar:   5.5       7           7.5
-            Skeletal Warrior:   5.5       6           6
-                       Giant:   5.25      6.5         7
-                      Zombie:   5.5       3           3
-                       Ghost:   5.5       3.5         3.5
-                       Mummy:   5.5       3.5         3.5
-              Giant Scorpion:   5.5       7           7.5
-                  Orc Shaman:   5         5.25        5.75
-                    Gargoyle:   5.5       3.5         4.5
-                      Wraith:   5.875     4           4
-                 Orc Warlord:   5         6           6.5
-                Frost Daedra:   6.125     4           5
-                 Fire Daedra:   6.125     7           7.5
-                    Daedroth:   6.25      6           6.5
-                     Vampire:   6.25      9          10
-              Daedra Seducer:   5.5       7.5         7.5
-             Vampire Ancient:   6.75     12          12
-                 Daedra Lord:   6.75      7           7.5
-                        Lich:   5.75      4           4
-                Ancient Lich:   6.25      4.5         4.5
-                  Dragonling:   6.25      7.5         8
-               Fire Atronach:   5.25      7           7.5
-               Iron Atronach:   5.125     3           3
               Flesh Atronach:   5.275     3           3
                 Ice Atronach:   5.375     3           3
-        Dragonling_Alternate:   5.5       9          10
+               Iron Atronach:   5.125     3           3
+                    Spriggan:   4.75      3           3
+                      Zombie:   5.5       3           3
                       Dreugh:   5.5       3.5         3.5
-                       Lamia:   5.375     4           4
-                        Mage:   4.825     4           4
-                  Spellsword:   4.875     7           7.5
-                  Battlemage:   5         6           6
-                    Sorcerer:   4.875     4           4
+                       Ghost:   5.5       3.5         3.5
+                       Mummy:   5.5       3.5         3.5
                       Healer:   4.9       4           4
-                  Nightblade:   5         7.5         8
-                        Bard:   5         6.5         7
-                     Burglar:   5.2       7.5         8
-                       Rogue:   5         7.5         8
-                     Acrobat:   5.325     8           8.5
-                       Thief:   5.2       7.5         8
-                    Assassin:   5         9          10
-                        Monk:   5.2       7           7.5
+                       Lamia:   5.375     4           4
+                        Lich:   5.75      4           4
+                        Mage:   4.825     4           4
+                    Sorcerer:   4.875     4           4
+                      Wraith:   5.875     4           4
+                Ancient Lich:   6.25      4.5         4.5
                       Archer:   5.075     4.5         4.5
+                    Gargoyle:   5.5       3.5         4.5
+                       Nymph:   5.5       4.5         4.5
                       Ranger:   4.925     4.5         4.5
-                   Barbarian:   5         6.5         7
-                     Warrior:   4.925     5.75        5.75
+               Slaughterfish:   5.5       4.5         4.5
+                Frost Daedra:   6.125     4           5
                       Knight:   4.875     5           5
-                       Guard:   4.875     8           8.5
+                         Orc:   5         5           5
+                Orc Sergeant:   5         5.75        5.75
+                  Orc Shaman:   5         5.25        5.75
+                     Warrior:   4.925     5.75        5.75
+                  Battlemage:   5         6           6
+                         Imp:   5.5       5.5         6
+            Skeletal Warrior:   5.5       6           6
+                    Daedroth:   6.25      6           6.5
+                 Orc Warlord:   5         6           6.5
+                   Barbarian:   5         6.5         7
+                        Bard:   5         6.5         7
+                       Giant:   5.25      6.5         7
+                         Rat:   4.875     6.5         7
+                     Centaur:   5.5       7           7.5
+                 Daedra Lord:   6.75      7           7.5
+              Daedra Seducer:   5.5       7.5         7.5
+               Fire Atronach:   5.25      7           7.5
+                 Fire Daedra:   6.125     7           7.5
+              Giant Scorpion:   5.5       7           7.5
+                Grizzly Bear:   5.5       6.75        7.5
+                        Monk:   5.2       7           7.5
+                  Spellsword:   4.875     7           7.5
+                    Wereboar:   5.5       7           7.5
+                     Burglar:   5.2       7.5         8
+                  Dragonling:   6.25      7.5         8
+                       Harpy:   5.5       7.5         8
+                  Nightblade:   5         7.5         8
+                       Rogue:   5         7.5         8
+            Sabertooth Tiger:   5.5       7.25        8
+                       Thief:   5.2       7.5         8
+                     Acrobat:   5.325     8           8.5
+                   Giant Bat:   5.5       8           8.5
+               Guard (HALT!):   4.875     8           8.5
+                      Spider:   5.5       8           9
+                    Werewolf:   5.875     8           9
+                    Assassin:   5         9          10
+        Dragonling_Alternate:   5.5       9          10
+                     Vampire:   6.25      9          10
+             Vampire Ancient:   6.75     12          12
 
 
     ENEMY SKILL LEVEL SCALING:
@@ -1878,9 +1921,15 @@ v1.3.1 FORMULAS & TABLES:
 
     ENEMY SPAWN CHANCES:
 
-        - Every 2.4 game hours several random numbers from 0 to 40 are generated. If any of the random numbers are 0, and if
-          enemies are allowed to spawn given current game conditions, a number of enemies equal to the number of randomly generated
-          zeroes are spawned from the location or environment's encounter table. This process happens 10 times per game day.
+        EVERY 2.4 GAME HOURS:
+
+            - An integer from 0 to 40 is randomly generated.
+
+            - If integer is 0 and enemies are allowed to spawn given current player location and current time of day, one random
+              enemy is spawned from the location or environment's encounter table.
+
+            - This process is repeated once every Magic Round (every 5 real-time seconds) 11 more times, then spawn attempts stop
+              until the next 2.4 hour mark arrives. A total of 120 spawn attempts are made every 24 hours of in-game time.
 
 
     ENEMY SPELLS:
@@ -2417,11 +2466,11 @@ v1.3.1 FORMULAS & TABLES:
             Daedric:    +60
 
 
-        Iron, Silver, Elven,                Steel Gauntlets/Boots:                  Mithril, Adamantium, Ebony,
-        Dwarven Gauntlets/Boots:                                                    Orcish, Daedric Gauntlets/Boots:
+        IRON, SILVER, ELVEN,                STEEL:                                  MITHRIL, ADAMANTIUM, EBONY,
+        DWARVEN:                                                                    ORCISH, DAEDRIC:
 
+            Boots:     Break in 205 hits        Boots:     Break in 308 hits            Boots:     Break in 103 hits
             Gauntlets: Break in 205 hits        Gauntlets: Break in 308 hits            Gauntlets: Break in 103 hits
-            Boots: Break in 205 hits            Boots: Break in 308 hits                Boots: Break in 103 hits
 
 
     HUMAN ENEMY ARMOR:
@@ -2441,7 +2490,7 @@ v1.3.1 FORMULAS & TABLES:
         - Equipped armor does not change enemy's ARMOR RATING.
 
 
-    HUMAN ENEMY DAMAGE:
+    HUMAN ENEMY ATTACK DAMAGE:
 
         - These are average damages. These tables will not be very accurate when enemies are level 1-5, as that is when enemies
           usually use weapons. Around level 6 enemies switch to Hand-to-Hand and their damage output becomes more consistent.
@@ -2860,20 +2909,17 @@ v1.3.1 FORMULAS & TABLES:
 
             ENEMIES THAT SPAWN WITH EQUIPMENT:
 
-                Orc Sergeant
-                Orc Shaman
-                Orc Warlord
-                Frost Daedra
-                Fire Daedra
-                Daedroth
-                Vampire
-                Daedra Seducer
-                Vampire Ancient
-                Daedra Lord
-                Lich
-                Ancient Lich
-                Dragonling_Alternate
-                Any human
+                Acrobat                             Dragonling_Alternate                    Orc Shaman
+                Ancient Lich                        Fire Daedra                             Orc Warlord
+                Archer                              Frost Daedra                            Ranger
+                Assassin                            Guard (HALT!)                           Rogue
+                Barbarian                           Healer                                  Sorcerer
+                Bard                                Knight                                  Spellsword
+                Battlemage                          Lich                                    Thief
+                Burglar                             Mage                                    Vampire
+                Daedra Lord                         Monk                                    Vampire Ancient
+                Daedra Seducer                      Nightblade                              Warrior
+                Daedroth                            Orc Sergeant
 
 
             EQUIPMENT SELECTION:
@@ -2887,17 +2933,17 @@ v1.3.1 FORMULAS & TABLES:
 
                 Randomly choose one:                        Randomly choose one:                        Randomly choose one:
 
-                    Broadsword                                  Claymore                                    Claymore
-                    Saber                                       Dai-Katana                                  Dai-Katana
-                    Longsword                                   Mace                                        Mace
-                    Katana                                      Flail                                       Flail
-                                                                Warhammer                                   Warhammer
-                                                                Battle Axe                                  Battle Axe
-                30% chance for one random:                      War Axe                                     War Axe
-                                                                Short Bow                                   Short Bow
-                    Buckler                                     Long Bow                                    Long Bow
+                    Broadsword                                  Battle Axe                                  Battle Axe
+                    Katana                                      Claymore                                    Claymore
+                    Longsword                                   Dai-Katana                                  Dai-Katana
+                    Saber                                       Flail                                       Flail
+                                                                Long Bow                                    Long Bow
+                                                                Mace                                        Mace
+                30% chance for one random:                      Short Bow                                   Short Bow
+                                                                War Axe                                     War Axe
+                    Buckler                                     Warhammer                                   Warhammer
+                    Kite Shield 
                     Round Shield
-                    Kite Shield
                     Tower Shield
 
                 
@@ -2905,21 +2951,21 @@ v1.3.1 FORMULAS & TABLES:
                 one random:                      
                                                             
                     Dagger
-                    Tanto
-                    Staff
                     Shortsword
+                    Staff
+                    Tanto
                     Wakazashi
 
 
                 30% chance for each item:                   45% chance for each item:                   60% chance for each item:
 
-                    Helm                                        Helm                                        Helm
-                    Right Pauldron                              Right Pauldron                              Right Pauldron
-                    Left Pauldron                               Left Pauldron                               Left Pauldron
-                    Cuirass                                     Cuirass                                     Cuirass
-                    Greaves                                     Greaves                                     Greaves
                     Boots                                       Boots                                       Boots
+                    Cuirass                                     Cuirass                                     Cuirass
                     Gauntlets                                   Gauntlets                                   Gauntlets
+                    Greaves                                     Greaves                                     Greaves
+                    Helm                                        Helm                                        Helm
+                    Left Pauldron                               Left Pauldron                               Left Pauldron
+                    Right Pauldron                              Right Pauldon                               Right Pauldron
 
 
         GOLD GENERATION:
@@ -2960,40 +3006,40 @@ v1.3.1 FORMULAS & TABLES:
 
             Creature Ingredient List 1:             Miscellaneous Ingredient List 1:            Plant Ingredient List 2:
                 
-                Werewolf's Blood                        Holy Relic                                  Twigs
-                Fairy Dragon's Scales                   Big Tooth                                   Green Leaves
-                Wraith Essence                          Medium Tooth                                Red Flowers
-                Ectoplasm                               Small Tooth                                 Yellow Flowers
-                Ghoul's Tongue                          Pure Water                                  Root Tendrils
-                Spider's Venom                          Rain Water                                  Root Bulb
-                Troll's Blood                           Elixir Vitae                                Green Berries
-                Snake Venom                             Nectar                                      Red Berries
-                Gorgon Snake                            Ichor                                       Yellow Berries
-                Lich Dust                                                                           Black Rose
-                Giant's Blood                                                                       White Rose
-                Basilisk's Eye                      Miscellaneous Ingredient List 2:                Black Poppy
-                Daedra's Heart                                                                      White Poppy
-                Saint's Hair                            Ivory                                       Ginkgo Leaves
-                Orc's Blood                             Pearl                                       Bamboo
-                                                                                                    Palm
-                                                                                                    Aloe
-            Creature Ingredient List 2:             Plant Ingredient List 1:                        Fig
-                                                                                                    Cactus
-                Dragon's Scales                         Twigs
-                Giant Scorpion Stinger                  Green Leaves
-                Small Scorpion Stinger                  Red Flowers
-                Mummy Wrappings                         Yellow Flowers
-                Gryphon's Feather                       Root Tendrils
-                                                        Root Bulb
-                                                        Pine Branch
-            Creature Ingredient List 3:                 Green Berries
+                Basilisk's Eye                          Big Tooth                                   Aloe
+                Daedra's Heart                          Elixir Vitae                                Bamboo
+                Ectoplasm                               Holy Relic                                  Black Poppy
+                Fairy Dragon's Scales                   Ichor                                       Black Rose
+                Ghoul's Tongue                          Medium Tooth                                Cactus
+                Giant's Blood                           Nectar                                      Fig
+                Gorgon Snake                            Pure Water                                  Ginkgo Leaves
+                Lich Dust                               Rain Water                                  Green Berries
+                Orc's Blood                             Small Tooth                                 Green Leaves
+                Saint's Hair                                                                        Palm
+                Snake Venom                                                                         Red Berries
+                Spider's Venom                      Miscellaneous Ingredient List 2:                Red Flowers
+                Troll's Blood                                                                       Root Bulb
+                Werewolf's Blood                        Ivory                                       Root Tendrils
+                Wraith Essence                          Pearl                                       Twigs
+                                                                                                    White Poppy
+                                                                                                    White Rose
+            Creature Ingredient List 2:             Plant Ingredient List 1:                        Yellow Berries
+                                                                                                    Yellow Flowers
+                Dragon's Scales                         Clover
+                Giant Scorpion Stinger                  Golden Poppy
+                Gryphon's Feather                       Green Berries
+                Mummy Wrappings                         Green Leaves
+                Small Scorpion Stinger                  Pine Branch
                                                         Red Berries
-                Wereboar's Tusk                         Yellow Berries
-                Nymph Hair                              Clover
-                Unicorn Horn                            Red Rose
+                                                        Red Flowers
+            Creature Ingredient List 3:                 Red Poppy
+                                                        Red Rose
+                Nymph Hair                              Root Bulb
+                Unicorn Horn                            Root Tendrils
+                Wereboar's Tusk                         Twigs
+                                                        Yellow Berries
+                                                        Yellow Flowers
                                                         Yellow Rose
-                                                        Red Poppy
-                                                        Golden Poppy
 
 
         LOOT CHANCES:
@@ -3023,17 +3069,17 @@ v1.3.1 FORMULAS & TABLES:
                 P2: Plant Ingredient List 2
 
 
-            Orc Stronghold                  Crypt                               Daedra Lord                 Frost Daedra
-            Human Stronghold                Desecrated Temple                   Lich                        Fire Daedra
-            Prison                          Vampire Haunt                       Ancient Lich
-            Ruined Castle                                                                                       Gold: 1-150
-            Barbarian Stronghold            City (walled town)                  Dragon's Den                    AM:       5
-            Cemetery                        Wealthy Home (Manor, etc.)                                          MI:       3
+            Barbarian Stronghold            Crypt                               Ancient Lich                Fire Daedra 
+            Cemetery                        Desecrated Temple                   Daedra Lord                 Frost Daedra
+            Human Stronghold                Vampire Haunt                       Lich        
+            Orc Stronghold                                                                                      Gold: 1-150
+            Prison                          City         (walled town)          Dragon's Den                    AM:       5
+            Ruined Castle                   Wealthy Home (Manor, etc.)                                          MI:       3
                                                                                     Gold: 1-125                 WP:       5
-            Hamlet (medium town)                Gold:  1-10                         AM:      10
-            Village (small town)                AM:       5                         MI:       3                 
-            Farm (Grange, etc.)                 MI:       3                         WP:      10             Giant
-            Poor Home (Hovel, etc.)             WP:       5
+            Farm     (Grange, etc.)             Gold:  1-10                         AM:      10
+            Hamlet    (medium town)             AM:       5                         MI:       3                 
+            Poor Home (Hovel, etc.)             MI:       3                         WP:      10             Giant
+            Village    (small town)             WP:       5
                                                                                     BK:       5             Giant Stronghold
                 Gold:  1-80                     BK:       5
                 AM:       5                     RI:     100                         C1:       5                 Gold:  1-30
@@ -3045,20 +3091,20 @@ v1.3.1 FORMULAS & TABLES:
                 RI:       5                     M2:       1                         P2:       5                 C2:       5
                                                 P1:       3                                                     C3:       2
                 C1:       5                     P2:       3                                                     M1:       1
-                C2:       5                                                     Imp                             M2:       1
-                C3:       2                                                     Harpy                           P1:       2
+                C2:       5                                                     Harpy                           M2:       1
+                C3:       2                                                     Imp                             P1:       2
                 M1:       2                 Mine                                                                P2:       2
                 M2:       1                 Natural Cave                        Harpy Nest
                 P1:       5                 Volcanic Caves
-                P2:       5                                                         Gold:   1-4             Spider Nest
-                                            Temple (light blue dot)                                         Scorpion Nest
-                                            Tavern (dark brown dot)                 RI:       4
-            Orc Shaman                                                                                          Gold:  1-20
-            Mage                                Gold:  1-15                         C1:       6                 AM:      50
-            Battlemage                          AM:      10                         C2:       6                 MI:       1
-            Sorcerer                            MI:       1                         C3:       3                 WP:      50
-            Healer                              WP:      10                         M1:       3
-            Nightblade                                                              P1:       6                 CL:      75
+                P2:       5                                                         Gold:   1-4             Scorpion Nest
+                                            Tavern    (dark brown dot)                                      Spider Nest  
+                                            Temple    (light blue dot)              RI:       4
+            Battlemage                                                                                          Gold:  1-20
+            Healer                              Gold:  1-15                         C1:       6                 AM:      50
+            Mage                                AM:      10                         C2:       6                 MI:       1
+            Nightblade                          MI:       1                         C3:       3                 WP:      50
+            Orc Shaman                          WP:      10                         M1:       3
+            Sorcerer                                                                P1:       6                 CL:      75
                                                 BK:       2                         P2:       6                 RI:       3
             Laboratory                          CL:      15
                                                 RI:       1                                                     C1:       3
@@ -3072,19 +3118,19 @@ v1.3.1 FORMULAS & TABLES:
                                                 P2:       1
                 C1:       5                                                         CL:       4                 Gold:  1-20
                 C2:       5                                                                                     AM:       5
-                C3:       2                 Centaur                                 M2:       1                 MI:       2
-                M1:       5                 Nymph                                                               WP:      10
-                M2:       1                 Archer
+                C3:       2                 Archer                                  M2:       1                 MI:       2
+                M1:       5                 Centaur                                                             WP:      10
+                M2:       1                 Nymph 
                 P1:       5                 Ranger                              Dreugh                          BK:      10
                 P2:       5                                                     Lamia
                                                 Gold:  1-20                                                     C1:       5
                                                 AM:       5                         Gold:  1-20                 C2:       5
-            Bard                                MI:       3                         AM:       5                 C3:       2
-            Burglar                             WP:      25                         MI:       2                 M1:       2
-            Rogue                                                                   WP:      15                 M2:       2
-            Acrobat                             BK:       2                                                     P1:       5
-            Thief                               RI:       2                         C1:       3                 P2:       5
-            Assassin                                                                C2:       3
+            Acrobat                             MI:       3                         AM:       5                 C3:       2
+            Assassin                            WP:      25                         MI:       2                 M1:       2
+            Bard                                                                    WP:      15                 M2:       2
+            Burglar                             BK:       2                                                     P1:       5
+            Rogue                               RI:       2                         C1:       3                 P2:       5
+            Thief                                                                   C2:       3
                                                 C1:       5                         C3:       1
                 Gold:  1-20                     C2:       5                         M1:       2             Skeletal Warrior
                 AM:      10                     C3:       2
@@ -3094,16 +3140,16 @@ v1.3.1 FORMULAS & TABLES:
                 C1:       1                     P2:       5
                 C2:       1                                                         MI:       2                 CL:       2
                 C3:       1
-                M1:       1                 Vampire                                 RI:       5
-                P1:       1                 Daedra Seducer                                                  Zombie
+                M1:       1                 Daedra Seducer                          RI:       5
+                P1:       1                 Vampire                                                         Zombie
                 P2:       1                 Vampire Ancient
-                                                                                Mummy                           Gold:  1-15
-                                            Coven                               Daedroth                        AM:      50
-            Orc Warlord                                                                                         MI:       1
-            Monk                                Gold:  1-80                         Gold:  1-80                 WP:      50
-            Barbarian                           AM:      10                         AM:      10
-            Warrior                             MI:       3                         MI:       3                 CL:       5
-            Knight                              WP:      25                         WP:      10
+                                                                                Daedroth                        Gold:  1-15
+                                            Coven                               Mummy                           AM:      50
+            Barbarian                                                                                           MI:       1
+            Knight                              Gold:  1-80                         Gold:  1-80                 WP:      50
+            Monk                                AM:      10                         AM:      10
+            Orc Warlord                         MI:       3                         MI:       3                 CL:       5
+            Warrior                             WP:      25                         WP:      10
                                                                                                                 M2:       1
                 Gold:  1-80                     BK:       5                         BK:       2
                 AM:     100                     CL:      35                         CL:       4
@@ -3409,6 +3455,27 @@ v1.3.1 FORMULAS & TABLES:
             Thyrwort
 
 
+    VAMPIRE HEAL AMOUNTS:
+
+        Flesh Atronach:  1                      Burglar:    20                      Barbarian:             50 
+        Zombie:          1                      Dreugh:     20                      Centaur:               50
+        Imp:             2                      Nightblade: 20                      Guard: (HALT!)         50 
+        Giant Bat:       3                      Spellsword: 20                      Orc Sergeant:          50
+        Rat:             3                      Thief:      20                      Sabertooth Tiger:      50 
+        Slaughterfish:   5                      Battlemage: 25                      Wereboar:              50 
+        Spider:          9                      Rogue:      25                      Grizzly Bear:          75
+        Civilian:       10                      Archer:     30                      Daedroth:             100 
+        Giant Scorpion: 12                      Lamia:      30                      Daedra Seducer:       150 
+        Acrobat:        15                      Monk:       35                      Giant:                150
+        Dragonling:     15                      Ranger:     35                      Vampire:              175
+        Harpy:          15                      Knight:     40                      Assassin:             200
+        Healer:         15                      Orc:        40                      Dragonling_Alternate: 200 
+        Mage:           15                      Werewolf:   40                      Orc Warlord:          200
+        Nymph:          15                      Orc Shaman: 45                      Daedra Lord:          255 
+        Sorcerer:       15                      Warrior:    45                      Vampire Ancient:      255
+        Bard:           20
+
+
 v1.3.1 ITEM TABLES:
 
     ITEM CHANGES, SUMMARY:
@@ -3455,20 +3522,20 @@ v1.3.1 ITEM TABLES:
 
                     Name                        D                   Name                        D
 
-                    %it of Far Silence         500                  %it of Undeniable Access   500
-                    %it of Featherweight       500                  %it of Venom Antidote      500
-                    %it of Force Bolts         500                  %it of Water-walking      1000
-                    %it of Friendship         1000                  %it of Wizard's Fire       500
-                    %it of Good Luck          1000                  %it, the Protector         500
-                    %it of Life Stealing      2500                  Blazing %it of Fireballs   500
-                    %it of Lightning           500                  Frosty %it of Ice Storms   500
-                    %it of Nimbleness         1000                  Healing %it                500
-                    %it of Oblivion           1200                  Leaping %it                500
-                    %it of Shocking            500                  Never Tiring %it           500
-                    %it of the Orc Lord       1000                  Shining %it                500
-                    %it of the Sealed Door     500                  Torgo's %it               1000
-                    %it of the Wise           1000                  Unrestrainable %it         500
-                    %it of Toxic Clouds        500
+                    %it of Far Silence         500                  Leaping %it                500
+                    %it of Featherweight       500                  Never Tiring %it           500
+                    %it of Force Bolts         500                  Shining %it                500
+                    %it of Lightning           500                  Unrestrainable %it         500
+                    %it of Shocking            500                  %it of Friendship         1000
+                    %it of the Sealed Door     500                  %it of Good Luck          1000
+                    %it of Toxic Clouds        500                  %it of Nimbleness         1000
+                    %it of Undeniable Access   500                  %it of the Orc Lord       1000
+                    %it of Venom Antidote      500                  %it of the Wise           1000
+                    %it of Wizard's Fire       500                  %it of Water-walking      1000
+                    %it, the Protector         500                  Torgo's %it               1000
+                    Blazing %it of Fireballs   500                  %it of Oblivion           1200
+                    Frosty %it of Ice Storms   500                  %it of Life Stealing      2500
+                    Healing %it                500
 
 
                 NEW MAGIC ITEMS:
@@ -3496,27 +3563,27 @@ v1.3.1 ITEM TABLES:
 
                 Name                       C          EP                    Name                       C          EP
 
-                Ancient Lich           2,250,000   -22,500                  Iron Atronach             80,000
-                Centaur                   53,000                            Lamia                     60,000
-                Daedra Lord            2,250,000   -22,500                  Lich                     750,000    -7,500
-                Daedra Seducer           200,000                            Mummy                     60,000
-                Daedroth                 150,000    -1,000                  Nymph                     60,000
-                Dragonling                50,000                            Orc                       51,000
-                Dragonling_Alternate   1,500,000   -15,000                  Orc Sergeant              51,000
-                Dreugh                    60,000                            Orc Shaman                53,000
-                Fire Atronach             80,000                            Orc Warlord            1,500,000   -15,000
-                Fire Daedra              100,000                            Rat                       50,000
-                Flesh Atronach            60,000                            Sabertooth Tiger          50,000
-                Frost Daedra             100,000                            Skeletal Warrior          50,000
-                Gargoyle                  53,000                            Slaughterfish             50,000
-                Ghost                     80,000                            Spider                    50,000
-                Giant                     53,000                            Spriggan                  51,000
-                Giant Bat                 50,000                            Vampire                  750,000    -7,500
-                Giant Scorpion            50,000                            Vampire Ancient        2,250,000   -22,500
-                Grizzly Bear              50,000                            Wereboar                  51,000
-                Harpy                     53,000                            Werewolf                  51,000
-                Ice Atronach              80,000                            Wraith                    80,000
-                Imp                       51,000                            Zombie                    50,000
+                Dragonling                50,000                            Dreugh                    60,000
+                Giant Bat                 50,000                            Flesh Atronach            60,000
+                Giant Scorpion            50,000                            Lamia                     60,000
+                Grizzly Bear              50,000                            Mummy                     60,000
+                Rat                       50,000                            Nymph                     60,000
+                Sabertooth Tiger          50,000                            Fire Atronach             80,000
+                Skeletal Warrior          50,000                            Ghost                     80,000
+                Slaughterfish             50,000                            Ice Atronach              80,000
+                Spider                    50,000                            Iron Atronach             80,000
+                Zombie                    50,000                            Wraith                    80,000
+                Imp                       51,000                            Fire Daedra              100,000
+                Orc                       51,000                            Frost Daedra             100,000
+                Orc Sergeant              51,000                            Daedroth                 150,000    -1,000
+                Spriggan                  51,000                            Daedra Seducer           200,000
+                Wereboar                  51,000                            Lich                     750,000    -7,500
+                Werewolf                  51,000                            Vampire                  750,000    -7,500
+                Centaur                   53,000                            Dragonling_Alternate   1,500,000   -15,000
+                Gargoyle                  53,000                            Orc Warlord            1,500,000   -15,000
+                Giant                     53,000                            Ancient Lich           2,250,000   -22,500
+                Harpy                     53,000                            Daedra Lord            2,250,000   -22,500
+                Orc Shaman                53,000                            Vampire Ancient        2,250,000   -22,500
 
 
         SHOP ITEMS, BY STORE QUALITY:
@@ -3761,17 +3828,17 @@ v1.3.1 ITEM TABLES:
             DWARVEN:                                                                    ORCISH, DAEDRIC:             
 
                 ARMOR:                              ARMOR:                                  ARMOR:
-                                                    
-                    Cuirass:         82 Hits            Cuirass:       123 Hits                 Cuirass:        41 Hits
+
                     Gauntlets:       41 Hits            Gauntlets:      62 Hits                 Gauntlets:      21 Hits
-                    Greaves:         62 Hits            Greaves:        93 Hits                 Greaves:        31 Hits
                     Left Pauldron:   41 Hits            Left Pauldron:  62 Hits                 Left Pauldron:  21 Hits
                     Right Pauldron:  41 Hits            Right Pauldron: 62 Hits                 Right Pauldron: 21 Hits
                     Helm:            56 Hits            Helm:           84 Hits                 Helm:           28 Hits
                     Boots:           62 Hits            Boots:          93 Hits                 Boots:          31 Hits
+                    Greaves:         62 Hits            Greaves:        93 Hits                 Greaves:        31 Hits
+                    Cuirass:         82 Hits            Cuirass:       123 Hits                 Cuirass:        41 Hits
 
 
-                SHIELDS:                            SHIELDS:                                SHIELDS:
+                SHIELD:                             SHIELD:                                 SHIELD: 
 
                     Buckler:         80 Hits            Buckler:       120 Hits                 Buckler:        40 Hits
                     Round Shield:    94 Hits            Round Shield:  140 Hits                 Round Shield:   47 Hits
@@ -3785,13 +3852,13 @@ v1.3.1 ITEM TABLES:
                     Long Bow:       200 Hits            Long Bow:      300 Hits                 Long Bow:      100 Hits
 
 
-                AXES:                               AXES:                                   AXES:
+                AXE:                                AXE:                                    AXE: 
 
                     Battle Axe:     140 Hits            Battle Axe:    210 Hits                 Battle Axe:     70 Hits
                     War Axe:        200 Hits            War Axe:       300 Hits                 War Axe:       100 Hits
 
 
-                BLUNT WEAPONS:                      BLUNT WEAPONS:                          BLUNT WEAPONS:
+                BLUNT WEAPON:                       BLUNT WEAPON:                           BLUNT WEAPON: 
 
                     Staff:          140 Hits            Staff:         210 Hits                 Staff:          70 Hits
                     Mace:           160 Hits            Mace:          240 Hits                 Mace:           80 Hits
@@ -3799,17 +3866,17 @@ v1.3.1 ITEM TABLES:
                     Warhammer:      200 Hits            Warhammer:     300 Hits                 Warhammer:     100 Hits
 
 
-                LONG BLADES:                        LONG BLADES:                            LONG BLADES:
+                LONG BLADE:                         LONG BLADE:                             LONG BLADE: 
 
                     Broadsword:     140 Hits            Broadsword:    210 Hits                 Broadsword:     70 Hits
                     Saber:          160 Hits            Saber:         240 Hits                 Saber:          80 Hits
-                    Longsword:      180 Hits            Longsword:     270 Hits                 Longsword:      90 Hits
-                    Katana:         200 Hits            Katana:        300 Hits                 Katana:        100 Hits
                     Claymore:       180 Hits            Claymore:      270 Hits                 Claymore:       90 Hits
+                    Longsword:      180 Hits            Longsword:     270 Hits                 Longsword:      90 Hits
                     Dai-Katana:     200 Hits            Dai-Katana:    300 Hits                 Dai-Katana:    100 Hits
+                    Katana:         200 Hits            Katana:        300 Hits                 Katana:        100 Hits
 
 
-                SHORT BLADES:                       SHORT BLADES:                           SHORT BLADES:
+                SHORT BLADE:                        SHORT BLADE:                            SHORT BLADE: 
 
                     Dagger:         140 Hits            Dagger:        210 Hits                 Dagger:         70 Hits
                     Tanto:          160 Hits            Tanto:         240 Hits                 Tanto:          80 Hits
@@ -3819,24 +3886,24 @@ v1.3.1 ITEM TABLES:
 
         ENCHANTMENT POINTS, BASE:
 
-                ARMOR:                              ARCHERY:                                LONG BLADES:
+                ARMOR:                              ARCHERY:                                LONG BLADE:
 
-                    Cuirass:       1250                 Short Bow:     750                      Broadsword:    350
-                    Gauntlets:      125                 Long Bow:     1500                      Saber:         400
-                    Greaves:        250                                                         Longsword:     450
-                    Left Pauldron:  200                                                         Katana:        500
-                    Right Pauldron: 200             AXES:                                       Claymore:      550
+                    Gauntlets:      125                 Short Bow:     750                      Broadsword:    350
+                    Boots:          200                 Long Bow:     1500                      Saber:         400
+                    Left Pauldron:  200                                                         Longsword:     450
+                    Right Pauldron: 200                                                         Katana:        500
+                    Greaves:        250             AXE:                                        Claymore:      550
                     Helm:           250                                                         Dai-Katana:    600
-                    Boots:          200                 Battle Axe:   1250
+                    Cuirass:       1250                 Battle Axe:   1250
                                                         War Axe:      2500
-                                                                                            SHORT BLADES:
-                SHIELDS:
-                                                    BLUNT WEAPONS:                              Dagger:        175
+                                                                                            SHORT BLADE:
+                SHIELD: 
+                                                    BLUNT WEAPON:                               Dagger:        175
                     Buckler:        400                                                         Tanto:         250
-                    Round Shield:   900                 Staff:        4000                      Shortsword:    325
-                    Kite Shield:   1500                 Mace:          400                      Wakazashi:     400
-                    Tower Shield:  2500                 Flail:         500
-                                                        Warhammer:     600
+                    Round Shield:   900                 Mace:          400                      Shortsword:    325
+                    Kite Shield:   1500                 Flail:         500                      Wakazashi:     400
+                    Tower Shield:  2500                 Warhammer:     600
+                                                        Staff:        4000
 
 
         SHIELD ARMOR:

@@ -112,6 +112,9 @@ namespace BossfallMod
             LootTables.OnLootSpawned += BossfallEventHandlers.Instance.BossfallOnTabledLootSpawned;
             SaveLoadManager.OnLoad += BossfallEventHandlers.Instance.BossfallOnLoad;
             DaggerfallUI.Instance.UserInterfaceManager.OnWindowChange += BossfallEventHandlers.Instance.BossfallOnWindowChange;
+            EnemyDeath.OnEnemyDeath += BossfallEventHandlers.Instance.BossfallOnEnemyDeath;
+            PopulationManager.OnMobileNPCEnable += BossfallEventHandlers.Instance.BossfallOnMobileNPCEnable;
+            PopulationManager.OnMobileNPCDisable += BossfallEventHandlers.Instance.BossfallOnMobileNPCDisable;
         }
 
         void Awake()

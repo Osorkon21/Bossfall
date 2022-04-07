@@ -94,8 +94,8 @@ namespace BossfallMod.Items
             2, 3, 2, 2, 2, 1, 1, 1, 1, 1
         };
 
-        // This array is mostly vanilla code from LootTables, but I changed it to be a readonly instance field. I also changed
-        // some generation chances.
+        // This array is mostly vanilla's DefaultLootTables field from LootTables, but I changed it to be a readonly instance
+        // field. I also changed some generation chances.
         readonly LootChanceMatrix[] bossfallLootTables = new LootChanceMatrix[]
         {
             new LootChanceMatrix() {key = "-", MinGold = 0, MaxGold = 0,    P1 = 0,  P2 = 0,  C1 = 0, C2 = 0, C3 = 0, M1 = 0,  AM = 0,   WP = 0,    MI = 0, CL = 0,  BK = 0,  M2 = 0, RL = 0 },

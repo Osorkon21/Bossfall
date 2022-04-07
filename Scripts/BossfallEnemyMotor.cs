@@ -25,18 +25,12 @@ namespace BossfallMod.EnemyAI
     /// <summary>
     /// Bossfall enemy AI.
     /// </summary>
-    [RequireComponent(typeof(BossfallEnemySenses))]
-    [RequireComponent(typeof(BossfallEnemyAttack))]
-    [RequireComponent(typeof(EnemySenses))]
-    [RequireComponent(typeof(EnemyAttack))]
-    [RequireComponent(typeof(EnemyBlood))]
-    [RequireComponent(typeof(EnemySounds))]
-    [RequireComponent(typeof(CharacterController))]
     public class BossfallEnemyMotor : MonoBehaviour
     {
         // I changed this region name to Fields.
         #region Fields
 
+        // This section of fields is vanilla code from EnemyMotor.
         float stopDistance = 1.7f;
         const float doorCrouchingHeight = 1.65f;
         bool flies;
@@ -87,6 +81,7 @@ namespace BossfallMod.EnemyAI
         MethodInfo setAccessor;
         FieldInfo lastGroundedY;
 
+        // This section of fields is vanilla code from EnemyMotor.
         EnemySenses senses;
         Vector3 destination;
         Vector3 detourDestination;
@@ -144,6 +139,10 @@ namespace BossfallMod.EnemyAI
 
         #region Unity Methods
 
+        /// <summary>
+        /// This method is mostly vanilla code from a method of the same name in EnemyMotor. Comments indicate changes or
+        /// additions I made.
+        /// </summary>
         void Start()
         {
             // I added the next 5 lines.
@@ -205,6 +204,10 @@ namespace BossfallMod.EnemyAI
             }
         }
 
+        /// <summary>
+        /// This method is mostly vanilla code from a method of the same name in EnemyMotor. Comments indicate changes or
+        /// additions I made.
+        /// </summary>
         void FixedUpdate()
         {
             // I reversed the DisableAI check so player can swap between Bossfall & vanilla AI with the console.
@@ -259,6 +262,9 @@ namespace BossfallMod.EnemyAI
 
         #region Private Methods
 
+        /// <summary>
+        /// This method is vanilla code from a method of the same name in EnemyMotor.
+        /// </summary>
         void HandleParalysis()
         {
             if (entityBehaviour.Entity.IsParalyzed)
@@ -270,6 +276,10 @@ namespace BossfallMod.EnemyAI
             mobile.FreezeAnims = false;
         }
 
+        /// <summary>
+        /// This method is mostly vanilla code from a method of the same name in EnemyMotor. Comments indicate changes or
+        /// additions I made.
+        /// </summary>
         void KnockbackMovement()
         {
             if (mobile.EnemyState == MobileStates.SeducerTransform1 || mobile.EnemyState == MobileStates.SeducerTransform2)
@@ -345,6 +355,10 @@ namespace BossfallMod.EnemyAI
             }
         }
 
+        /// <summary>
+        /// This method is mostly vanilla code from a method of the same name in EnemyMotor. Comments indicate changes or
+        /// additions I made.
+        /// </summary>
         void ApplyGravity()
         {
             // I redirect property calls to vanilla properties, using Reflection if necessary.
@@ -365,6 +379,10 @@ namespace BossfallMod.EnemyAI
             }
         }
 
+        /// <summary>
+        /// This method is mostly vanilla code from a method of the same name in EnemyMotor. Comments indicate changes or
+        /// additions I made.
+        /// </summary>
         void HandleNoAction()
         {
             // I redirect property calls to vanilla properties, using Reflection if necessary.
@@ -378,6 +396,10 @@ namespace BossfallMod.EnemyAI
             }
         }
 
+        /// <summary>
+        /// This method is mostly vanilla code from a method of the same name in EnemyMotor. Comments indicate changes or
+        /// additions I made.
+        /// </summary>
         void HandleBashing()
         {
             // I redirect property calls to vanilla properties, using Reflection if necessary.
@@ -394,6 +416,10 @@ namespace BossfallMod.EnemyAI
             }
         }
 
+        /// <summary>
+        /// This method is mostly vanilla code from a method of the same name in EnemyMotor. Comments indicate changes or
+        /// additions I made.
+        /// </summary>
         void UpdateTimers()
         {
             if (moveInForAttackTimer > 0)
@@ -433,6 +459,10 @@ namespace BossfallMod.EnemyAI
                 motor.GiveUpTimer--;
         }
 
+        /// <summary>
+        /// This method is mostly vanilla code from a method of the same name in EnemyMotor. Comments indicate changes or
+        /// additions I made.
+        /// </summary>
         void TakeAction()
         {
             // I changed the declaration of this variable to avoid unnecessary moveSpeed calculations.
@@ -558,6 +588,10 @@ namespace BossfallMod.EnemyAI
             }
         }
 
+        /// <summary>
+        /// This method is mostly vanilla code from a method of the same name in EnemyMotor. Comments indicate changes or
+        /// additions I made.
+        /// </summary>
         void GetDestination()
         {
             CharacterController targetController = senses.Target.GetComponent<CharacterController>();
@@ -594,6 +628,10 @@ namespace BossfallMod.EnemyAI
             }
         }
 
+        /// <summary>
+        /// This method is mostly vanilla code from a method of the same name in EnemyMotor. Comments indicate changes or
+        /// additions I made.
+        /// </summary>
         bool DoRangedAttack(Vector3 direction, float moveSpeed, float distance, bool isPlayingOneShot)
         {
             // I use different min/max range values here. Enemies now fire bows and spells at closer and longer ranges.
@@ -651,9 +689,13 @@ namespace BossfallMod.EnemyAI
             return false;
         }
 
+        /// <summary>
+        /// This method is mostly vanilla code from a method of the same name in EnemyMotor. Comments indicate changes or
+        /// additions I made.
+        /// </summary>
         bool DoTouchSpell()
         {
-            // I reroute the method call to a method in this script.
+            // I reroute the CanCastTouchSpell method call to a method in this script.
             if (senses.TargetInSight && senses.DetectedTarget && attack.MeleeTimer == 0
                 && senses.DistanceToTarget <= attack.MeleeDistance + senses.TargetRateOfApproach
                 && CanCastTouchSpell() && entityEffectManager.SetReadySpell(selectedSpell))
@@ -668,6 +710,10 @@ namespace BossfallMod.EnemyAI
             return false;
         }
 
+        /// <summary>
+        /// This method is mostly vanilla code from a method of the same name in EnemyMotor. Comments indicate changes or
+        /// additions I made.
+        /// </summary>
         void StrafeDecision()
         {
             // I changed the maximum range from 4 to 5, reducing strafe frequency. I also added "UnityEngine." to the
@@ -692,6 +738,10 @@ namespace BossfallMod.EnemyAI
             }
         }
 
+        /// <summary>
+        /// This method is mostly vanilla code from a method of the same name in EnemyMotor. Comments indicate changes or
+        /// additions I made.
+        /// </summary>
         bool ClearPathToPosition(Vector3 location, float dist = 30)
         {
             Vector3 sphereCastDir = (location - transform.position).normalized;
@@ -722,6 +772,9 @@ namespace BossfallMod.EnemyAI
             return true;
         }
 
+        /// <summary>
+        /// This method is vanilla code from a method of the same name in EnemyMotor.
+        /// </summary>
         bool HasClearPathToShootProjectile(float speed, float radius)
         {
             Vector3 sphereCastDir = senses.PredictNextTargetPos(speed);
@@ -758,6 +811,10 @@ namespace BossfallMod.EnemyAI
             return true;
         }
 
+        /// <summary>
+        /// This method is mostly vanilla code from a method of the same name in EnemyMotor. Comments indicate changes or
+        /// additions I made.
+        /// </summary>
         bool CanShootBow()
         {
             if (!hasBowAttack)
@@ -767,6 +824,10 @@ namespace BossfallMod.EnemyAI
             return HasClearPathToShootProjectile(35f, 0.15f);
         }
 
+        /// <summary>
+        /// This method is mostly vanilla code from a method of the same name in EnemyMotor. Comments indicate changes or
+        /// additions I made.
+        /// </summary>
         bool CanCastRangedSpell()
         {
             if (entity.CurrentMagicka <= 0)
@@ -809,6 +870,10 @@ namespace BossfallMod.EnemyAI
             return HasClearPathToShootProjectile(25f, 0.45f);
         }
 
+        /// <summary>
+        /// This method is mostly vanilla code from a method of the same name in EnemyMotor. Comments indicate changes or
+        /// additions I made.
+        /// </summary>
         bool CanCastTouchSpell()
         {
             if (entity.CurrentMagicka <= 0)
@@ -850,11 +915,18 @@ namespace BossfallMod.EnemyAI
             return true;
         }
 
+        /// <summary>
+        /// This method is vanilla code from a method of the same name in EnemyMotor.
+        /// </summary>
         bool CanFly()
         {
             return mobile.Enemy.Behaviour == MobileBehaviour.Flying || mobile.Enemy.Behaviour == MobileBehaviour.Spectral;
         }
 
+        /// <summary>
+        /// This method is mostly vanilla code from a method of the same name in EnemyMotor. Comments indicate changes or
+        /// additions I made.
+        /// </summary>
         bool EffectsAlreadyOnTarget(EntityEffectBundle spell)
         {
             // I added "spell.Settings.TargetType != TargetTypes.CasterOnly" to the following line. 
@@ -915,6 +987,10 @@ namespace BossfallMod.EnemyAI
             return true;
         }
 
+        /// <summary>
+        /// This method is mostly vanilla code from a method of the same name in EnemyMotor. Comments indicate changes or
+        /// additions I made.
+        /// </summary>
         void AttemptMove(Vector3 direction, float moveSpeed, bool backAway = false, bool strafe = false, float strafeDist = 0)
         {
             if (!backAway && !strafe)
@@ -1037,6 +1113,10 @@ namespace BossfallMod.EnemyAI
             }
         }
 
+        /// <summary>
+        /// This method is mostly vanilla code from a method of the same name in EnemyMotor. Comments indicate changes or
+        /// additions I made.
+        /// </summary>
         void FindDetour(Vector3 direction2d)
         {
             float angle;
@@ -1179,6 +1259,10 @@ namespace BossfallMod.EnemyAI
             lastTimeWasStuck = Time.time;
         }
 
+        /// <summary>
+        /// This method is mostly vanilla code from a method of the same name in EnemyMotor. Comments indicate changes or
+        /// additions I made.
+        /// </summary>
         void ObstacleCheck(Vector3 direction)
         {
             obstacleDetected = false;
@@ -1235,6 +1319,10 @@ namespace BossfallMod.EnemyAI
             // There was an empty "else" statement here in EnemyMotor's method. I removed it.
         }
 
+        /// <summary>
+        /// This method is mostly vanilla code from a method of the same name in EnemyMotor. Comments indicate changes or
+        /// additions I made.
+        /// </summary>
         void FallCheck(Vector3 direction)
         {
             // I redirect property calls to vanilla properties, using Reflection if necessary.
@@ -1254,6 +1342,10 @@ namespace BossfallMod.EnemyAI
             fallDetected = !Physics.Raycast(ray, out hit, (originalHeight * 0.5f) + 1.5f);
         }
 
+        /// <summary>
+        /// This method is mostly vanilla code from a method of the same name in EnemyMotor. Comments indicate changes or
+        /// additions I made.
+        /// </summary>
         void EvaluateMoveInForAttack()
         {
             // If enemy is the type to always charge, they'll always move in to attack.
@@ -1362,6 +1454,10 @@ namespace BossfallMod.EnemyAI
             }
         }
 
+        /// <summary>
+        /// This method is mostly vanilla code from a method of the same name in EnemyMotor. Comments indicate changes or
+        /// additions I made.
+        /// </summary>
         void SetChangeStateTimer()
         {
             if (!DaggerfallUnity.Settings.EnhancedCombatAI)
@@ -1373,6 +1469,9 @@ namespace BossfallMod.EnemyAI
                 changeStateTimer = UnityEngine.Random.Range(0.2f, 0.8f);
         }
 
+        /// <summary>
+        /// This method is vanilla code from a method of the same name in EnemyMotor.
+        /// </summary>
         void WaterMove(Vector3 motion)
         {
             if (GameManager.Instance.PlayerEnterExit.blockWaterLevel != 10000
@@ -1389,6 +1488,10 @@ namespace BossfallMod.EnemyAI
             }
         }
 
+        /// <summary>
+        /// This method is mostly vanilla code from a method of the same name in EnemyMotor. Comments indicate changes or
+        /// additions I made.
+        /// </summary>
         void TurnToTarget(Vector3 targetDirection)
         {
             // Vanilla has 20f here. I want enemies to turn faster.
@@ -1400,6 +1503,9 @@ namespace BossfallMod.EnemyAI
             }
         }
 
+        /// <summary>
+        /// This method is vanilla code from a method of the same name in EnemyMotor.
+        /// </summary>
         void UpdateToIdleOrMoveAnim()
         {
             if (!mobile.IsPlayingOneShot())
@@ -1421,6 +1527,10 @@ namespace BossfallMod.EnemyAI
             lastPosition = transform.position;
         }
 
+        /// <summary>
+        /// This method is mostly vanilla code from a method of the same name in EnemyMotor. Comments indicate changes or
+        /// additions I made.
+        /// </summary>
         void ApplyFallDamage()
         {
             // Bossfall doubles vanilla falling damage and starts damaging at a lower threshold.
@@ -1456,6 +1566,10 @@ namespace BossfallMod.EnemyAI
             }
         }
 
+        /// <summary>
+        /// This method is mostly vanilla code from a method of the same name in EnemyMotor. Comments indicate changes or
+        /// additions I made.
+        /// </summary>
         void OpenDoors()
         {
             if (mobile.Enemy.CanOpenDoors)
@@ -1477,6 +1591,9 @@ namespace BossfallMod.EnemyAI
             }
         }
 
+        /// <summary>
+        /// This method is vanilla code from a method of the same name in EnemyMotor.
+        /// </summary>
         void HeightAdjust()
         {
             if (!resetHeight && controller && ((controller.collisionFlags & CollisionFlags.CollidedSides) != 0) && originalHeight > doorCrouchingHeight)

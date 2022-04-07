@@ -30,10 +30,12 @@ namespace BossfallMod.EnemyAI
     {
         #region Fields
 
+        // This section of fields is vanilla code from EnemySenses.
         const float predictionInterval = 0.0625f;
         const float systemTimerUpdatesDivisor = .0549254f;
         const float classicSpawnDespawnExterior = 4096 * MeshReader.GlobalScale;
 
+        // This section of fields is vanilla code from EnemySenses.
         MobileUnit mobile;
         DaggerfallEntityBehaviour entityBehaviour;
         EnemyMotor motor;
@@ -79,7 +81,8 @@ namespace BossfallMod.EnemyAI
         #region Unity
 
         /// <summary>
-        /// I moved everything in vanilla DFU's EnemySenses Start method to this Awake method.
+        /// I moved everything in vanilla DFU's EnemySenses Start method to this Awake method. Comments indicate changes
+        /// or additions I made.
         /// </summary>
         void Awake()
         {
@@ -120,6 +123,10 @@ namespace BossfallMod.EnemyAI
                 CanDetectInvisible = true;
         }
 
+        /// <summary>
+        /// This method is mostly vanilla code from EnemySenses's FixedUpdate method. Comments indicate changes or additions
+        /// I made.
+        /// </summary>
         void FixedUpdate()
         {
             // I reversed the DisableAI check so player can swap between Bossfall & vanilla AI with the console.
@@ -516,6 +523,10 @@ namespace BossfallMod.EnemyAI
 
         #region Private Methods
 
+        /// <summary>
+        /// This method is mostly vanilla code from a method of the same name in EnemySenses. Comments indicate changes or
+        /// additions I made.
+        /// </summary>
         void GetTargets()
         {
             DaggerfallEntityBehaviour highestPriorityTarget = null;
@@ -643,6 +654,10 @@ namespace BossfallMod.EnemyAI
             }
         }
 
+        /// <summary>
+        /// This method is mostly vanilla code from a method of the same name in EnemySenses. Comments indicate changes or
+        /// additions I made.
+        /// </summary>
         bool CanSeeTarget(DaggerfallEntityBehaviour target)
         {
             bool seen = false;
@@ -695,6 +710,10 @@ namespace BossfallMod.EnemyAI
             return seen;
         }
 
+        /// <summary>
+        /// This method is mostly vanilla code from a method of the same name in EnemySenses. Comments indicate changes or
+        /// additions I made.
+        /// </summary>
         bool CanHearTarget()
         {
             float hearingScale = 1f;
