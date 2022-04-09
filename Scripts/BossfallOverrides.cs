@@ -2,8 +2,8 @@
 // Copyright:       Copyright (C) 2022 Osorkon, vanilla DFU code Copyright (C) 2009-2022 Daggerfall Workshop
 // License:         MIT License (http://www.opensource.org/licenses/mit-license.php)
 // Source Code:     https://github.com/Osorkon21/Bossfall, vanilla DFU code https://github.com/Interkarma/daggerfall-unity
-// Original Author: Osorkon, vanilla DFU code Gavin Clayton (interkarma@dfworkshop.net)
-// Contributors:    vanilla DFU code Allofich, Hazelnut, ifkopifko, Numidium, TheLacus
+// Original Author: Osorkon, vanilla DFU code Gavin Clayton (interkarma@dfworkshop.net), Hazelnut
+// Contributors:    vanilla DFU code Allofich, Hazelnut, ifkopifko, Numidium, TheLacus, Pango
 // 
 // Notes: This script uses code from several vanilla DFU scripts. Comments indicate authorship - please
 //        verify original authorship before crediting. When in doubt compare with vanilla DFU's source code.
@@ -23,6 +23,7 @@ using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
 using DaggerfallWorkshop.Utility;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BossfallMod.Formulas
@@ -2409,6 +2410,13 @@ namespace BossfallMod.Formulas
             12, 1, 1, 5, 15, 15, 15, 15, 15, 15, 15, 15, 15, 2, 1, 2, 2, 1, 2, 1, 4, 34, 1, 2, 1, 1, 2, 1, 2, 2, 2, 2, 2, 1, 8
         };
 
+        /// <summary>
+        /// Mostly vanilla code from the storeBuysItemType field in DaggerfallTradeWindow, but I added "ItemGroups.Armor"
+        /// at the beginning of the List.
+        /// </summary>
+        readonly List<ItemGroups> bossfallGeneralStoreItemGroupsAccepted = new List<ItemGroups>()
+            { ItemGroups.Armor, ItemGroups.Books, ItemGroups.MensClothing, ItemGroups.WomensClothing, ItemGroups.Transportation, ItemGroups.Jewellery, ItemGroups.Weapons, ItemGroups.UselessItems2 };
+
         #endregion
 
         #region Properties
@@ -2423,6 +2431,7 @@ namespace BossfallMod.Formulas
         public string[] BossfallInnocentHUDMessages { get { return bossfallInnocentHUDMessages; } }
         public float[] FastMoveSpeeds { get { return fastMoveSpeeds; } }
         public float[] VeryFastMoveSpeeds { get { return veryFastMoveSpeeds; } }
+        public List<ItemGroups> BossfallGeneralStoreItemGroupsAccepted { get { return bossfallGeneralStoreItemGroupsAccepted; } }
 
         #endregion
 
@@ -2883,17 +2892,17 @@ namespace BossfallMod.Formulas
                     if (gloves != null)
                     {
                         if (gloves.IsEnchanted)
-                            gloves.LowerCondition(10, player, player.Items);
+                            gloves.LowerCondition(8, player, player.Items);
                         else
-                            gloves.LowerCondition(10, player);
+                            gloves.LowerCondition(8, player);
                     }
                 }
                 else if (boots != null)
                 {
                     if (boots.IsEnchanted)
-                        boots.LowerCondition(15, player, player.Items);
+                        boots.LowerCondition(12, player, player.Items);
                     else
-                        boots.LowerCondition(15, player);
+                        boots.LowerCondition(12, player);
                 }
             }
 

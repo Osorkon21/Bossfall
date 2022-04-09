@@ -1,10 +1,10 @@
 {
     "ModTitle": "Bossfall",
-    "ModVersion": "1.3.1",
+    "ModVersion": "2.0",
     "ModAuthor": "Osorkon based on work of DFWorkshop",
     "ContactInfo": "https://forums.dfworkshop.net/",
     "DFUnity_Version": "0.13.5",
-    "ModDescription": "Comprehensive gameplay overhaul that greatly increases difficulty and adds many new features.",
+    "ModDescription": "Unlevels loot and enemies, increases difficulty, and adds many new features.",
     "GUID": "e71234ab-0a5f-4e38-9987-36fba5ce2977",
     "Files": [
         "Assets/Game/Mods/Bossfall/bossfall.dfmod.json",
@@ -22,6 +22,8 @@
         "Assets/Game/Mods/Bossfall/modsettings.json",
         "Assets/Game/Mods/Bossfall/modpresets.json",
         "Assets/Game/Mods/Bossfall/ItemTemplates.json",
-        "Assets/Game/Mods/Bossfall/Scripts/BossfallPlayerEntity.cs"
+        "Assets/Game/Mods/Bossfall/Scripts/BossfallPlayerEntity.cs",
+        "Assets/Game/Mods/Bossfall/Quests/BOSSFALL.txt",
+        "Assets/Game/Mods/Bossfall/Quests/QuestList-Bossfall.txt"
     ]
 }

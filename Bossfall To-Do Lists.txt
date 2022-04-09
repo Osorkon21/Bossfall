@@ -9,133 +9,68 @@ Note: This file is a combination of changes made in previous versions and planne
       I really don't want to lose this information, so I added it to GitHub as a backup.
 
 
-BOSSFALL v1.3.1 TESTING:
-
-Test if ur inventory & trade window (and any other window detections u add) detection in BossfallOnWindowChange detects D.R.E.A.M. (and any other mods that u think might need 2 be checked) versions of these windows (I think it should? Unless it's registering a custom UI window instance... then ur in trouble)
-Test built .dfmod w/newest version of DFU (w/ & w/o newest versions of all ur mods) make sure ur mod works w/it and doesn't crash
-Test ur new shields w/latest version of D.R.E.A.M. see if they correctly use modded textures (they should work fine)
-Test "World of Daggerfall" mod w/new .dfmod, save outdoors, load outdoors, save inside, load inside w/Bossfall and World of Daggerfall running @ same time make sure nothing breaks
-Test dungeon entrance flavor msgs w/a few dungeons make sure u approve
-Test potion creation make sure Dispel Magic potion (use console 2 create potions) & potion recipe (from Alchemist shops) get created
-Test item creation w/enemies that use starting equipment w/out mods make sure it works & u approve
-Test item creation w/enemies that use starting equipment w/mods (RPR:I mainly) make sure it works & u approve
-Test startup quest make sure it pops on new game start
-
-
-BOSSFALL v1.3.1 TO-DO:
-
-.DFMOD DL FOLDER CONTENTS:
-
-bossfall.dfmod for appropriate OS
-ReadMe in each OS folder, add to each folder once all changes are completed and added 2 ReadMe
-
-
-.DFMOD ESSENTIALS:
-
-Change swingWeaponFatigueLoss int field in WeaponManager to 24 using Reflection (use GameManager.Instance.WeaponManager for instance), do this in Bossfall.cs, dbl check actual value in previous Bossfall WeaponManager script
-Add Potion/Potion Recipe of Dispel Magic (make it a custom potion effect that doesn't erase player's Teleport anchor(s))
-Bossfall startup quest (u will need 2 add a Bossfall-QuestList or whatever as a new file, see base game's QuestList file for template)
-Everything below this up to BOSSFALL v1.4 TO-DO needs to be added b4 initial release
-
+BOSSFALL v2.0 TO-DO:
 
 .DFMOD NOTES:
 
-Add ItemGroups.Armor to static Dictionary storeBuysItemType in DaggerfallTradeWindow, erase old List entry first, should end up looking like:
-
-    { DFLocation.BuildingTypes.GeneralStore, new List<ItemGroups>()
-    { ItemGroups.Armor, ItemGroups.Books, ItemGroups.MensClothing, ItemGroups.WomensClothing, ItemGroups.Transportation, ItemGroups.Jewellery, ItemGroups.Weapons, ItemGroups.UselessItems2 } }
-
-Do above 5 lines w/Reflection - this will make General Stores buy armor, but don't make 'em sell Armor
-
-Remove OP powers from ItemMaker b4 initial release? Not sure about this one, if u do remove all powers u previously removed
-Remove OP powers from SpellMaker b4 initial release? Not sure about this one, if u do remove all spell powers u previously removed
-Add chance of finding mod items in house containers, use StockShopShelves as starting template, u'll have 2 modify it so it's not guaranteed, use ur List of mod items here
-Double check all ur item gen methods that handle loot pile, enemy loot table random items, and shop shelf/house container loot gen - make sure mod items are automatically generated when appropriate so u don't need 2 add them manually (I think this is already the case but it never hurts 2 check) - this is NOT true for house containers
 Change Legal Info on NexusMods & 3rd forum post, include blurb about "not all code was written by me, I've marked all code I didn't write, check code for author before using/crediting"
-To generate mod wpns/armor one by one (do this the first time ur "add starting equipment 2 enemies" method is called, do it only once) and then check generated items for where they should be equipped (this will guaranteed tell u what location armor piece/wpn goes to). Once u process entire Lists of generated mod items u get from ItemHelper.GetCustomItemsForGroup(ItemGroups.Weapons and ItemGroups.Armor), store the item templates in a permanent container u make so then u know what goes where, only should have 2 process every mod item once
-5189333 is ur Dispel Magic potion key (that uses ur custom Dispel Magic potion recipe)
-GameManager.Instance.Dungeon.Summary.DungeonType (or whatever) can be called to see what dungeon type ur entering, use that for ur dungeon entrance flavor msgs, make popup HUD msgs last twice as long as normal? (or SETTING: Make actual msg box popup 2 display ur dungeon entrance flavor txt?)
-Make sure ur dungeon popup doesn't happen when player enters or begins new game in a main quest dungeon
 Update all FAQ questions (if necessary) for relevance after .dfmod release on NexusMods and 3rd forum post
 Add "why doesn't Disable AI work" FAQ question to NexusMods & 3rd forum post
-Write Bossfall .dfmod
+Add "save game corruption" FAQ question to Nexusmods & 3rd forum post - with Bossfall only nothing is corrupted, all saves work fine, it must be from another mod? 
 Update lines of code & comments added or modified in 2 NexusMods credits spots & 3rd forum post, just put lines o' code & comments in .dfmod
 Remove lines of comments from 2 NexusMods credits spots and 3rd forum post
 Update time spent in 2 NexusMods credits spots & 3rd forum post, just put "worked on since mid-October 2021", whatever that value in months is
 
 
-.DFMOD ReadMe SECTIONS START:
+BOSSFALL v2.1 TO-DO:
+
+SORT THESE LATER:
+
+    Add chance of finding mod items in house containers, use StockShopShelves as starting template, u'll have 2 modify it so it's not guaranteed, use ur List of mod items here
+    Double check all ur item gen methods that handle loot pile, enemy loot table random items, and shop shelf/house container loot gen - make sure mod items are automatically generated when appropriate so u don't need 2 add them manually (I think this is already the case but it never hurts 2 check) - this is NOT true for house containers
+    To generate mod wpns/armor one by one (do this the first time ur "add starting equipment 2 enemies" method is called, do it only once) and then check generated items for where they should be equipped (this will guaranteed tell u what location armor piece/wpn goes to). Once u process entire Lists of generated mod items u get from ItemHelper.GetCustomItemsForGroup(ItemGroups.Weapons and ItemGroups.Armor), store the item templates in a permanent container u make so then u know what goes where, only should have 2 process every mod item once
+    5189333 is ur Dispel Magic potion key (that uses ur custom Dispel Magic potion recipe)
+    GameManager.Instance.Dungeon.Summary.DungeonType (or whatever) can be called to see what dungeon type ur entering, use that for ur dungeon entrance flavor msgs, make popup HUD msgs last twice as long as normal? (or SETTING: Make actual msg box popup 2 display ur dungeon entrance flavor txt?)
+    Make sure ur dungeon popup doesn't happen when player enters or begins new game in a main quest dungeon
 
 
-.DFMOD SUMMARY OF CHANGES: section, add following sections to SUMMARY OF CHANGES once corresponding feature is actually added to .dfmod
+ADD THIS TO README.SUMMARY OF CHANGES ONCE IMPLEMENTED:
 
     MAGIC ITEMS:
 
         - You can find a new Dispel Magic potion and potion recipe.
 
 
-.DFMOD CHANGELOG: section, add following sections to CHANGELOG once corresponding feature is actually added to .dfmod
+ADD THIS TO README.CHANGELOG.CRIME & PUNISHMENT ONCE IMPLEMENTED:
 
-    COMBAT:
+    Legal reputation loss for most crimes changed. Loan default more severe (-30), murder tanks rep (-50)
+    All fines doubled, banishment less likely
+    Murder carries severe penalties (minimum 12 years & 120K fine)
+    Dark Brotherhood chance of averting murder/assault conviction increased (if you're a guildmember)
 
-        - Attack fatigue cost increased to 24. Vanilla attacks cost 11 fatigue.
 
-
-    POTIONS:
+ADD THIS TO README.CHANGELOG.POTIONS ONCE IMPLEMENTED:
 
         - Dispel Magic is now a Potion, recipes spawn normally (so player can get rid of Continuous Damage effects).
 
 
-.DFMOD FORMULAS & TABLES: section, merge/add following sections to FORMULAS & TABLES once corresponding feature is actually added to .dfmod & to CHANGELOG section
+ADD THIS TO README.CHANGELOG.GAMEPLAY & README.FORMULAS & TABLES.FALLING DAMAGE ONCE IMPLEMENTED:
+
+    - add ur fall dmg formula once implemented
 
 
-    FALLING DAMAGE:
+ADD THIS TO README.CHANGELOG.INVISIBILITY ONCE IMPLEMENTED:
 
-        - add ur fall dmg formula here? Only if u add fall damage changes in v1.3.1
+    Credit "thevm" for the inspiration for these Invis changes
+    Give enemies that used to see thru Invis one-time chance to see thru it (checks once per enemy), have it set ur CanDetectInvisible bool if check succeeds
+    Depends on player's Illusion skill, use Lerp to add between 50% chance to see thru Invis @ 1% Illusion skill down to added 0% chance to see thru Invis @ 100% Illusion skill)
+    Base chance to see thru Invis increases the more powerful the enemy is (non-boss Daedra have like 15-20% chance to see thru it)
+    Add HUD msg to tell player which monster can see thru it & why ("The Imp is not fooled by your clumsy Illusion spell.")
 
+    Base chance to see thru Invis @ 100% player Illusion skill (flesh out rest o' list w/all previous enemies that used 2 see thru Invis):
 
-    SKILL ADVANCEMENT DIFFICULTY:
+    Imp 0
 
-        - Add ur tables here, simply calculate how much more difficult both ur settings are than vanilla as vanilla's exact
-          skill calculations are very obtuse and hard to follow IMO
-
-
-END OF .DFMOD ReadMe SECTIONS
-
-
-.DFMOD CRIME & PUNISHMENT:
-
-Legal reputation loss for most crimes changed. Loan default more severe (-30), murder tanks rep (-50)
-All fines doubled, banishment less likely
-Murder carries severe penalties (minimum 12 years & 120K fine)
-Dark Brotherhood chance of averting murder/assault conviction increased (if you're a guildmember)
-
-
-.DFMOD SHOPS:
-
-General stores buy armor
-
-
-.DFMOD INVISIBILITY:
-
-Credit "thevm" for the inspiration for these Invis changes
-Give enemies that used to see thru Invis one-time chance to see thru it (checks once per enemy), have it set ur CanDetectInvisible bool if check succeeds
-Depends on player's Illusion skill, use Lerp to add between 50% chance to see thru Invis @ 1% Illusion skill down to added 0% chance to see thru Invis @ 100% Illusion skill)
-Base chance to see thru Invis increases the more powerful the enemy is (non-boss Daedra have like 15-20% chance to see thru it)
-Add HUD msg to tell player which monster can see thru it & why ("The Imp is not fooled by your clumsy Illusion spell.")
-
-Base chance to see thru Invis @ 100% player Illusion skill (flesh out rest o' list w/all previous enemies that used 2 see thru Invis):
-
-Imp 0
-
-
-.DFMOD ITEMS:
-
-Nerf glove/boot H2H durability damage slightly (2 for gloves, 3 for boots), credit "thevm" for feedback that led 2 change
-Also change durability values in FORMULAS & TABLES.HAND-TO-HAND section as needed as they will have changed
-
-
-BOSSFALL v1.4 TO-DO:
 
 ACROBATICS:
 
@@ -797,7 +732,7 @@ Above a certain height (4 dungeon wall blocks?) instakill falling entities, make
 Below that height make falling dmg start @ 3.8f, dmg is 10f permetrefallen (look @ PlayerHealth for template, use Reflection to implement)
 TO ADD: Training cap is 95
 Nerf training, follow previous Bossfall rules (don't bother w/nerfing training from quest rewards, not worth it)
-End goal is clear changelog below v1.3.1 section as that means you've added all previous changes to .dfmod (delete previous Changelog version's entries as u add them to .dfmod)
+End goal is clear changelog below v2.0 section as that means you've added all previous changes to .dfmod (delete previous Changelog version's entries as u add them to .dfmod)
 "thevm" Armor durability is being dmged even if player fully blocks all incoming dmg w/Shield, make it so if Shield blocks all dmg armor doesn't get dmged (to accomplish this, check 4 shield presence in BossfallOverrides.CalculateAttackDamage, dmg armor if appropriate, use code in DaggerfallEntity.DecreaseHealth as template)
 Rework Spell Absorption Special Advantage and from the Item Maker - make it not 100%. Similar to how the spell Spell Absorption works? Or dependent on your WIL? Once rework's done, re-enable Spell Absorption from character creation & from Item Maker
 Add avatar to DFWorkshop & NexusMods (the Ancient Lich pose from Bossfall cover picture?)
@@ -910,7 +845,7 @@ WoodlandsNight: 0.75 lM
 HauntedWoodlandsNight: 2 lM
 
 
-BOSSFALL v1.5 TO-DO:
+BOSSFALL v2.2 TO-DO:
 
 Clone HDD onto SSD, put SSD into comp remove HDD
 Superwipe HDD, once securely wiped dispose of it (or keep it for a backup?)

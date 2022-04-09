@@ -22,9 +22,9 @@ README SECTIONS:
     ADDITIONAL INFO:
 
         PROJECT HISTORY
-        v1.3.1 CHANGELOG
-        v1.3.1 FORMULAS & TABLES
-        v1.3.1 ITEM TABLES
+        v2.0 CHANGELOG
+        v2.0 FORMULAS & TABLES
+        v2.0 ITEM TABLES
         CREDITS & THANKS
         LEGAL INFO
 
@@ -64,7 +64,6 @@ MOD COMPATIBILITY:
         Unleveled Mobs and Quests
         Roleplay & Realism
         Better Default Classes
-        Lousy Lycans?           (untested)
         Shield Module?          (untested)
         Combat Overhaul Alpha?  (untested)
         Dodge Mod?              (untested)
@@ -138,9 +137,16 @@ SUMMARY OF CHANGES:
         - All magic items have been modified. They have different names, enchantments, and/or durabilities.
 
 
+    QUESTING:
+
+        - A Bossfall mini-tutorial quest activates when starting a new game.
+
+
     SHOPS:
 
         - Horses and Wagons are expensive.
+
+        - General Stores buy armor.
 
         - Store quality ("Rusty Relics", "Sturdy Shelves", etc.) determines what items are available. Best-in-slot weapons and
           armor and fancy or expensive-looking items are not in low quality shops.
@@ -220,9 +226,9 @@ PROJECT HISTORY:
     You've read my story, now it's time to make your own. Tamriel is waiting...
 
 
-v1.3.1 CHANGELOG:
+v2.0 CHANGELOG:
 
-    - Documents every change I made in Bossfall v1.3.1. If no entry on a subject exists, its behavior and values are vanilla's.
+    - Documents every change I made in Bossfall v2.0. If no entry on a subject exists, its behavior and values are vanilla's.
 
 
     BANKING:
@@ -461,6 +467,8 @@ v1.3.1 CHANGELOG:
         - All Steel weapons have a minimum damage of 1.
 
         - Knockbacks heavily nerfed to reduce stunlocks.
+
+        - Attack fatigue cost increased to 24. Vanilla attacks cost 11 fatigue.
 
         - Strength weapon damage bonus halved.
 
@@ -1632,6 +1640,8 @@ v1.3.1 CHANGELOG:
 
     QUESTING:
 
+        - A Bossfall mini-tutorial quest activates when starting a new game.
+
         - If the Display Enemy Level setting is on, activating quest enemies in Info mode will display their level and name at
           greatly increased distances. The activation limit is twice as far as vanilla's standard enemy activation distance.
 
@@ -1678,6 +1688,8 @@ v1.3.1 CHANGELOG:
     SHOPS:
 
         - Horses and Wagons are expensive.
+
+        - General Stores buy armor.
 
         - Shop quality now determines what items can be sold at a store. "Rusty Relics" and "Sturdy Shelves" quality stores
           have much less selection. "Average" and "Better Appointed" quality stores have slightly less selection. "Incense Burning"
@@ -1735,7 +1747,7 @@ v1.3.1 CHANGELOG:
         - Exact heal amounts per entity can be found in the FORMULAS & TABLES section of the ReadMe.
 
 
-v1.3.1 FORMULAS & TABLES:
+v2.0 FORMULAS & TABLES:
 
     BOSS SPAWN CHANCES:
 
@@ -2469,8 +2481,8 @@ v1.3.1 FORMULAS & TABLES:
         IRON, SILVER, ELVEN,                STEEL:                                  MITHRIL, ADAMANTIUM, EBONY,
         DWARVEN:                                                                    ORCISH, DAEDRIC:
 
-            Boots:     Break in 205 hits        Boots:     Break in 308 hits            Boots:     Break in 103 hits
-            Gauntlets: Break in 205 hits        Gauntlets: Break in 308 hits            Gauntlets: Break in 103 hits
+            Boots:     Break in 256 hits        Boots:     Break in 384 hits            Boots:     Break in 128 hits
+            Gauntlets: Break in 256 hits        Gauntlets: Break in 384 hits            Gauntlets: Break in 128 hits
 
 
     HUMAN ENEMY ARMOR:
@@ -3436,6 +3448,33 @@ v1.3.1 FORMULAS & TABLES:
             Giant Scorpion:  10-14                      Vampire Ancient:      26-30
 
 
+    SKILL ADVANCEMENT DIFFICULTY:
+
+        - Player's Career Advancement Multiplier and Reflexes setting heavily influence skill advancement difficulty,
+          so these numbers only serve as a general indicator of how difficult individual skills are to raise.
+
+                       VANILLA    HARD    EXTREMELY HARD                        VANILLA    HARD    EXTREMELY HARD
+
+        Alteration:       1         3           8                   Jumping:       5         5          20
+        Archery:          1         4          12                   Lockpicking:   2         2           2
+        Axe:              2         4          12                   Long Blade:    2         4          12
+        Backstabbing:     1         1           3                   Medical:      12         5          16 
+        Blunt Weapon:     2         4          12                   Mercantile:    1         3           9
+        Centaurian:      15         1           1                   Mysticism:     1         3           8
+        Climbing:         2         5          20                   Nymph:        15         1           1
+        Critical Strike:  8        16          35                   Orcish:       15         2           2
+        Daedric:         15         1           1                   Pickpocket:    2         2           2
+        Destruction:      1         3           8                   Restoration:   2         3           8
+        Dodging:          4         8          24                   Running:      50        75         250
+        Dragonish:       15         1           1                   Short Blade:   2         4          12
+        Etiquette:        1         1           1                   Spriggan:     15         1           1  
+        Giantish:        15         1           1                   Stealth:       2         4          12
+        Hand-to-Hand:     2         4          12                   Streetwise:    1         1           1              
+        Harpy:           15         1           1                   Swimming:      1         1           2
+        Illusion:         1         3           8                   Thaumaturgy:   2         3           8
+        Impish:          15         1           1
+
+
     SPIDER & GIANT SCORPION POISON CHANCES:
 
         - Each hit has a 10% total chance to inflict a vanilla poison. Only one poison may be inflicted per attack.
@@ -3476,7 +3515,7 @@ v1.3.1 FORMULAS & TABLES:
         Bard:           20
 
 
-v1.3.1 ITEM TABLES:
+v2.0 ITEM TABLES:
 
     ITEM CHANGES, SUMMARY:
 

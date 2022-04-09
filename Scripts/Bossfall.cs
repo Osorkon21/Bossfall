@@ -13,12 +13,15 @@ using BossfallMod.Events;
 using BossfallMod.Formulas;
 using BossfallMod.Items;
 using BossfallMod.Utility;
+using DaggerfallConnect;
 using DaggerfallWorkshop;
 using DaggerfallWorkshop.Game;
 using DaggerfallWorkshop.Game.Entity;
 using DaggerfallWorkshop.Game.Items;
 using DaggerfallWorkshop.Game.MagicAndEffects.MagicEffects;
+using DaggerfallWorkshop.Game.Questing;
 using DaggerfallWorkshop.Game.Serialization;
+using DaggerfallWorkshop.Game.UserInterfaceWindows;
 using DaggerfallWorkshop.Game.Utility;
 using DaggerfallWorkshop.Game.Utility.ModSupport;
 using DaggerfallWorkshop.Utility;
@@ -40,6 +43,7 @@ namespace BossfallMod
         static Mod mod;
 
         MethodInfo serializableEnemiesGetMethod;
+        Dictionary<DFLocation.BuildingTypes, List<ItemGroups>> shopsBuyTheseItemGroups;
 
         #endregion
 
@@ -115,6 +119,9 @@ namespace BossfallMod
             EnemyDeath.OnEnemyDeath += BossfallEventHandlers.Instance.BossfallOnEnemyDeath;
             PopulationManager.OnMobileNPCEnable += BossfallEventHandlers.Instance.BossfallOnMobileNPCEnable;
             PopulationManager.OnMobileNPCDisable += BossfallEventHandlers.Instance.BossfallOnMobileNPCDisable;
+
+            if (!QuestListsManager.RegisterQuestList("Bossfall"))
+                throw new Exception("Bossfall QuestList could not be loaded.");
         }
 
         void Awake()
@@ -130,12 +137,21 @@ namespace BossfallMod
         {
             Type type = SaveLoadManager.StateManager.GetType();
             Type type1 = typeof(SoulBound);
+            Type type2 = typeof(DaggerfallTradeWindow);
+            Type type3 = GameManager.Instance.WeaponManager.GetType();
 
             PropertyInfo property = type.GetProperty("SerializableEnemies", BindingFlags.Instance | BindingFlags.NonPublic);
             FieldInfo fieldInfo = type1.GetField("classicParamCosts", BindingFlags.Static | BindingFlags.NonPublic);
+            FieldInfo fieldInfo1 = type2.GetField("storeBuysItemType", BindingFlags.Static | BindingFlags.NonPublic);
+            FieldInfo fieldInfo2 = type3.GetField("swingWeaponFatigueLoss", BindingFlags.Instance | BindingFlags.NonPublic);
 
             serializableEnemiesGetMethod = property.GetGetMethod(true);
             fieldInfo.SetValue(null, BossfallOverrides.Instance.EnchantmentPointsByEnemyID);
+            fieldInfo2.SetValue(GameManager.Instance.WeaponManager, 24);
+
+            shopsBuyTheseItemGroups = (Dictionary<DFLocation.BuildingTypes, List<ItemGroups>>)fieldInfo1.GetValue(type2);
+            shopsBuyTheseItemGroups.Remove(DFLocation.BuildingTypes.GeneralStore);
+            shopsBuyTheseItemGroups.Add(DFLocation.BuildingTypes.GeneralStore, BossfallOverrides.Instance.BossfallGeneralStoreItemGroupsAccepted);
         }
 
         #endregion
